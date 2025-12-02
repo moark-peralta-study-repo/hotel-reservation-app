@@ -16,7 +16,7 @@ A simple desktop application for managing hotel reservations, built in Java with
 Open a terminal (Linux/Mac) or PowerShell/Command Prompt (Windows) and run:
 
 ```bash
-https://github.com/moark-peralta-study-repo/hotel-reservation-app.git
+git clone https://github.com/moark-peralta-study-repo/hotel-reservation-app.git
 cd hotel-reservation-gui
 ```
 
