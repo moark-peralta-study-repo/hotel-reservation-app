@@ -71,21 +71,3 @@ git pull
 ```
 
 3. Rebuild and run the project using the Gradle wrapper as shown above.
-
-## Tips for Beginners
-
-- Always use the Gradle wrapper (`./gradlew` on Linux/Mac, `gradlew.bat` on Windows) instead of a system-installed Gradle.
-- If you encounter dependency issues, run:
-
-```bash
-./gradlew --refresh-dependencies   # Linux/Mac
-gradlew.bat --refresh-dependencies # Windows
-```
-
-- Make sure your Java version is 17 or higher:
-
-```bash
-java -version
-```
-
-- If anything breaks, you can always delete the `build` folder and rebuild the project.
