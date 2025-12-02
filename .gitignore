@@ -1,0 +1,54 @@
+
+# -----------------------
+# Gradle
+# -----------------------
+.gradle/
+build/
+out/
+
+# Gradle wrapper logs
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+# -----------------------
+# IDEA / IntelliJ
+# -----------------------
+*.iml
+*.iws
+.idea/
+
+# -----------------------
+# OS-specific
+# -----------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------
+# Temporary files
+# -----------------------
+*.log
+*.tmp
+*.bak
+*.swp
+
+# -----------------------
+# Java specific
+# -----------------------
+*.class
+*.jar
+*.war
+*.ear
+
+# -----------------------
+# Test results and reports
+# -----------------------
+/build/reports/
+/build/test-results/
+/build/tmp/
+
+# -----------------------
+# Optional
+# -----------------------
+# Keep your database file tracked if you want everyone to start with the same DB
+# Otherwise, ignore it if each dev will have a local DB
+# /src/main/resources/hotel.db
