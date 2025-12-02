@@ -17,7 +17,7 @@ Open a terminal (Linux/Mac) or PowerShell/Command Prompt (Windows) and run:
 
 ```bash
 git clone https://github.com/moark-peralta-study-repo/hotel-reservation-app.git
-cd hotel-reservation-gui
+cd hotel-reservation-app
 ```
 
 ### 2. Build the project using the Gradle wrapper
