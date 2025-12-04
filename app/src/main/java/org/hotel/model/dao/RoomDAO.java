@@ -9,7 +9,7 @@ import org.hotel.model.Room;
 
 public class RoomDAO {
   public void insert(Room room) {
-    String sql = "INSERT INTO rooms (room_number, type, price, is_available) VALUES (?, ?, ?, ?";
+    String sql = "INSERT INTO rooms (room_number, type, price, is_available) VALUES (?, ?, ?, ?)";
     try (Connection conn = Database.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

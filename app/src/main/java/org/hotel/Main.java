@@ -4,6 +4,7 @@
 package org.hotel;
 
 import org.hotel.db.Database;
+import org.hotel.model.Customer;
 
 public class Main {
   public String getGreeting() {
