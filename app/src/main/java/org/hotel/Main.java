@@ -3,6 +3,8 @@
  */
 package org.hotel;
 
+import org.hotel.db.Database;
+
 public class Main {
   public String getGreeting() {
     return "Main Class at ../hotel-reservation-app/app/src/main/java/org/hotel/Main.java";
@@ -10,5 +12,6 @@ public class Main {
 
   public static void main(String[] args) {
     System.out.println(new Main().getGreeting());
+    Database.initializeDatabase();
   }
 }
