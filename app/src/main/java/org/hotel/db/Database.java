@@ -1,6 +1,5 @@
 package org.hotel.db;
 
-import java.awt.Taskbar.State;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -20,10 +19,12 @@ public class Database {
         Statement stmt = conn.createStatement()) {
 
       createTables(stmt);
+      // stmt.executeUpdate("DELETE FROM rooms");
+      // stmt.executeUpdate("DELETE FROM customers");
+      // stmt.executeUpdate("DELETE FROM bookings");
       seedAll(stmt);
 
       System.out.println("Database Initialized Successfully.");
-
     } catch (SQLException e) {
       System.out.println("Database initialization failed.");
       e.printStackTrace();
@@ -40,14 +41,23 @@ public class Database {
               (101, 'Single', 1200, 1),
               (102, 'Single', 1200, 1),
               (103, 'Single', 1200, 1),
+              (104, 'Single', 1200, 1),
+              (105, 'Single', 1200, 1),
+              (106, 'Single', 1200, 1),
 
               (201, 'Double', 1800, 1),
               (202, 'Double', 1800, 1),
               (203, 'Double', 1800, 1),
+              (204, 'Double', 1800, 1),
+              (205, 'Double', 1800, 1),
+              (206, 'Double', 1800, 1),
 
               (301, 'Suite', 3500, 1),
               (302, 'Suite', 3500, 1),
-              (303, 'Suite', 3500, 1);
+              (303, 'Suite', 3500, 1),
+              (304, 'Suite', 3500, 1),
+              (305, 'Suite', 3500, 1),
+              (306, 'Suite', 3500, 1);
           """;
 
       stmt.executeUpdate(insertRooms);
@@ -60,7 +70,10 @@ public class Database {
             INSERT INTO customers (name, phone, email) VALUES
               ('Juan Dela Cruz', '09696969696', 'juan@example.com'),
               ('Maria Santos', '09999999999', 'maria@example.com'),
-              ('Jessie Prado', '09888888888', 'jessie@example.com');
+              ('Jessie Prado', '09888888888', 'jessie@example.com'),
+              ('Juan Dela Crus', '09696969697', 'juan1@example.com'),
+              ('Marla Santos', '09999999990', 'maria1@example.com'),
+              ('Love Prado', '09388888888', 'jessie1@example.com');
           """;
 
       stmt.execute(insertCustomers);
@@ -75,7 +88,10 @@ public class Database {
             INSERT INTO bookings (customer_id, room_id, check_in, check_out, total_price) VALUES
               (1, 101, '2025-12-01', '2025-12-03', 2400),
               (2, 201, '2025-12-05', '2025-12-06', 1800),
-              (3, 301, '2025-12-10', '2025-12-12', 7000);
+              (3, 301, '2025-12-10', '2025-12-12', 7000),
+              (4, 101, '2026-12-01', '2026-12-03', 2400),
+              (5, 201, '2026-12-05', '2026-12-06', 1800),
+              (6, 301, '2026-12-10', '2026-12-12', 7000);
           """;
       stmt.execute(insertBookings);
       System.out.println("Seeded: Bookings");
