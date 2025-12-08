@@ -8,6 +8,18 @@ public class MainFrame extends JFrame {
   private JPanel contentPanel;
   private CardLayout cardLayout;
 
+  public JPanel getNavPanel() {
+    return navPanel;
+  }
+
+  public JPanel getContentPanel() {
+    return contentPanel;
+  }
+
+  public CardLayout getCardLayout() {
+    return cardLayout;
+  }
+
   public MainFrame() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int width = (int) screenSize.getWidth();
@@ -21,6 +33,8 @@ public class MainFrame extends JFrame {
     JButton reservationBtn = new NavButton("Reservations");
     JButton checkInBtn = new NavButton("Check-in");
     JButton checkOutBtn = new NavButton("Check-out");
+
+    roomsBtn.addActionListener(e -> cardLayout.show(contentPanel, "Rooms"));
 
     setTitle("Hotel Sugu");
     setSize(width, height);

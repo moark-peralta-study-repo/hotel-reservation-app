@@ -3,7 +3,15 @@
  */
 package org.hotel;
 
+import java.util.List;
+
+import javax.swing.SwingUtilities;
+
 import org.hotel.db.Database;
+import org.hotel.model.dao.RoomDAO;
+import org.hotel.view.MainFrame;
+import org.hotel.view.RoomsView;
+import org.hotel.model.Room;
 
 public class Main {
   public String getGreeting() {
@@ -13,5 +21,17 @@ public class Main {
   public static void main(String[] args) {
     System.out.println(new Main().getGreeting());
     Database.initializeDatabase();
+
+    SwingUtilities.invokeLater(() -> {
+      MainFrame mainFrame = new MainFrame();
+
+      RoomDAO roomDAO = new RoomDAO();
+      List<Room> rooms = roomDAO.getAll();
+
+      RoomsView roomsView = new RoomsView(rooms);
+
+      mainFrame.getContentPanel().add(roomsView, "Rooms");
+      mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Rooms");
+    });
   }
 }
