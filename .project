@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>hotel-reservation-gui</name>
-	<comment>Project hotel-reservation-gui created by Buildship.</comment>
+	<name>hotel-reservation-gui-hotel-reservation-app</name>
+	<comment>Project hotel-reservation-app created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -16,7 +16,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1764337005950</id>
+			<id>1764822249861</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

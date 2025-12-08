@@ -4,7 +4,10 @@
 package org.hotel;
 
 import org.hotel.db.Database;
+<<<<<<< HEAD
 import org.hotel.view.MainFrame;
+=======
+>>>>>>> feat/ui/main
 
 public class Main {
   public String getGreeting() {
@@ -14,6 +17,9 @@ public class Main {
   public static void main(String[] args) {
     System.out.println(new Main().getGreeting());
     Database.initializeDatabase();
+<<<<<<< HEAD
     new MainFrame();
+=======
+>>>>>>> feat/ui/main
   }
 }

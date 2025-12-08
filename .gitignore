@@ -47,6 +47,12 @@ Thumbs.db
 /build/tmp/
 
 # -----------------------
+# DB SHIT
+# -----------------------
+*.db
+*.sqlite
+
+# -----------------------
 # Optional
 # -----------------------
 # Keep your database file tracked if you want everyone to start with the same DB
