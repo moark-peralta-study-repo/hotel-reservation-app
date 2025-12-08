@@ -33,7 +33,8 @@ public class MainFrame extends JFrame {
     navPanel.setBackground(Color.decode("#ffffff"));
     navPanel.setPreferredSize(new Dimension(navWidth, height));
     navPanel.setBackground(Color.decode("#ffffff"));
-    navPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#000000")));
+    navPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#f3f4f6")));
+
     add(navPanel, BorderLayout.WEST);
 
     navPanel.add(dashBoardBtn);
@@ -42,6 +43,18 @@ public class MainFrame extends JFrame {
     navPanel.add(reservationBtn);
     navPanel.add(checkInBtn);
     navPanel.add(checkOutBtn);
+
+    JPanel contentWrapper = new JPanel(new BorderLayout());
+
+    TopPanel topPanel = new TopPanel("Mark Lester Peralta");
+    contentWrapper.add(topPanel, BorderLayout.NORTH);
+
+    cardLayout = new CardLayout();
+    contentPanel = new JPanel(cardLayout);
+    contentWrapper.add(contentPanel, BorderLayout.CENTER);
+
+    add(contentWrapper, BorderLayout.CENTER);
+
     setVisible(true);
   }
 }
