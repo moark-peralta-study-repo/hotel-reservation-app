@@ -10,7 +10,7 @@ import org.hotel.model.Booking;
 public class BookingsDAO {
 
   public void insert(Booking booking) {
-    String sql = "INSERT INTO bookings (customer_id, room_id, check_out, check_in, total_price) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO bookings (customer_id, room_id, check_out, check_in, total_price, status) VALUES (?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -20,6 +20,7 @@ public class BookingsDAO {
       pstmt.setString(3, booking.getCheckOut());
       pstmt.setString(4, booking.getCheckIn());
       pstmt.setDouble(5, booking.getTotalPrice());
+      pstmt.setString(6, booking.getStatus());
 
       pstmt.executeUpdate();
     } catch (SQLException e) {
@@ -42,7 +43,8 @@ public class BookingsDAO {
             rs.getInt("room_id"),
             rs.getString("check_out"),
             rs.getString("check_in"),
-            rs.getDouble("total_price"));
+            rs.getDouble("total_price"),
+            rs.getString("status"));
 
         bookings.add(booking);
       }

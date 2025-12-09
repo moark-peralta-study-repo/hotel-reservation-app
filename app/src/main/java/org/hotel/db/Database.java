@@ -85,13 +85,13 @@ public class Database {
     if (rsBookings.next() && rsBookings.getInt("count") == 0) {
 
       String insertBookings = """
-            INSERT INTO bookings (customer_id, room_id, check_in, check_out, total_price) VALUES
-              (1, 101, '2025-12-01', '2025-12-03', 2400),
-              (2, 201, '2025-12-05', '2025-12-06', 1800),
-              (3, 301, '2025-12-10', '2025-12-12', 7000),
-              (4, 101, '2026-12-01', '2026-12-03', 2400),
-              (5, 201, '2026-12-05', '2026-12-06', 1800),
-              (6, 301, '2026-12-10', '2026-12-12', 7000);
+            INSERT INTO bookings (customer_id, room_id, check_in, check_out, total_price, status) VALUES
+              (1, 101, '2025-12-01', '2025-12-03', 2400, 'reserved'),
+              (2, 201, '2025-12-05', '2025-12-06', 1800, 'reserved'),
+              (3, 301, '2025-12-10', '2025-12-12', 7000, 'checked_out'),
+              (4, 101, '2026-12-01', '2026-12-03', 2400, 'checked_in'),
+              (5, 201, '2026-12-05', '2026-12-06', 1800, 'checked_out'),
+              (6, 301, '2026-12-10', '2026-12-12', 7000, 'reserved');
           """;
       stmt.execute(insertBookings);
       System.out.println("Seeded: Bookings");
@@ -123,10 +123,11 @@ public class Database {
               CREATE TABLE IF NOT EXISTS bookings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 customer_id INTEGER,
-                check_in TEXT,
                 room_id INTEGER,
+                check_in TEXT,
                 check_out TEXT,
                 total_price REAL,
+                status TEXT default "reserved",
                 FOREIGN KEY(customer_id) REFERENCES customers(id),
                 FOREIGN KEY(room_id) REFERENCES rooms(id)
             );
