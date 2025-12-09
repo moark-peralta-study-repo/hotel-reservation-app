@@ -7,22 +7,26 @@ public class Booking {
   private String checkOut;
   private String checkIn;
   private double totalPrice;
+  private String status;
 
-  public Booking(int id, int customerId, int roomId, String checkOut, String checkIn, double totalPrice) {
+  public Booking(int id, int customerId, int roomId, String checkOut, String checkIn, double totalPrice,
+      String status) {
     this.id = id;
     this.customerId = customerId;
     this.roomId = roomId;
     this.checkOut = checkOut;
     this.checkIn = checkIn;
     this.totalPrice = totalPrice;
+    this.status = status;
   }
 
-  public Booking(int customerId, int roomId, String checkOut, String checkIn, double totalPrice) {
+  public Booking(int customerId, int roomId, String checkOut, String checkIn, double totalPrice, String status) {
     this.customerId = customerId;
     this.roomId = roomId;
     this.checkOut = checkOut;
     this.checkIn = checkIn;
     this.totalPrice = totalPrice;
+    this.status = status;
   }
 
   public int getId() {
@@ -73,4 +77,11 @@ public class Booking {
     this.totalPrice = totalPrice;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }
