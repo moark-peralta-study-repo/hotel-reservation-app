@@ -22,16 +22,6 @@ public class Main {
     System.out.println(new Main().getGreeting());
     Database.initializeDatabase();
 
-    SwingUtilities.invokeLater(() -> {
-      MainFrame mainFrame = new MainFrame();
-
-      RoomDAO roomDAO = new RoomDAO();
-      List<Room> rooms = roomDAO.getAll();
-
-      RoomsView roomsView = new RoomsView(rooms);
-
-      mainFrame.getContentPanel().add(roomsView, "Rooms");
-      mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Rooms");
-    });
+    SwingUtilities.invokeLater(MainFrame::new);
   }
 }

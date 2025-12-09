@@ -2,6 +2,10 @@ package org.hotel.view;
 
 import java.awt.*;
 import javax.swing.*;
+import java.util.List;
+
+import org.hotel.model.Room;
+import org.hotel.model.dao.RoomDAO;
 
 public class MainFrame extends JFrame {
   private JPanel navPanel;
@@ -34,7 +38,15 @@ public class MainFrame extends JFrame {
     JButton checkInBtn = new NavButton("Check-in");
     JButton checkOutBtn = new NavButton("Check-out");
 
-    roomsBtn.addActionListener(e -> cardLayout.show(contentPanel, "Rooms"));
+    roomsBtn.addActionListener(e -> {
+      RoomDAO roomDAO = new RoomDAO();
+      List<Room> rooms = roomDAO.getAll();
+      RoomsView roomsView = new RoomsView(rooms);
+
+      contentPanel.add(roomsView, "Rooms");
+      cardLayout.show(contentPanel, "Rooms");
+
+    });
 
     setTitle("Hotel Sugu");
     setSize(width, height);
