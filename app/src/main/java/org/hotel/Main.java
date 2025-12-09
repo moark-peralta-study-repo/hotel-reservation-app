@@ -12,6 +12,7 @@ import org.hotel.model.dao.RoomDAO;
 import org.hotel.view.MainFrame;
 import org.hotel.view.RoomsView;
 import org.hotel.model.Room;
+import org.hotel.view.MainFrame;
 
 public class Main {
   public String getGreeting() {
@@ -23,5 +24,6 @@ public class Main {
     Database.initializeDatabase();
 
     SwingUtilities.invokeLater(MainFrame::new);
+    new MainFrame();
   }
 }
