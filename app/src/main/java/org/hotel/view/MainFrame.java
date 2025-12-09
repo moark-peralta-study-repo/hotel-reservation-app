@@ -2,11 +2,27 @@ package org.hotel.view;
 
 import java.awt.*;
 import javax.swing.*;
+import java.util.List;
+
+import org.hotel.model.Room;
+import org.hotel.model.dao.RoomDAO;
 
 public class MainFrame extends JFrame {
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
+
+  public JPanel getNavPanel() {
+    return navPanel;
+  }
+
+  public JPanel getContentPanel() {
+    return contentPanel;
+  }
+
+  public CardLayout getCardLayout() {
+    return cardLayout;
+  }
 
   public MainFrame() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -21,6 +37,16 @@ public class MainFrame extends JFrame {
     JButton reservationBtn = new NavButton("Reservations");
     JButton checkInBtn = new NavButton("Check-in");
     JButton checkOutBtn = new NavButton("Check-out");
+
+    roomsBtn.addActionListener(e -> {
+      RoomDAO roomDAO = new RoomDAO();
+      List<Room> rooms = roomDAO.getAll();
+      RoomsView roomsView = new RoomsView(rooms);
+
+      contentPanel.add(roomsView, "Rooms");
+      cardLayout.show(contentPanel, "Rooms");
+
+    });
 
     setTitle("Hotel Sugu");
     setSize(width, height);

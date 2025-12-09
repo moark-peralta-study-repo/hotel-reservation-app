@@ -3,7 +3,15 @@
  */
 package org.hotel;
 
+import java.util.List;
+
+import javax.swing.SwingUtilities;
+
 import org.hotel.db.Database;
+import org.hotel.model.dao.RoomDAO;
+import org.hotel.view.MainFrame;
+import org.hotel.view.RoomsView;
+import org.hotel.model.Room;
 import org.hotel.view.MainFrame;
 
 public class Main {
@@ -14,6 +22,8 @@ public class Main {
   public static void main(String[] args) {
     System.out.println(new Main().getGreeting());
     Database.initializeDatabase();
+
+    SwingUtilities.invokeLater(MainFrame::new);
     new MainFrame();
   }
 }
