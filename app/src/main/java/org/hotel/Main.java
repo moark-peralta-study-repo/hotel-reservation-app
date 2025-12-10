@@ -3,15 +3,9 @@
  */
 package org.hotel;
 
-import java.util.List;
-
 import javax.swing.SwingUtilities;
 
 import org.hotel.db.Database;
-import org.hotel.model.dao.RoomDAO;
-import org.hotel.view.MainFrame;
-import org.hotel.view.RoomsView;
-import org.hotel.model.Room;
 import org.hotel.view.MainFrame;
 
 public class Main {
