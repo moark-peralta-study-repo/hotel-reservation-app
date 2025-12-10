@@ -11,6 +11,11 @@ public class MainFrame extends JFrame {
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
+  private JButton roomsBtn;
+
+  public JButton getRoomsBtn() {
+    return roomsBtn;
+  }
 
   public JPanel getNavPanel() {
     return navPanel;
@@ -32,21 +37,11 @@ public class MainFrame extends JFrame {
 
     // Buttons
     JButton dashBoardBtn = new NavButton("Dashboard");
-    JButton roomsBtn = new NavButton("Rooms");
+    roomsBtn = new NavButton("Rooms");
     JButton bookingsBtn = new NavButton("Bookings");
     JButton reservationBtn = new NavButton("Reservations");
     JButton checkInBtn = new NavButton("Check-in");
     JButton checkOutBtn = new NavButton("Check-out");
-
-    roomsBtn.addActionListener(e -> {
-      RoomDAO roomDAO = new RoomDAO();
-      List<Room> rooms = roomDAO.getAll();
-      RoomsView roomsView = new RoomsView(rooms);
-
-      contentPanel.add(roomsView, "Rooms");
-      cardLayout.show(contentPanel, "Rooms");
-
-    });
 
     setTitle("Hotel Sugu");
     setSize(width, height);
@@ -78,6 +73,8 @@ public class MainFrame extends JFrame {
     cardLayout = new CardLayout();
     contentPanel = new JPanel(cardLayout);
     contentWrapper.add(contentPanel, BorderLayout.CENTER);
+
+    contentPanel.add(new JPanel(), "Rooms");
 
     add(contentWrapper, BorderLayout.CENTER);
 
