@@ -24,6 +24,5 @@ public class Main {
     Database.initializeDatabase();
 
     SwingUtilities.invokeLater(MainFrame::new);
-    new MainFrame();
   }
 }
