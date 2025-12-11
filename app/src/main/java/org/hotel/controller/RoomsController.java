@@ -76,7 +76,7 @@ public class RoomsController {
       return;
     }
 
-    int roomNumber = (int) roomsView.getTableModel().getValueAt(selectedRow, 1);
+    int roomNumber = (int) roomsView.getTableModel().getValueAt(selectedRow, 2);
     Room room = roomDAO.getByRoomNumber(roomNumber);
 
     if (room == null) {
