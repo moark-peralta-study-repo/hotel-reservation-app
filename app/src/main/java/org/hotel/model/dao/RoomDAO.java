@@ -60,7 +60,7 @@ public class RoomDAO {
             rs.getInt("room_number"),
             rs.getString("type"),
             rs.getDouble("price"),
-            rs.getBoolean("available"));
+            rs.getInt("is_available") == 1);
       }
 
     } catch (SQLException e) {
@@ -70,7 +70,7 @@ public class RoomDAO {
   }
 
   public void update(Room room) {
-    String sql = "UPDATE rooms SET room_number=? type=?, price=?, available=? WHERE id=?";
+    String sql = "UPDATE rooms SET room_number=?, type=?, price=?, is_available=? WHERE id=?";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -78,9 +78,10 @@ public class RoomDAO {
       stmt.setInt(1, room.getRoomNumber());
       stmt.setString(2, room.getType());
       stmt.setDouble(3, room.getPrice());
-      stmt.setBoolean(4, room.isAvailable());
+      stmt.setInt(4, room.isAvailable() ? 1 : 0);
       stmt.setInt(5, room.getId());
 
+      stmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
     }
