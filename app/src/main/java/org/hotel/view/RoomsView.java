@@ -42,17 +42,19 @@ public class RoomsView extends JPanel {
 
     add(actionPanel, BorderLayout.NORTH);
 
-    String[] columns = { "#", "Room No.", "Type", "Price", "Status" };
+    String[] columns = { "#", "ID", "Room No.", "Type", "Price", "Status" };
 
-    Object[][] tableData = new Object[rooms.size()][5];
+    Object[][] tableData = new Object[rooms.size()][6];
 
     for (int i = 0; i < rooms.size(); i++) {
       Room r = rooms.get(i);
+
       tableData[i][0] = i + 1;
-      tableData[i][1] = r.getRoomNumber();
-      tableData[i][2] = r.getType();
-      tableData[i][3] = r.getPrice();
-      tableData[i][4] = r.isAvailable() ? "Available" : "Occupied";
+      tableData[i][1] = r.getId();
+      tableData[i][2] = r.getRoomNumber();
+      tableData[i][3] = r.getType();
+      tableData[i][4] = r.getPrice();
+      tableData[i][5] = r.isAvailable() ? "Available" : "Occupied";
     }
 
     tableModel = new DefaultTableModel(tableData, columns) {
@@ -63,6 +65,10 @@ public class RoomsView extends JPanel {
     };
 
     roomTable = new JTable(tableModel);
+    roomTable.getColumnModel().getColumn(1).setMinWidth(0);
+    roomTable.getColumnModel().getColumn(1).setMaxWidth(0);
+    roomTable.getColumnModel().getColumn(1).setWidth(0);
+
     roomTable.setFillsViewportHeight(true);
     roomTable.setRowHeight(30);
     roomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

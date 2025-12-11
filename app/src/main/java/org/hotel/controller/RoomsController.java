@@ -37,12 +37,35 @@ public class RoomsController {
     roomsView = new RoomsView(rooms);
 
     roomsView.getEditBtn().addActionListener(e -> onEditRoom());
+    roomsView.getDeleteBtn().addActionListener(e -> onDeleteRoom());
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(roomsView, "Rooms");
     mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Rooms");
     mainFrame.getContentPanel().revalidate();
     mainFrame.getContentPanel().repaint();
+  }
+
+  private void onDeleteRoom() {
+    int selectedRow = roomsView.getRoomTable().getSelectedRow();
+
+    if (selectedRow == -1) {
+      JOptionPane.showMessageDialog(mainFrame, "Please select a room to delete");
+      return;
+    }
+
+    int id = (int) roomsView.getTableModel().getValueAt(selectedRow, 1);
+    Room room = roomDAO.getById(id);
+
+    int confirm = JOptionPane.showConfirmDialog(null,
+        "Are you sure you want to delete Room " + room.getRoomNumber() + "?",
+        "Confirm Delete",
+        JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+      roomDAO.delete(room.getId());
+      loadRooms();
+    }
   }
 
   private void onEditRoom() {

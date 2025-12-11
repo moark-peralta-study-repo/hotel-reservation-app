@@ -45,6 +45,31 @@ public class RoomDAO {
     return rooms;
   }
 
+  public Room getById(int id) {
+    String sql = "SELECT * FROM rooms WHERE id=?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);) {
+
+      stmt.setInt(1, id);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        return new Room(
+            rs.getInt("id"),
+            rs.getInt("room_number"),
+            rs.getString("type"),
+            rs.getDouble("price"),
+            rs.getInt("is_available") == 1);
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   public Room getByRoomNumber(int roomNumber) {
     String sql = "SELECT * FROM rooms WHERE room_number = ?";
 
@@ -81,6 +106,19 @@ public class RoomDAO {
       stmt.setInt(4, room.isAvailable() ? 1 : 0);
       stmt.setInt(5, room.getId());
 
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void delete(int id) {
+    String sql = "DELETE FROM rooms WHERE id=?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, id);
       stmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
