@@ -44,4 +44,45 @@ public class RoomDAO {
     }
     return rooms;
   }
+
+  public Room getByRoomNumber(int roomNumber) {
+    String sql = "SELECT * FROM rooms WHERE room_number = ?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, roomNumber);
+      ResultSet rs = stmt.executeQuery();
+
+      if (rs.next()) {
+        return new Room(
+            rs.getInt("id"),
+            rs.getInt("room_number"),
+            rs.getString("type"),
+            rs.getDouble("price"),
+            rs.getBoolean("available"));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public void update(Room room) {
+    String sql = "UPDATE rooms SET room_number=? type=?, price=?, available=? WHERE id=?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, room.getRoomNumber());
+      stmt.setString(2, room.getType());
+      stmt.setDouble(3, room.getPrice());
+      stmt.setBoolean(4, room.isAvailable());
+      stmt.setInt(5, room.getId());
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 }
