@@ -3,7 +3,11 @@
  */
 package org.hotel;
 
+import javax.swing.SwingUtilities;
+
+import org.hotel.controller.RoomsController;
 import org.hotel.db.Database;
+import org.hotel.view.MainFrame;
 
 public class Main {
   public String getGreeting() {
@@ -13,5 +17,10 @@ public class Main {
   public static void main(String[] args) {
     System.out.println(new Main().getGreeting());
     Database.initializeDatabase();
+
+    SwingUtilities.invokeLater(() -> {
+      MainFrame mainFrame = new MainFrame();
+      new RoomsController(mainFrame);
+    });
   }
 }
