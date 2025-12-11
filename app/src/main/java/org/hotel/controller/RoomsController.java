@@ -38,12 +38,56 @@ public class RoomsController {
 
     roomsView.getEditBtn().addActionListener(e -> onEditRoom());
     roomsView.getDeleteBtn().addActionListener(e -> onDeleteRoom());
+    roomsView.getAddBtn().addActionListener(e -> onAddRoom());
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(roomsView, "Rooms");
     mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Rooms");
     mainFrame.getContentPanel().revalidate();
     mainFrame.getContentPanel().repaint();
+  }
+
+  private void onAddRoom() {
+    Room newRoom = showAddDialog();
+
+    if (newRoom != null) {
+      roomDAO.insert(newRoom);
+      loadRooms();
+    }
+
+  }
+
+  private Room showAddDialog() {
+    JTextField roomNoField = new JTextField();
+    JTextField typeField = new JTextField();
+    JTextField priceField = new JTextField();
+
+    JCheckBox availableCheck = new JCheckBox("Available");
+    availableCheck.setSelected(true);
+
+    JPanel panel = new JPanel(new GridLayout(0, 1));
+    panel.add(new JLabel("Room Number:"));
+    panel.add(roomNoField);
+    panel.add(new JLabel("Type:"));
+    panel.add(typeField);
+    panel.add(new JLabel("Price:"));
+    panel.add(priceField);
+    panel.add(availableCheck);
+
+    int result = JOptionPane.showConfirmDialog(mainFrame, panel, "Add new Room", JOptionPane.OK_CANCEL_OPTION);
+
+    if (result != JOptionPane.showConfirmDialog(mainFrame, panel, "Add Rooms", JOptionPane.OK_CANCEL_OPTION))
+      ;
+
+    if (result != JOptionPane.OK_OPTION)
+      return null;
+
+    return new Room(
+        0,
+        Integer.parseInt(roomNoField.getText()),
+        typeField.getText(),
+        Double.parseDouble(priceField.getText()),
+        availableCheck.isSelected());
   }
 
   private void onDeleteRoom() {
