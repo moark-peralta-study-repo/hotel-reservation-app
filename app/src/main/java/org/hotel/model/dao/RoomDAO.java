@@ -124,4 +124,22 @@ public class RoomDAO {
       e.printStackTrace();
     }
   }
+
+  public void add(Room newRoom) {
+    String sql = "INSERT INTO rooms (roomNumber, type, price, is_available) VALUES (?, ?, ?, ?);";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, newRoom.getRoomNumber());
+      stmt.setString(2, newRoom.getType());
+      stmt.setDouble(3, newRoom.getPrice());
+      stmt.setBoolean(2, newRoom.isAvailable());
+
+      stmt.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 }
