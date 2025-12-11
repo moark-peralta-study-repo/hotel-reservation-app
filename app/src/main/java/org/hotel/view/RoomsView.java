@@ -1,11 +1,20 @@
 package org.hotel.view;
 
-import org.hotel.model.Room;
-
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import org.hotel.model.Room;
 
 public class RoomsView extends JPanel {
   private JTable roomTable;
@@ -56,6 +65,7 @@ public class RoomsView extends JPanel {
     roomTable = new JTable(tableModel);
     roomTable.setFillsViewportHeight(true);
     roomTable.setRowHeight(30);
+    roomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(roomTable);
     add(scrollPane, BorderLayout.CENTER);
