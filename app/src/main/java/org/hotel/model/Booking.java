@@ -4,18 +4,19 @@ public class Booking {
   private int id;
   private int customerId;
   private int roomId;
-  private String checkOut;
   private String checkIn;
+  private String checkOut;
   private double totalPrice;
   private String status;
 
-  public Booking(int id, int customerId, int roomId, String checkOut, String checkIn, double totalPrice,
-      String status) {
+  public Booking(int id, int customerId, int roomId,
+      String checkIn, String checkOut,
+      double totalPrice, String status) {
     this.id = id;
     this.customerId = customerId;
     this.roomId = roomId;
-    this.checkOut = checkOut;
     this.checkIn = checkIn;
+    this.checkOut = checkOut;
     this.totalPrice = totalPrice;
     this.status = status;
   }
@@ -23,8 +24,8 @@ public class Booking {
   public Booking(int customerId, int roomId, String checkOut, String checkIn, double totalPrice, String status) {
     this.customerId = customerId;
     this.roomId = roomId;
-    this.checkOut = checkOut;
     this.checkIn = checkIn;
+    this.checkOut = checkOut;
     this.totalPrice = totalPrice;
     this.status = status;
   }
