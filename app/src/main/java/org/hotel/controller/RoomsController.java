@@ -74,9 +74,6 @@ public class RoomsController {
 
     int result = JOptionPane.showConfirmDialog(mainFrame, panel, "Add new Room", JOptionPane.OK_CANCEL_OPTION);
 
-    if (result != JOptionPane.showConfirmDialog(mainFrame, panel, "Add Rooms", JOptionPane.OK_CANCEL_OPTION))
-      ;
-
     if (result != JOptionPane.OK_OPTION)
       return null;
 
