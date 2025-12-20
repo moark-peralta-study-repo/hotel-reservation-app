@@ -1,11 +1,18 @@
 package org.hotel.model.dao;
 
-import java.sql.*;
+import java.awt.print.Book;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import org.hotel.utils.BookingUtils;
 
 import org.hotel.db.Database;
 import org.hotel.model.Booking;
+import org.hotel.model.BookingStatus;
 
 public class BookingsDAO {
   public void update(Booking booking) {
@@ -23,7 +30,7 @@ public class BookingsDAO {
       stmt.setString(3, booking.getCheckIn());
       stmt.setString(4, booking.getCheckOut());
       stmt.setDouble(5, booking.getTotalPrice());
-      stmt.setString(6, booking.getStatus());
+      stmt.setString(6, booking.getStatus().name());
       stmt.setInt(7, booking.getId());
 
       stmt.executeUpdate();
@@ -60,7 +67,7 @@ public class BookingsDAO {
       pstmt.setString(3, booking.getCheckIn());
       pstmt.setString(4, booking.getCheckOut());
       pstmt.setDouble(5, booking.getTotalPrice());
-      pstmt.setString(6, booking.getStatus());
+      pstmt.setString(6, booking.getStatus().name());
 
       pstmt.executeUpdate();
     } catch (SQLException e) {
@@ -78,16 +85,7 @@ public class BookingsDAO {
         ResultSet rs = stmt.executeQuery(sql)) {
 
       while (rs.next()) {
-        Booking booking = new Booking(
-            rs.getInt("id"),
-            rs.getInt("customer_id"),
-            rs.getInt("room_id"),
-            rs.getString("check_in"),
-            rs.getString("check_out"),
-            rs.getDouble("total_price"),
-            rs.getString("status"));
-
-        bookings.add(booking);
+        bookings.add(BookingUtils.mapRowToBooking(rs));
       }
 
     } catch (SQLException e) {
@@ -108,16 +106,7 @@ public class BookingsDAO {
 
       while (rs.next()) {
 
-        Booking booking = new Booking(
-            rs.getInt("id"),
-            rs.getInt("customer_id"),
-            rs.getInt("room_id"),
-            rs.getString("check_in"),
-            rs.getString("check_out"),
-            rs.getDouble("total_price"),
-            rs.getString("status"));
-
-        bookings.add(booking);
+        bookings.add(BookingUtils.mapRowToBooking(rs));
       }
 
     } catch (SQLException e) {
@@ -136,16 +125,8 @@ public class BookingsDAO {
         ResultSet rs = stmt.executeQuery(sql)) {
 
       while (rs.next()) {
-        Booking booking = new Booking(
-            rs.getInt("id"),
-            rs.getInt("customer_id"),
-            rs.getInt("room_id"),
-            rs.getString("check_in"),
-            rs.getString("check_out"),
-            rs.getDouble("total_price"),
-            rs.getString("status"));
 
-        bookings.add(booking);
+        bookings.add(BookingUtils.mapRowToBooking(rs));
       }
 
     } catch (SQLException e) {
@@ -218,6 +199,7 @@ public class BookingsDAO {
       ResultSet rs = stmt.executeQuery();
 
       if (rs.next()) {
+        BookingStatus status = BookingStatus.valueOf(rs.getString("status").toUpperCase());
         return new Booking(
             rs.getInt("id"),
             rs.getInt("customer_id"),
@@ -225,7 +207,7 @@ public class BookingsDAO {
             rs.getString("check_in"),
             rs.getString("check_out"),
             rs.getDouble("total_price"),
-            rs.getString("status"));
+            status);
       }
 
     } catch (SQLException e) {
