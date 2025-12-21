@@ -86,12 +86,12 @@ public class Database {
 
       String insertBookings = """
             INSERT INTO bookings (customer_id, room_id, check_in, check_out, total_price, status) VALUES
-              (1, 101, '2025-12-01', '2025-12-03', 2400, 'reserved'),
-              (2, 201, '2025-12-05', '2025-12-06', 1800, 'reserved'),
-              (3, 301, '2025-12-10', '2025-12-12', 7000, 'checked_out'),
-              (4, 101, '2026-12-01', '2026-12-03', 2400, 'checked_in'),
-              (5, 201, '2026-12-05', '2026-12-06', 1800, 'checked_out'),
-              (6, 301, '2026-12-10', '2026-12-12', 7000, 'reserved');
+              (1, 101, '2025-12-01', '2025-12-03', 2400, 'RESERVED'),
+              (2, 201, '2025-12-05', '2025-12-06', 1800, 'RESERVED'),
+              (3, 301, '2025-12-10', '2025-12-12', 7000, 'CHECKED_OUT'),
+              (4, 101, '2026-12-01', '2026-12-03', 2400, 'CHECKED_IN'),
+              (5, 201, '2026-12-05', '2026-12-06', 1800, 'CHECKED_OUT'),
+              (6, 301, '2026-12-10', '2026-12-12', 7000, 'RESERVED');
           """;
       stmt.execute(insertBookings);
       System.out.println("Seeded: Bookings");
