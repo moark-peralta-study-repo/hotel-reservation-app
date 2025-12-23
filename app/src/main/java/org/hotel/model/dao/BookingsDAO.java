@@ -1,6 +1,5 @@
 package org.hotel.model.dao;
 
-import java.awt.print.Book;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,11 +7,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.hotel.utils.BookingUtils;
 
 import org.hotel.db.Database;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingStatus;
+import org.hotel.utils.BookingUtils;
 
 public class BookingsDAO {
   public void update(Booking booking) {
@@ -40,17 +39,29 @@ public class BookingsDAO {
     }
   }
 
-  public void cancel(int id) {
-    String sql = """
-          UPDATE bookings SET status = 'cancelled' WHERE id = ?
-        """;
+  public void cancel(Booking booking) {
+    String updateBooking = "UPDATE bookings SET status = ? WHERE id = ?";
+    String updateRoom = "UPDATE rooms SET is_available = 1 WHERE id = ?";
 
-    try (Connection conn = Database.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
+    try (Connection conn = Database.getConnection()) {
+      conn.setAutoCommit(false);
 
-      stmt.setInt(1, id);
-      stmt.executeUpdate();
+      try (
+          PreparedStatement bookingStmt = conn.prepareStatement(updateBooking);
+          PreparedStatement roomStmt = conn.prepareStatement(updateRoom)) {
 
+        bookingStmt.setString(1, BookingStatus.CANCELLED.name());
+        bookingStmt.setInt(2, booking.getId());
+        bookingStmt.executeUpdate();
+
+        roomStmt.setInt(1, booking.getRoomId());
+        roomStmt.executeUpdate();
+
+        conn.commit();
+      } catch (SQLException e) {
+        conn.rollback();
+        throw e;
+      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -98,7 +109,7 @@ public class BookingsDAO {
   // For checkIn view
   public List<Booking> getPendingCheckIn() {
     List<Booking> bookings = new ArrayList<>();
-    String sql = "SELECT * FROM bookings WHERE status = 'reserved' AND check_in <= date('now')";
+    String sql = "SELECT * FROM bookings WHERE status = 'RESERVED' AND check_in <= date('now')";
 
     try (Connection conn = Database.getConnection();
         Statement stmt = conn.createStatement();
@@ -118,7 +129,7 @@ public class BookingsDAO {
 
   public List<Booking> getCheckedInBookings() {
     List<Booking> bookings = new ArrayList<>();
-    String sql = "SELECT * FROM bookings WHERE status = 'checked_in' ";
+    String sql = "SELECT * FROM bookings WHERE status = 'CHECKED_IN' ";
 
     try (Connection conn = Database.getConnection();
         Statement stmt = conn.createStatement();
@@ -138,7 +149,7 @@ public class BookingsDAO {
   }
 
   public void checkInCustomer(Booking booking) {
-    String updateBooking = "UPDATE bookings SET status = 'checked_in' WHERE id = ?";
+    String updateBooking = "UPDATE bookings SET status = ? WHERE id = ?";
     String updateRoom = "UPDATE rooms SET is_available = 0 WHERE id = ?";
 
     try (Connection conn = Database.getConnection()) {
@@ -147,7 +158,8 @@ public class BookingsDAO {
       try (PreparedStatement bookingStmt = conn.prepareStatement(updateBooking);
           PreparedStatement roomStmt = conn.prepareStatement(updateRoom)) {
 
-        bookingStmt.setInt(1, booking.getId());
+        bookingStmt.setString(1, BookingStatus.CHECKED_IN.name());
+        bookingStmt.setInt(2, booking.getId());
         bookingStmt.executeUpdate();
 
         roomStmt.setInt(1, booking.getRoomId());
@@ -165,7 +177,7 @@ public class BookingsDAO {
   }
 
   public void checkOutCustomer(Booking booking) {
-    String updateBooking = "UPDATE bookings SET status = 'checked_out' WHERE id = ?";
+    String updateBooking = "UPDATE bookings SET status = ? WHERE id = ?";
     String updateRoom = "UPDATE rooms SET is_available = 1 WHERE id = ?";
 
     try (Connection conn = Database.getConnection()) {
@@ -174,11 +186,14 @@ public class BookingsDAO {
       try (PreparedStatement bookingStmt = conn.prepareStatement(updateBooking);
           PreparedStatement roomStmt = conn.prepareStatement(updateRoom)) {
 
-        bookingStmt.setInt(1, booking.getId());
+        bookingStmt.setString(1, BookingStatus.CHECKED_OUT.name());
+        bookingStmt.setInt(2, booking.getId());
         bookingStmt.executeUpdate();
 
         roomStmt.setInt(1, booking.getRoomId());
         roomStmt.executeUpdate();
+
+        conn.commit();
 
       } catch (SQLException e) {
         conn.rollback();
@@ -199,15 +214,7 @@ public class BookingsDAO {
       ResultSet rs = stmt.executeQuery();
 
       if (rs.next()) {
-        BookingStatus status = BookingStatus.valueOf(rs.getString("status").toUpperCase());
-        return new Booking(
-            rs.getInt("id"),
-            rs.getInt("customer_id"),
-            rs.getInt("room_id"),
-            rs.getString("check_in"),
-            rs.getString("check_out"),
-            rs.getDouble("total_price"),
-            status);
+        return BookingUtils.mapRowToBooking(rs);
       }
 
     } catch (SQLException e) {
