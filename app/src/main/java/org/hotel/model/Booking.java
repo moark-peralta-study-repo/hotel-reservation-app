@@ -21,7 +21,7 @@ public class Booking {
     this.status = status;
   }
 
-  public Booking(int customerId, int roomId, String checkOut, String checkIn, double totalPrice, BookingStatus status) {
+  public Booking(int customerId, int roomId, String checkIn, String checkOut, double totalPrice, BookingStatus status) {
     this.customerId = customerId;
     this.roomId = roomId;
     this.checkIn = checkIn;
