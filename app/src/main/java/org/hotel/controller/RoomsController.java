@@ -1,10 +1,6 @@
 package org.hotel.controller;
 
-import org.hotel.model.Room;
-import org.hotel.model.dao.RoomDAO;
-import org.hotel.view.MainFrame;
-import org.hotel.view.RoomsView;
-
+import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.JCheckBox;
@@ -13,8 +9,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
+import org.hotel.model.Room;
+import org.hotel.model.dao.RoomDAO;
+import org.hotel.view.MainFrame;
+import org.hotel.view.RoomsView;
 
 public class RoomsController {
   private MainFrame mainFrame;
