@@ -1,11 +1,16 @@
 package org.hotel.view;
 
-import java.awt.*;
-import javax.swing.*;
-import java.util.List;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 
-import org.hotel.model.Room;
-import org.hotel.model.dao.RoomDAO;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class MainFrame extends JFrame {
   private JPanel navPanel;
