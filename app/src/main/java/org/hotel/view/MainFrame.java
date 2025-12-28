@@ -1,17 +1,27 @@
 package org.hotel.view;
 
-import java.awt.*;
-import javax.swing.*;
-import java.util.List;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 
-import org.hotel.model.Room;
-import org.hotel.model.dao.RoomDAO;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class MainFrame extends JFrame {
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
   private JButton roomsBtn;
+  private JButton bookingsBtn;
+
+  public JButton getBookingsBtn() {
+    return bookingsBtn;
+  }
 
   public JButton getRoomsBtn() {
     return roomsBtn;
@@ -38,7 +48,8 @@ public class MainFrame extends JFrame {
     // Buttons
     JButton dashBoardBtn = new NavButton("Dashboard");
     roomsBtn = new NavButton("Rooms");
-    JButton bookingsBtn = new NavButton("Bookings");
+    // JButton bookingsBtn = new NavButton("Bookings");
+    bookingsBtn = new NavButton("Bookings");
     JButton reservationBtn = new NavButton("Reservations");
     JButton checkInBtn = new NavButton("Check-in");
     JButton checkOutBtn = new NavButton("Check-out");
