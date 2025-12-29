@@ -13,11 +13,27 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class MainFrame extends JFrame {
+
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
   private JButton roomsBtn;
   private JButton bookingsBtn;
+  private JButton reservationBtn;
+  private JButton checkInBtn;
+  private JButton checkOutBtn;
+
+  public JButton getReservationBtn() {
+    return reservationBtn;
+  }
+
+  public JButton getCheckInBtn() {
+    return checkInBtn;
+  }
+
+  public JButton getCheckOutBtn() {
+    return checkOutBtn;
+  }
 
   public JButton getBookingsBtn() {
     return bookingsBtn;
@@ -50,9 +66,12 @@ public class MainFrame extends JFrame {
     roomsBtn = new NavButton("Rooms");
     // JButton bookingsBtn = new NavButton("Bookings");
     bookingsBtn = new NavButton("Bookings");
-    JButton reservationBtn = new NavButton("Reservations");
-    JButton checkInBtn = new NavButton("Check-in");
-    JButton checkOutBtn = new NavButton("Check-out");
+    // JButton reservationBtn = new NavButton("Reservations");
+    reservationBtn = new NavButton("Reservations");
+    // JButton checkInBtn = new NavButton("Check-in");
+    checkInBtn = new NavButton("Check-ins");
+    // JButton checkOutBtn = new NavButton("Check-out");
+    checkOutBtn = new NavButton("Check-outs");
 
     setTitle("Hotel Sugu");
     setSize(width, height);
