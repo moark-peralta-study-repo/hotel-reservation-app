@@ -25,6 +25,8 @@ public class BookingsController {
     mainFrame.getCheckInBtn().addActionListener(e -> loadPendingCheckInBookings());
 
     mainFrame.getCheckOutBtn().addActionListener(e -> loadCheckedInBookings());
+
+    mainFrame.getReservationBtn().addActionListener(e -> loadFutureBookings());
   }
 
   private void loadCheckedInBookings() {
@@ -38,6 +40,19 @@ public class BookingsController {
     mainFrame.getContentPanel().repaint();
   }
 
+  // Future Checkins
+  private void loadFutureBookings() {
+    List<Booking> futureCheckin = bookingsDAO.getReservedBookings();
+    bookingsView = new BookingsView(futureCheckin);
+
+    mainFrame.getContentPanel().removeAll();
+    mainFrame.getContentPanel().add(bookingsView, "Bookings");
+    mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
+    mainFrame.getContentPanel().revalidate();
+    mainFrame.getContentPanel().repaint();
+  }
+
+  // Arriving today OR overdue checkins
   private void loadPendingCheckInBookings() {
     List<Booking> pendingCheckin = bookingsDAO.getPendingCheckIn();
     bookingsView = new BookingsView(pendingCheckin);
