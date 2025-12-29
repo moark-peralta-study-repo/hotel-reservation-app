@@ -17,6 +17,11 @@ public class MainFrame extends JFrame {
   private JPanel contentPanel;
   private CardLayout cardLayout;
   private JButton roomsBtn;
+  private JButton bookingsBtn;
+
+  public JButton getBookingsBtn() {
+    return bookingsBtn;
+  }
 
   public JButton getRoomsBtn() {
     return roomsBtn;
@@ -43,7 +48,8 @@ public class MainFrame extends JFrame {
     // Buttons
     JButton dashBoardBtn = new NavButton("Dashboard");
     roomsBtn = new NavButton("Rooms");
-    JButton bookingsBtn = new NavButton("Bookings");
+    // JButton bookingsBtn = new NavButton("Bookings");
+    bookingsBtn = new NavButton("Bookings");
     JButton reservationBtn = new NavButton("Reservations");
     JButton checkInBtn = new NavButton("Check-in");
     JButton checkOutBtn = new NavButton("Check-out");

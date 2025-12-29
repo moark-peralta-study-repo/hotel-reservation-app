@@ -5,6 +5,7 @@ package org.hotel;
 
 import javax.swing.SwingUtilities;
 
+import org.hotel.controller.BookingsController;
 import org.hotel.controller.RoomsController;
 import org.hotel.db.Database;
 import org.hotel.view.MainFrame;
@@ -21,6 +22,7 @@ public class Main {
     SwingUtilities.invokeLater(() -> {
       MainFrame mainFrame = new MainFrame();
       new RoomsController(mainFrame);
+      new BookingsController(mainFrame);
     });
   }
 }
