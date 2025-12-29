@@ -26,14 +26,6 @@ public class BookingsView extends JPanel {
     JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
     add(actionPanel, BorderLayout.NORTH);
 
-    // this.id = id;
-    // this.customerId = customerId;
-    // this.roomId = roomId;
-    // this.checkIn = checkIn;
-    // this.checkOut = checkOut;
-    // this.totalPrice = totalPrice;
-    // this.status = status;
-
     String[] columns = {
         "#",
         "Booking ID",
@@ -77,24 +69,5 @@ public class BookingsView extends JPanel {
 
     JScrollPane scrollPane = new JScrollPane(bookingTable);
     add(scrollPane, BorderLayout.CENTER);
-  }
-
-  public void updateTable(List<Booking> bookings) {
-    Object[][] tableData = new Object[bookings.size()][tableModel.getColumnCount()];
-
-    for (int i = 0; i < bookings.size(); i++) {
-      Booking b = bookings.get(i);
-      tableData[i][0] = i + 1;
-      tableData[i][1] = b.getId();
-      tableData[i][2] = b.getCustomerId();
-      tableData[i][3] = b.getRoomId();
-      tableData[i][4] = b.getCheckIn();
-      tableData[i][5] = b.getCheckOut();
-      tableData[i][6] = b.getTotalPrice();
-      tableData[i][7] = b.getStatus();
-    }
-
-    tableModel.setDataVector(tableData,
-        new Object[] { "#", "Booking ID", "Customer", "Room No.", "Check-in", "Check-out", "Total Price", "Status" });
   }
 }
