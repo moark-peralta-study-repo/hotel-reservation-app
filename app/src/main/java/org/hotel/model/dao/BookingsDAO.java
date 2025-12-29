@@ -127,6 +127,27 @@ public class BookingsDAO {
     return bookings;
   }
 
+  public List<Booking> getReservedBookings() {
+    List<Booking> bookings = new ArrayList<>();
+
+    String sql = "SELECT * FROM bookings WHERE status = 'RESERVED' AND check_in > date('now')";
+
+    try (Connection conn = Database.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql)) {
+
+      while (rs.next()) {
+
+        bookings.add(BookingUtils.mapRowToBooking(rs));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return bookings;
+  }
+
   public List<Booking> getCheckedInBookings() {
     List<Booking> bookings = new ArrayList<>();
     String sql = "SELECT * FROM bookings WHERE status = 'CHECKED_IN' ";
