@@ -21,6 +21,19 @@ public class BookingsController {
 
   private void registerEvents() {
     mainFrame.getBookingsBtn().addActionListener(e -> loadBookings());
+
+    mainFrame.getCheckInBtn().addActionListener(e -> loadPendingCheckInBookings());
+  }
+
+  private void loadPendingCheckInBookings() {
+    List<Booking> checkedIBookings = bookingsDAO.getPendingCheckIn();
+    bookingsView = new BookingsView(checkedIBookings);
+
+    mainFrame.getContentPanel().removeAll();
+    mainFrame.getContentPanel().add(bookingsView, "Bookings");
+    mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
+    mainFrame.getContentPanel().revalidate();
+    mainFrame.getContentPanel().repaint();
   }
 
   private void loadBookings() {
