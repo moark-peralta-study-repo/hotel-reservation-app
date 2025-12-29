@@ -23,11 +23,24 @@ public class BookingsController {
     mainFrame.getBookingsBtn().addActionListener(e -> loadBookings());
 
     mainFrame.getCheckInBtn().addActionListener(e -> loadPendingCheckInBookings());
+
+    mainFrame.getCheckOutBtn().addActionListener(e -> loadCheckedInBookings());
+  }
+
+  private void loadCheckedInBookings() {
+    List<Booking> checkedInBookings = bookingsDAO.getCheckedInBookings();
+    bookingsView = new BookingsView(checkedInBookings);
+
+    mainFrame.getContentPanel().removeAll();
+    mainFrame.getContentPanel().add(bookingsView, "Bookings");
+    mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
+    mainFrame.getContentPanel().revalidate();
+    mainFrame.getContentPanel().repaint();
   }
 
   private void loadPendingCheckInBookings() {
-    List<Booking> checkedIBookings = bookingsDAO.getPendingCheckIn();
-    bookingsView = new BookingsView(checkedIBookings);
+    List<Booking> pendingCheckin = bookingsDAO.getPendingCheckIn();
+    bookingsView = new BookingsView(pendingCheckin);
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
