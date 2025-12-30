@@ -48,6 +48,7 @@ public class BookingsView extends JPanel {
         checkOutBtn = new JButton("Check Out");
         actionPanel.add(checkOutBtn);
       }
+      default -> throw new IllegalArgumentException("Unexpected value: " + mode);
     }
 
     add(actionPanel, BorderLayout.NORTH);
