@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -13,17 +14,42 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import org.hotel.model.Booking;
+import org.hotel.model.BookingsViewMode;
 
 public class BookingsView extends JPanel {
   private JTable bookingTable;
   private DefaultTableModel tableModel;
   private JTextField searchField;
+  private JButton addReservationBtn, checkInBtn, checkOutBtn, editReservationBtn, cancelReservationBtn;
 
-  public BookingsView(List<Booking> bookings) {
+  public BookingsView(List<Booking> bookings, BookingsViewMode mode) {
     setLayout(new BorderLayout());
     setBackground(Color.decode("#f9fafb"));
 
     JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
+    switch (mode) {
+      case RESERVATION -> {
+        addReservationBtn = new JButton("Add Reservation");
+        editReservationBtn = new JButton("Edit Reservation");
+        cancelReservationBtn = new JButton("Cancel Reservation");
+
+        actionPanel.add(addReservationBtn);
+        actionPanel.add(editReservationBtn);
+        actionPanel.add(cancelReservationBtn);
+      }
+
+      case CHECK_IN -> {
+        checkInBtn = new JButton("Check In");
+        actionPanel.add(checkInBtn);
+      }
+
+      case CHECK_OUT -> {
+        checkOutBtn = new JButton("Check Out");
+        actionPanel.add(checkOutBtn);
+      }
+    }
+
     add(actionPanel, BorderLayout.NORTH);
 
     String[] columns = {

@@ -3,6 +3,7 @@ package org.hotel.controller;
 import java.util.List;
 
 import org.hotel.model.Booking;
+import org.hotel.model.BookingsViewMode;
 import org.hotel.model.dao.BookingsDAO;
 import org.hotel.view.BookingsView;
 import org.hotel.view.MainFrame;
@@ -31,7 +32,7 @@ public class BookingsController {
 
   private void loadCheckedInBookings() {
     List<Booking> checkedInBookings = bookingsDAO.getCheckedInBookings();
-    bookingsView = new BookingsView(checkedInBookings);
+    bookingsView = new BookingsView(checkedInBookings, BookingsViewMode.CHECK_OUT);
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
@@ -43,7 +44,7 @@ public class BookingsController {
   // Future Checkins
   private void loadFutureBookings() {
     List<Booking> futureCheckin = bookingsDAO.getReservedBookings();
-    bookingsView = new BookingsView(futureCheckin);
+    bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
@@ -55,7 +56,7 @@ public class BookingsController {
   // Arriving today OR overdue checkins
   private void loadPendingCheckInBookings() {
     List<Booking> pendingCheckin = bookingsDAO.getPendingCheckIn();
-    bookingsView = new BookingsView(pendingCheckin);
+    bookingsView = new BookingsView(pendingCheckin, BookingsViewMode.CHECK_IN);
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
@@ -66,7 +67,7 @@ public class BookingsController {
 
   private void loadBookings() {
     List<Booking> bookings = bookingsDAO.getAll();
-    bookingsView = new BookingsView(bookings);
+    bookingsView = new BookingsView(bookings, BookingsViewMode.ALL);
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
