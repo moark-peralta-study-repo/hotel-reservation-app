@@ -1,6 +1,10 @@
 package org.hotel.model.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,21 +31,37 @@ public class RoomDAO {
     List<Room> rooms = new ArrayList<>();
     String sql = "SELECT * FROM rooms";
 
-    try (Connection conn = Database.getConnection();
+    try (
+        Connection conn = Database.getConnection();
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql)) {
-      while (rs.next()) {
 
-        rooms.add(new Room(
-            rs.getInt("id"),
-            rs.getInt("room_number"),
-            rs.getString("type"),
-            rs.getDouble("price"),
-            rs.getInt("is_available") == 1));
+      while (rs.next()) {
+        int roomId = rs.getInt("id");
+
+        String checkSql = "SELECT COUNT(*) AS count FROM bookings WHERE room_id = ? AND status = 'CHECKED_IN'";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+          checkStmt.setInt(1, roomId);
+          ResultSet checkRs = checkStmt.executeQuery();
+          boolean available = true;
+          if (checkRs.next()) {
+            available = checkRs.getInt("count") == 0;
+          }
+
+          rooms.add(
+              new Room(
+                  roomId,
+                  rs.getInt("room_number"),
+                  rs.getString("type"),
+                  rs.getDouble("price"),
+                  available));
+        }
       }
+
     } catch (SQLException e) {
       e.printStackTrace();
     }
+
     return rooms;
   }
 

@@ -40,28 +40,16 @@ public class BookingsDAO {
   }
 
   public void cancel(Booking booking) {
-    String updateBooking = "UPDATE bookings SET status = ? WHERE id = ?";
-    String updateRoom = "UPDATE rooms SET is_available = 1 WHERE id = ?";
+    String sql = "UPDATE bookings SET status = ? WHERE id = ?";
 
-    try (Connection conn = Database.getConnection()) {
-      conn.setAutoCommit(false);
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-      try (
-          PreparedStatement bookingStmt = conn.prepareStatement(updateBooking);
-          PreparedStatement roomStmt = conn.prepareStatement(updateRoom)) {
+      stmt.setString(1, BookingStatus.CANCELLED.name());
+      stmt.setInt(2, booking.getId());
+      stmt.executeUpdate();
 
-        bookingStmt.setString(1, BookingStatus.CANCELLED.name());
-        bookingStmt.setInt(2, booking.getId());
-        bookingStmt.executeUpdate();
-
-        roomStmt.setInt(1, booking.getRoomId());
-        roomStmt.executeUpdate();
-
-        conn.commit();
-      } catch (SQLException e) {
-        conn.rollback();
-        throw e;
-      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -107,6 +95,7 @@ public class BookingsDAO {
   }
 
   // For checkIn view
+  // Arrival today or late checkin
   public List<Booking> getPendingCheckIn() {
     List<Booking> bookings = new ArrayList<>();
     String sql = "SELECT * FROM bookings WHERE status = 'RESERVED' AND check_in <= date('now')";
@@ -170,56 +159,32 @@ public class BookingsDAO {
   }
 
   public void checkInCustomer(Booking booking) {
-    String updateBooking = "UPDATE bookings SET status = ? WHERE id = ?";
-    String updateRoom = "UPDATE rooms SET is_available = 0 WHERE id = ?";
+    String sql = "UPDATE bookings SET status = ? WHERE id = ?";
 
-    try (Connection conn = Database.getConnection()) {
-      conn.setAutoCommit(false);
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-      try (PreparedStatement bookingStmt = conn.prepareStatement(updateBooking);
-          PreparedStatement roomStmt = conn.prepareStatement(updateRoom)) {
+      stmt.setString(1, BookingStatus.CHECKED_IN.name());
+      stmt.setInt(2, booking.getId());
+      stmt.executeUpdate();
 
-        bookingStmt.setString(1, BookingStatus.CHECKED_IN.name());
-        bookingStmt.setInt(2, booking.getId());
-        bookingStmt.executeUpdate();
-
-        roomStmt.setInt(1, booking.getRoomId());
-        roomStmt.executeUpdate();
-
-        conn.commit();
-
-      } catch (SQLException e) {
-        conn.rollback();
-        throw e;
-      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
   public void checkOutCustomer(Booking booking) {
-    String updateBooking = "UPDATE bookings SET status = ? WHERE id = ?";
-    String updateRoom = "UPDATE rooms SET is_available = 1 WHERE id = ?";
+    String sql = "UPDATE bookings SET status = ? WHERE id = ?";
 
-    try (Connection conn = Database.getConnection()) {
-      conn.setAutoCommit(false);
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-      try (PreparedStatement bookingStmt = conn.prepareStatement(updateBooking);
-          PreparedStatement roomStmt = conn.prepareStatement(updateRoom)) {
+      stmt.setString(1, BookingStatus.CHECKED_OUT.name());
+      stmt.setInt(2, booking.getId());
+      stmt.executeUpdate();
 
-        bookingStmt.setString(1, BookingStatus.CHECKED_OUT.name());
-        bookingStmt.setInt(2, booking.getId());
-        bookingStmt.executeUpdate();
-
-        roomStmt.setInt(1, booking.getRoomId());
-        roomStmt.executeUpdate();
-
-        conn.commit();
-
-      } catch (SQLException e) {
-        conn.rollback();
-        throw e;
-      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
