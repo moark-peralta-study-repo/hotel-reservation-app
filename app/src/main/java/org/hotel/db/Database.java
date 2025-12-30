@@ -2,9 +2,9 @@ package org.hotel.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 public class Database {
   private static final String URL = "jdbc:sqlite:hotel.db";
@@ -22,7 +22,8 @@ public class Database {
       // stmt.executeUpdate("DELETE FROM rooms");
       // stmt.executeUpdate("DELETE FROM customers");
       // stmt.executeUpdate("DELETE FROM bookings");
-      seedAll(stmt);
+      seedRooms(stmt);
+      seedBookingAuto(stmt);
 
       System.out.println("Database Initialized Successfully.");
     } catch (SQLException e) {
@@ -31,106 +32,39 @@ public class Database {
     }
   }
 
-  private static void seedAll(Statement stmt) throws SQLException {
-    ResultSet rsRooms = stmt.executeQuery("SELECT COUNT(*) AS count FROM rooms");
-
-    if (rsRooms.next() && rsRooms.getInt("count") == 0) {
-
-      String insertRooms = """
-            INSERT INTO rooms (room_number, type, price, is_available) VALUES
-              (101, 'Single', 1200, 1),
-              (102, 'Single', 1200, 1),
-              (103, 'Single', 1200, 1),
-              (104, 'Single', 1200, 1),
-              (105, 'Single', 1200, 1),
-              (106, 'Single', 1200, 1),
-
-              (201, 'Double', 1800, 1),
-              (202, 'Double', 1800, 1),
-              (203, 'Double', 1800, 1),
-              (204, 'Double', 1800, 1),
-              (205, 'Double', 1800, 1),
-              (206, 'Double', 1800, 1),
-
-              (301, 'Suite', 3500, 1),
-              (302, 'Suite', 3500, 1),
-              (303, 'Suite', 3500, 1),
-              (304, 'Suite', 3500, 1),
-              (305, 'Suite', 3500, 1),
-              (306, 'Suite', 3500, 1);
-          """;
-
-      stmt.executeUpdate(insertRooms);
-      System.out.println("Seeded: Rooms");
-    }
-
-    ResultSet rsCustomers = stmt.executeQuery("SELECT COUNT(*) AS count FROM customers");
-    if (rsCustomers.next() && rsCustomers.getInt("count") == 0) {
-      String insertCustomers = """
-            INSERT INTO customers (name, phone, email) VALUES
-              ('Juan Dela Cruz', '09696969696', 'juan@example.com'),
-              ('Maria Santos', '09999999999', 'maria@example.com'),
-              ('Jessie Prado', '09888888888', 'jessie@example.com'),
-              ('Juan Dela Crus', '09696969697', 'juan1@example.com'),
-              ('Marla Santos', '09999999990', 'maria1@example.com'),
-              ('Love Prado', '09388888888', 'jessie1@example.com');
-          """;
-
-      stmt.execute(insertCustomers);
-      System.out.println("Seeded: Customers");
-    }
-
-    ResultSet rsBookings = stmt.executeQuery("SELECT COUNT(*) AS count FROM bookings");
-
-    if (rsBookings.next() && rsBookings.getInt("count") == 0) {
-
-      String insertBookings = """
-            INSERT INTO bookings (customer_id, room_id, check_in, check_out, total_price, status) VALUES
-              (1, 101, '2025-12-01', '2025-12-03', 2400, 'RESERVED'),
-              (2, 201, '2025-12-05', '2025-12-06', 1800, 'RESERVED'),
-              (3, 301, '2025-12-10', '2025-12-12', 7000, 'CHECKED_OUT'),
-              (4, 101, '2026-12-01', '2026-12-03', 2400, 'CHECKED_IN'),
-              (5, 201, '2026-12-05', '2026-12-06', 1800, 'CHECKED_OUT'),
-              (6, 301, '2026-12-10', '2026-12-12', 7000, 'RESERVED');
-          """;
-      stmt.execute(insertBookings);
-      System.out.println("Seeded: Bookings");
-    }
-  }
-
   private static void createTables(Statement stmt) throws SQLException {
     String sqlRooms = """
-          CREATE TABLE IF NOT EXISTS rooms (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            room_number INTEGER UNIQUE NOT NULL,
-            type TEXT,
-            price REAL,
-            is_available INTEGER DEFAULT 1
+        CREATE TABLE IF NOT EXISTS rooms (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_number INTEGER UNIQUE NOT NULL,
+        type TEXT,
+        price REAL,
+        is_available INTEGER DEFAULT 1
         );
         """;
 
     String sqlCustomers = """
-              CREATE TABLE IF NOT EXISTS customers (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                phone TEXT,
-                email TEXT
-            );
+        CREATE TABLE IF NOT EXISTS customers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        phone TEXT,
+        email TEXT
+        );
 
         """;
 
     String sqlBookings = """
-              CREATE TABLE IF NOT EXISTS bookings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                customer_id INTEGER,
-                room_id INTEGER,
-                check_in TEXT,
-                check_out TEXT,
-                total_price REAL,
-                status TEXT default "reserved",
-                FOREIGN KEY(customer_id) REFERENCES customers(id),
-                FOREIGN KEY(room_id) REFERENCES rooms(id)
-            );
+        CREATE TABLE IF NOT EXISTS bookings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        customer_id INTEGER,
+        room_id INTEGER,
+        check_in TEXT,
+        check_out TEXT,
+        total_price REAL,
+        status TEXT default "reserved",
+        FOREIGN KEY(customer_id) REFERENCES customers(id),
+        FOREIGN KEY(room_id) REFERENCES rooms(id)
+        );
         """;
 
     stmt.execute(sqlCustomers);
@@ -138,5 +72,78 @@ public class Database {
     stmt.execute(sqlBookings);
 
     System.out.println("Tables Created");
+  }
+
+  private static void seedBookingAuto(Statement stmt) throws SQLException {
+    LocalDate today = LocalDate.now();
+
+    for (int i = 1; i <= 100; i++) {
+      int customerId = (i % 6) + 1;
+      int roomId = (i % 50) + 1;
+
+      LocalDate checkIn = today.plusDays((i % 10) - 5); // 5 days before or after today
+      LocalDate checkOut = checkIn.plusDays(2);
+
+      String status;
+      if (today.isBefore(checkIn)) {
+        status = "RESERVED";
+      } else if (!today.isBefore(checkOut)) {
+        status = "CHECKED_OUT";
+      } else {
+        status = "CHECKED_IN";
+      }
+
+      double price = switch (roomId % 3) {
+        case 1 -> 1200;
+        case 2 -> 1800;
+        default -> 3500;
+      };
+
+      stmt.executeUpdate("""
+              INSERT INTO bookings (customer_id, room_id, check_in, check_out, total_price, status)
+              VALUES (%d, %d, '%s', '%s', %.2f, '%s')
+          """.formatted(customerId, roomId, checkIn, checkOut, price, status));
+    }
+  }
+
+  private static void seedRooms(Statement stmt) throws SQLException {
+
+    var rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM rooms");
+    if (rs.next() && rs.getInt("count") > 0) {
+      return; // already seeded
+    }
+
+    for (int floor = 1; floor <= 5; floor++) {
+      for (int room = 1; room <= 10; room++) {
+
+        int roomNumber = floor * 100 + room;
+
+        String type;
+        double price;
+
+        switch (roomNumber % 3) {
+          case 1 -> {
+            type = "Single";
+            price = 1200;
+          }
+          case 2 -> {
+            type = "Double";
+            price = 1800;
+          }
+          default -> {
+            type = "Suite";
+            price = 3500;
+          }
+        }
+
+        stmt.executeUpdate(
+            """
+                INSERT INTO rooms (room_number, type, price, is_available)
+                VALUES (%d, '%s', %.2f, 1)
+                """.formatted(roomNumber, type, price));
+      }
+    }
+
+    System.out.println("Seeded: 50 Rooms");
   }
 }
