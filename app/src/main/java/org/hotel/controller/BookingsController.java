@@ -50,6 +50,8 @@ public class BookingsController {
     List<Booking> futureCheckin = bookingsDAO.getReservedBookings();
     bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
 
+    attachViewListeners();
+
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
     mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
@@ -89,6 +91,26 @@ public class BookingsController {
 
     if (bookingsView.getCheckOutBtn() != null) {
       bookingsView.getCheckOutBtn().addActionListener(e -> handleCheckOut());
+    }
+
+    if (bookingsView.getCancelReservationBtn() != null) {
+      bookingsView.getCancelReservationBtn().addActionListener(e -> handleCancelReservation());
+    }
+  }
+
+  private void handleCancelReservation() {
+    int selectedRow = bookingsView.getBookingTable().getSelectedRow();
+    if (selectedRow != -1) {
+      int bookingId = (int) bookingsView.getTableModel().getValueAt(selectedRow, 1);
+      Booking booking = bookingsDAO.getById(bookingId);
+
+      if (booking != null) {
+        bookingsDAO.cancelReservation(booking);
+        JOptionPane.showMessageDialog(mainFrame, "Cancelled reservation with Booking ID: " + bookingId);
+        loadFutureBookings();
+      }
+    } else {
+      JOptionPane.showMessageDialog(mainFrame, "Please select a reservation to cancel.");
     }
   }
 
