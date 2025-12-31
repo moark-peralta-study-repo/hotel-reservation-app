@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -47,6 +48,12 @@ public class BookingsView extends JPanel {
       case CHECK_OUT -> {
         checkOutBtn = new JButton("Check Out");
         actionPanel.add(checkOutBtn);
+      }
+
+      case ALL -> {
+
+        actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 22, 22));
+
       }
       default -> throw new IllegalArgumentException("Unexpected value: " + mode);
     }
@@ -94,7 +101,15 @@ public class BookingsView extends JPanel {
     bookingTable.setRowHeight(30);
     bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+    // JScrollPane scrollPane = new JScrollPane(bookingTable);
+    // add(scrollPane, BorderLayout.CENTER);
     JScrollPane scrollPane = new JScrollPane(bookingTable);
-    add(scrollPane, BorderLayout.CENTER);
+
+    JPanel tableWrapper = new JPanel(new BorderLayout());
+    tableWrapper.setBackground(Color.decode("#e8e8e8"));
+    tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
+
+    tableWrapper.add(scrollPane, BorderLayout.CENTER);
+    add(tableWrapper, BorderLayout.CENTER);
   }
 }
