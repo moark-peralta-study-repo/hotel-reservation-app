@@ -39,7 +39,7 @@ public class BookingsDAO {
     }
   }
 
-  public void cancel(Booking booking) {
+  public void cancelReservation(Booking booking) {
     String sql = "UPDATE bookings SET status = ? WHERE id = ?";
 
     try (
