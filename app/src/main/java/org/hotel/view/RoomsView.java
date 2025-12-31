@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -74,7 +75,13 @@ public class RoomsView extends JPanel {
     roomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(roomTable);
-    add(scrollPane, BorderLayout.CENTER);
+
+    JPanel tableWrapper = new JPanel(new BorderLayout());
+    tableWrapper.setBackground(Color.decode("#e8e8e8"));
+    tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
+
+    tableWrapper.add(scrollPane, BorderLayout.CENTER);
+    add(tableWrapper, BorderLayout.CENTER);
   }
 
   public JTable getRoomTable() {
