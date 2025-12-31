@@ -112,4 +112,36 @@ public class BookingsView extends JPanel {
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
     add(tableWrapper, BorderLayout.CENTER);
   }
+
+  public JTable getBookingTable() {
+    return bookingTable;
+  }
+
+  public DefaultTableModel getTableModel() {
+    return tableModel;
+  }
+
+  public JTextField getSearchField() {
+    return searchField;
+  }
+
+  public JButton getAddReservationBtn() {
+    return addReservationBtn;
+  }
+
+  public JButton getCheckInBtn() {
+    return checkInBtn;
+  }
+
+  public JButton getCheckOutBtn() {
+    return checkOutBtn;
+  }
+
+  public JButton getEditReservationBtn() {
+    return editReservationBtn;
+  }
+
+  public JButton getCancelReservationBtn() {
+    return cancelReservationBtn;
+  }
 }
