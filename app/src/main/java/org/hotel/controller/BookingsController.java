@@ -36,6 +36,8 @@ public class BookingsController {
     List<Booking> checkedInBookings = bookingsDAO.getCheckedInBookings();
     bookingsView = new BookingsView(checkedInBookings, BookingsViewMode.CHECK_OUT);
 
+    attachViewListeners();
+
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
     mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
@@ -84,6 +86,10 @@ public class BookingsController {
     if (bookingsView.getCheckInBtn() != null) {
       bookingsView.getCheckInBtn().addActionListener(e -> handleCheckIn());
     }
+
+    if (bookingsView.getCheckOutBtn() != null) {
+      bookingsView.getCheckOutBtn().addActionListener(e -> handleCheckOut());
+    }
   }
 
   private void handleCheckIn() {
@@ -99,6 +105,22 @@ public class BookingsController {
       }
     } else {
       JOptionPane.showMessageDialog(mainFrame, "Please select a booking to check in.");
+    }
+  }
+
+  private void handleCheckOut() {
+    int selectedRow = bookingsView.getBookingTable().getSelectedRow();
+    if (selectedRow != -1) {
+      int bookingId = (int) bookingsView.getTableModel().getValueAt(selectedRow, 1);
+      Booking booking = bookingsDAO.getById(bookingId);
+
+      if (booking != null) {
+        bookingsDAO.checkOutCustomer(booking);
+        JOptionPane.showMessageDialog(mainFrame, "Checked out Booking ID: " + bookingId);
+        loadCheckedInBookings();
+      }
+    } else {
+      JOptionPane.showMessageDialog(mainFrame, "Please select a booking to check out.");
     }
   }
 }
