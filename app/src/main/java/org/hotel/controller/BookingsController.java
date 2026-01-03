@@ -7,12 +7,15 @@ import javax.swing.JOptionPane;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingsViewMode;
 import org.hotel.model.dao.BookingsDAO;
+import org.hotel.view.AddReservationDialog;
 import org.hotel.view.BookingsView;
+import org.hotel.view.EditReservationDialog;
 import org.hotel.view.MainFrame;
 
 public class BookingsController {
   private MainFrame mainFrame;
   private BookingsDAO bookingsDAO;
+  private Booking booking;
   private BookingsView bookingsView;
 
   public BookingsController(MainFrame mainFrame) {
@@ -96,6 +99,14 @@ public class BookingsController {
     if (bookingsView.getCancelReservationBtn() != null) {
       bookingsView.getCancelReservationBtn().addActionListener(e -> handleCancelReservation());
     }
+
+    if (bookingsView.getAddReservationBtn() != null) {
+      bookingsView.getAddReservationBtn().addActionListener(e -> openAddReservationDialog());
+    }
+
+    if (bookingsView.getEditReservationBtn() != null) {
+      bookingsView.getEditReservationBtn().addActionListener(e -> openEditReservationDialog());
+    }
   }
 
   private void handleCancelReservation() {
@@ -143,6 +154,34 @@ public class BookingsController {
       }
     } else {
       JOptionPane.showMessageDialog(mainFrame, "Please select a booking to check out.");
+    }
+  }
+
+  private void openAddReservationDialog() {
+    AddReservationDialog dialog = new AddReservationDialog(mainFrame);
+
+    dialog.setVisible(true);
+
+    Booking booking = dialog.getBooking();
+    if (booking != null) {
+      bookingsDAO.insert(booking);
+      loadFutureBookings();
+    }
+  }
+
+  private void openEditReservationDialog() {
+    int selectedRow = bookingsView.getBookingTable().getSelectedRow();
+
+    if (selectedRow != -1) {
+      int bookingId = (int) bookingsView.getTableModel().getValueAt(selectedRow, 1);
+      Booking booking = bookingsDAO.getById(bookingId);
+
+      EditReservationDialog dialog = new EditReservationDialog(mainFrame, booking, bookingsDAO);
+      dialog.setVisible(true);
+
+      loadFutureBookings();
+    } else {
+      JOptionPane.showMessageDialog(mainFrame, "Please select a Reservation to edit");
     }
   }
 }

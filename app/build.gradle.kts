@@ -7,6 +7,7 @@
 
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
+    java
     application
 }
 
@@ -19,6 +20,7 @@ dependencies {
     // Use JUnit test framework.
     testImplementation(libs.junit)
     implementation ("org.xerial:sqlite-jdbc:3.46.0.0")
+    implementation ("org.jdatepicker:jdatepicker:1.3.4")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
