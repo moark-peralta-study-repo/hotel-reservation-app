@@ -2,6 +2,8 @@ package org.hotel.view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -98,8 +100,17 @@ public class AddReservationDialog extends JDialog {
         return;
       }
 
-      String checkIn = checkInPicker.getJFormattedTextField().getText();
-      String checkOut = checkInPicker.getJFormattedTextField().getText();
+      Date inDate = (Date) checkInPicker.getModel().getValue();
+      Date outDate = (Date) checkInPicker.getModel().getValue();
+
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      String checkIn = sdf.format(inDate);
+      String checkOut = sdf.format(outDate);
+
+      if (!inDate.before(outDate)) {
+        JOptionPane.showMessageDialog(this, "Check-in must be before the check-out date.");
+        return;
+      }
 
       booking = new Booking(
           0,
@@ -109,6 +120,7 @@ public class AddReservationDialog extends JDialog {
           checkOut,
           totalPrice,
           BookingStatus.RESERVED);
+
       dispose();
 
     } catch (NumberFormatException e) {
