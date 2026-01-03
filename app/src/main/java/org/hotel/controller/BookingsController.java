@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingsViewMode;
 import org.hotel.model.dao.BookingsDAO;
+import org.hotel.view.AddReservationDialog;
 import org.hotel.view.BookingsView;
 import org.hotel.view.MainFrame;
 
@@ -96,6 +97,10 @@ public class BookingsController {
     if (bookingsView.getCancelReservationBtn() != null) {
       bookingsView.getCancelReservationBtn().addActionListener(e -> handleCancelReservation());
     }
+
+    if (bookingsView.getAddReservationBtn() != null) {
+      bookingsView.getAddReservationBtn().addActionListener(e -> openAddReservationDialog());
+    }
   }
 
   private void handleCancelReservation() {
@@ -143,6 +148,18 @@ public class BookingsController {
       }
     } else {
       JOptionPane.showMessageDialog(mainFrame, "Please select a booking to check out.");
+    }
+  }
+
+  private void openAddReservationDialog() {
+    AddReservationDialog dialog = new AddReservationDialog(mainFrame);
+
+    dialog.setVisible(true);
+
+    Booking booking = dialog.getBooking();
+    if (booking != null) {
+      bookingsDAO.insert(booking);
+      loadFutureBookings();
     }
   }
 }
