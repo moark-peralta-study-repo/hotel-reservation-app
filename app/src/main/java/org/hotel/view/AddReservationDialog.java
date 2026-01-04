@@ -101,7 +101,7 @@ public class AddReservationDialog extends JDialog {
       }
 
       Date inDate = (Date) checkInPicker.getModel().getValue();
-      Date outDate = (Date) checkInPicker.getModel().getValue();
+      Date outDate = (Date) checkOutPicker.getModel().getValue();
 
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       String checkIn = sdf.format(inDate);
