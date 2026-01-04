@@ -143,10 +143,10 @@ public class EditReservationDialog extends JDialog {
       booking.setCustomerId(customerId);
       booking.setRoomId(roomId);
       booking.setTotalPrice(totalPrice);
-      booking.setCheckIn(DATE_FORMAT.format(checkIn));
-      booking.setCheckOut(DATE_FORMAT.format(checkOut));
+      booking.setCheckIn(checkIn);
+      booking.setCheckOut(checkOut);
 
-      bookingsDAO.update(booking); // make sure update() exists in your DAO
+      bookingsDAO.update(booking);
       dispose();
     } catch (NumberFormatException e) {
       JOptionPane.showMessageDialog(this, "Invalid input values.");
