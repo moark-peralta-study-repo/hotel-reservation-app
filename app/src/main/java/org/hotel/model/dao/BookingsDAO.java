@@ -152,6 +152,37 @@ public class BookingsDAO {
     return bookings;
   }
 
+  public List<BookingRowDTO> getPendingCheckInRows() {
+    String sql = """
+        SELECT
+          b.id AS booking_id,
+          c.name AS customer_name,
+          r.room_number AS room_number,
+          b.check_in,
+          b.check_out,
+          b.total_price,
+          b.status,
+        FROM bookings b
+        JOIN customers c ON b.customer_id = c.id
+        JOIN rooms r ON b.room_id = r.id
+        WHERE b.status = 'RESERVED' AND b.check_in <= date('now')
+        """;
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (Connection conn = Database.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql)) {
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
+  }
+
   public List<Booking> getReservedBookings() {
     List<Booking> bookings = new ArrayList<>();
 

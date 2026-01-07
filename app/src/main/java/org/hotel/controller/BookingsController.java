@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingsViewMode;
 import org.hotel.model.dao.BookingsDAO;
@@ -64,7 +65,7 @@ public class BookingsController {
 
   // Arriving today OR overdue checkins
   private void loadPendingCheckInBookings() {
-    List<Booking> pendingCheckin = bookingsDAO.getPendingCheckIn();
+    List<BookingRowDTO> pendingCheckin = bookingsDAO.getPendingCheckInRows();
     bookingsView = new BookingsView(pendingCheckin, BookingsViewMode.CHECK_IN);
 
     attachViewListeners();
