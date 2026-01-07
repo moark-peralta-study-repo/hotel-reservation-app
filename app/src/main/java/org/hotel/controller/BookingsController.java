@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingsViewMode;
 import org.hotel.model.dao.BookingsDAO;
@@ -36,7 +37,7 @@ public class BookingsController {
   }
 
   private void loadCheckedInBookings() {
-    List<Booking> checkedInBookings = bookingsDAO.getCheckedInBookings();
+    List<BookingRowDTO> checkedInBookings = bookingsDAO.getCheckedInBookingsRow();
     bookingsView = new BookingsView(checkedInBookings, BookingsViewMode.CHECK_OUT);
 
     attachViewListeners();
@@ -50,7 +51,7 @@ public class BookingsController {
 
   // Future Checkins
   private void loadFutureBookings() {
-    List<Booking> futureCheckin = bookingsDAO.getReservedBookings();
+    List<BookingRowDTO> futureCheckin = bookingsDAO.getReservedBookingRows();
     bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
 
     attachViewListeners();
@@ -64,7 +65,7 @@ public class BookingsController {
 
   // Arriving today OR overdue checkins
   private void loadPendingCheckInBookings() {
-    List<Booking> pendingCheckin = bookingsDAO.getPendingCheckIn();
+    List<BookingRowDTO> pendingCheckin = bookingsDAO.getPendingCheckInRows();
     bookingsView = new BookingsView(pendingCheckin, BookingsViewMode.CHECK_IN);
 
     attachViewListeners();
@@ -77,7 +78,7 @@ public class BookingsController {
   }
 
   private void loadBookings() {
-    List<Booking> bookings = bookingsDAO.getAll();
+    List<BookingRowDTO> bookings = bookingsDAO.getAllRows();
     bookingsView = new BookingsView(bookings, BookingsViewMode.ALL);
 
     mainFrame.getContentPanel().removeAll();

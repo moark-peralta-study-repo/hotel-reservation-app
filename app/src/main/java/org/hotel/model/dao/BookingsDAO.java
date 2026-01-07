@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hotel.db.Database;
+import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingStatus;
 import org.hotel.utils.BookingUtils;
@@ -74,6 +75,41 @@ public class BookingsDAO {
     }
   }
 
+  // DTO getAll()
+  public List<BookingRowDTO> getAllRows() {
+    String sql = """
+          SELECT
+            b.id AS booking_id,
+            c.name AS customer_name,
+            r.room_number AS room_number,
+            b.check_in,
+            b.check_out,
+            b.total_price,
+            b.status
+          FROM bookings b
+          JOIN customers c ON b.customer_id = c.id
+          JOIN rooms r ON b.room_id = r.id
+          ORDER BY b.check_in
+        """;
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) {
+
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
+  }
+
   // Use this method when click the Bookings NavButton
   public List<Booking> getAll() {
     List<Booking> bookings = new ArrayList<>();
@@ -116,6 +152,37 @@ public class BookingsDAO {
     return bookings;
   }
 
+  public List<BookingRowDTO> getPendingCheckInRows() {
+    String sql = """
+        SELECT
+          b.id AS booking_id,
+          c.name AS customer_name,
+          r.room_number AS room_number,
+          b.check_in,
+          b.check_out,
+          b.total_price,
+          b.status
+        FROM bookings b
+        JOIN customers c ON b.customer_id = c.id
+        JOIN rooms r ON b.room_id = r.id
+        WHERE b.status = 'RESERVED' AND b.check_in <= date('now')
+        """;
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (Connection conn = Database.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql)) {
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
+  }
+
   public List<Booking> getReservedBookings() {
     List<Booking> bookings = new ArrayList<>();
 
@@ -137,6 +204,40 @@ public class BookingsDAO {
     return bookings;
   }
 
+  public List<BookingRowDTO> getReservedBookingRows() {
+    String sql = """
+        SELECT
+          b.id AS booking_id,
+          c.name AS customer_name,
+          r.room_number AS room_number,
+          b.check_in,
+          b.check_out,
+          b.total_price,
+          b.status
+        FROM bookings b
+        JOIN customers c ON b.customer_id = c.id
+        JOIN rooms r ON b.room_id = r.id
+        WHERE b.status = 'RESERVED' AND b.check_in > date('now')
+        """;
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) {
+
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
+
+  }
+
   public List<Booking> getCheckedInBookings() {
     List<Booking> bookings = new ArrayList<>();
     String sql = "SELECT * FROM bookings WHERE status = 'CHECKED_IN' ";
@@ -156,6 +257,40 @@ public class BookingsDAO {
     }
 
     return bookings;
+  }
+
+  public List<BookingRowDTO> getCheckedInBookingsRow() {
+    String sql = """
+        SELECT
+          b.id AS booking_id,
+          c.name AS customer_name,
+          r.room_number AS room_number,
+          b.check_in,
+          b.check_out,
+          b.total_price,
+          b.status
+        FROM bookings b
+        JOIN customers c ON b.customer_id = c.id
+        JOIN rooms r ON b.room_id = r.id
+        WHERE b.status = 'CHECKED_IN'
+        """;
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+
+    ) {
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
   }
 
   public void checkInCustomer(Booking booking) {
@@ -208,5 +343,40 @@ public class BookingsDAO {
     }
 
     return null;
+  }
+
+  public List<BookingRowDTO> findAllForTable() {
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    String sql = """
+          SELECT
+            b.id AS booking_id,
+            c.name AS customer_name,
+            r.room_number,
+            b.check_in,
+            b.check_out,
+            b.total_price,
+            b.status
+          FROM bookings b
+          JOIN customers c ON b.customer_id = c.id
+          JOIN rooms r ON b.room_id = r.id
+          ORDER BY b.check_in
+        """;
+
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) {
+
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
   }
 }
