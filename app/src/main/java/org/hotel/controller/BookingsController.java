@@ -51,7 +51,7 @@ public class BookingsController {
 
   // Future Checkins
   private void loadFutureBookings() {
-    List<Booking> futureCheckin = bookingsDAO.getReservedBookings();
+    List<BookingRowDTO> futureCheckin = bookingsDAO.getReservedBookingRows();
     bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
 
     attachViewListeners();
