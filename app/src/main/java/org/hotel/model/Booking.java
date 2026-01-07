@@ -9,9 +9,15 @@ public class Booking {
   private double totalPrice;
   private BookingStatus status;
 
-  public Booking(int id, int customerId, int roomId,
-      String checkIn, String checkOut,
-      double totalPrice, BookingStatus status) {
+  public Booking(
+      int id,
+      int customerId,
+      int roomId,
+      String checkIn,
+      String checkOut,
+      double totalPrice,
+      BookingStatus status) {
+
     this.id = id;
     this.customerId = customerId;
     this.roomId = roomId;
