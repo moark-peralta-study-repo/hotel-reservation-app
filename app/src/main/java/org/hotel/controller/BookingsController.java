@@ -37,7 +37,7 @@ public class BookingsController {
   }
 
   private void loadCheckedInBookings() {
-    List<Booking> checkedInBookings = bookingsDAO.getCheckedInBookings();
+    List<BookingRowDTO> checkedInBookings = bookingsDAO.getCheckedInBookingsRow();
     bookingsView = new BookingsView(checkedInBookings, BookingsViewMode.CHECK_OUT);
 
     attachViewListeners();
@@ -78,7 +78,7 @@ public class BookingsController {
   }
 
   private void loadBookings() {
-    List<Booking> bookings = bookingsDAO.getAll();
+    List<BookingRowDTO> bookings = bookingsDAO.getAllRows();
     bookingsView = new BookingsView(bookings, BookingsViewMode.ALL);
 
     mainFrame.getContentPanel().removeAll();
