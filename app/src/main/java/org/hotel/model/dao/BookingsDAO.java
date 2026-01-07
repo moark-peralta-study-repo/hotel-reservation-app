@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hotel.db.Database;
+import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingStatus;
 import org.hotel.utils.BookingUtils;
@@ -72,6 +73,41 @@ public class BookingsDAO {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+
+  // DTO getAll()
+  public List<BookingRowDTO> getAllRows() {
+    String sql = """
+          SELECT
+            b.id AS booking_id,
+            c.name AS customer_name,
+            r.room_number AS room_number,
+            b.check_in,
+            b.check_out,
+            b.total_price,
+            b.status
+          FROM bookings b
+          JOIN customers c ON b.customer_id = c.id
+          JOIN rooms r ON b.room_id = r.id
+          ORDER BY b.check_in
+        """;
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) {
+
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
   }
 
   // Use this method when click the Bookings NavButton
@@ -208,5 +244,40 @@ public class BookingsDAO {
     }
 
     return null;
+  }
+
+  public List<BookingRowDTO> findAllForTable() {
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    String sql = """
+          SELECT
+            b.id AS booking_id,
+            c.name AS customer_name,
+            r.room_number,
+            b.check_in,
+            b.check_out,
+            b.total_price,
+            b.status
+          FROM bookings b
+          JOIN customers c ON b.customer_id = c.id
+          JOIN rooms r ON b.room_id = r.id
+          ORDER BY b.check_in
+        """;
+
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) {
+
+      while (rs.next()) {
+        rows.add(BookingUtils.mapRowToDTO(rs));
+
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rows;
   }
 }
