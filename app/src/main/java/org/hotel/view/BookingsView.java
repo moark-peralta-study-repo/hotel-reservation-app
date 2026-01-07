@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import org.hotel.model.Booking;
+import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.BookingsViewMode;
 
 public class BookingsView extends JPanel {
@@ -23,7 +23,7 @@ public class BookingsView extends JPanel {
   private JTextField searchField;
   private JButton addReservationBtn, checkInBtn, checkOutBtn, editReservationBtn, cancelReservationBtn;
 
-  public BookingsView(List<Booking> bookings, BookingsViewMode mode) {
+  public BookingsView(List<BookingRowDTO> rows, BookingsViewMode mode) {
     setLayout(new BorderLayout());
     setBackground(Color.decode("#f9fafb"));
 
@@ -70,19 +70,19 @@ public class BookingsView extends JPanel {
         "Total Price",
         "Status" };
 
-    Object[][] tableData = new Object[bookings.size()][columns.length];
+    Object[][] tableData = new Object[rows.size()][columns.length];
 
-    for (int i = 0; i < bookings.size(); i++) {
-      Booking b = bookings.get(i);
+    for (int i = 0; i < rows.size(); i++) {
+      BookingRowDTO r = rows.get(i);
 
       tableData[i][0] = i + 1;
-      tableData[i][1] = b.getId();
-      tableData[i][2] = b.getCustomerId();
-      tableData[i][3] = b.getRoomId();
-      tableData[i][4] = b.getCheckIn();
-      tableData[i][5] = b.getCheckOut();
-      tableData[i][6] = b.getTotalPrice();
-      tableData[i][7] = b.getStatus();
+      tableData[i][1] = r.getBookingId();
+      tableData[i][2] = r.getCustomerName();
+      tableData[i][3] = r.getRoomNumber();
+      tableData[i][4] = r.getCheckIn();
+      tableData[i][5] = r.getCheckOut();
+      tableData[i][6] = r.getTotalPrice();
+      tableData[i][7] = r.getStatus();
     }
 
     tableModel = new DefaultTableModel(tableData, columns) {
