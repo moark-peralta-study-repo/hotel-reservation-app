@@ -11,12 +11,8 @@ import org.hotel.db.Database;
 import org.hotel.view.MainFrame;
 
 public class Main {
-  public String getGreeting() {
-    return "Main Class at ../hotel-reservation-app/app/src/main/java/org/hotel/Main.java";
-  }
 
   public static void main(String[] args) {
-    System.out.println(new Main().getGreeting());
     Database.initializeDatabase();
 
     SwingUtilities.invokeLater(() -> {
