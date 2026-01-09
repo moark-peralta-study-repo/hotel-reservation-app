@@ -17,11 +17,11 @@ public class MainFrame extends JFrame {
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
-  private JButton roomsBtn;
-  private JButton bookingsBtn;
-  private JButton reservationBtn;
-  private JButton checkInBtn;
-  private JButton checkOutBtn;
+  private NavButton roomsBtn;
+  private NavButton bookingsBtn;
+  private NavButton reservationBtn;
+  private NavButton checkInBtn;
+  private NavButton checkOutBtn;
 
   public JButton getReservationBtn() {
     return reservationBtn;
@@ -55,6 +55,12 @@ public class MainFrame extends JFrame {
     return cardLayout;
   }
 
+  private void setActiveBtn(NavButton clicked) {
+    for (NavButton btn : new NavButton[] { roomsBtn, bookingsBtn, reservationBtn, checkInBtn, checkOutBtn }) {
+      btn.setActive(btn == clicked);
+    }
+  }
+
   public MainFrame() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int width = (int) screenSize.getWidth();
@@ -72,6 +78,11 @@ public class MainFrame extends JFrame {
     checkInBtn = new NavButton("Check-ins");
     // JButton checkOutBtn = new NavButton("Check-out");
     checkOutBtn = new NavButton("Check-outs");
+
+    roomsBtn.addActionListener(e -> {
+      setActiveBtn(roomsBtn);
+      cardLayout.show(contentPanel, "Rooms");
+    });
 
     setTitle("Hotel Sugu");
     setSize(width, height);
