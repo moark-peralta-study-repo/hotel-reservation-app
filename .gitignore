@@ -5,6 +5,11 @@
 .gradle/
 build/
 out/
+.settings/
+.classpath
+.project
+bin/
+
 
 # Gradle wrapper logs
 gradle-wrapper.jar
