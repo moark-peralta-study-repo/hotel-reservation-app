@@ -81,7 +81,23 @@ public class MainFrame extends JFrame {
 
     roomsBtn.addActionListener(e -> {
       setActiveBtn(roomsBtn);
-      cardLayout.show(contentPanel, "Rooms");
+      // cardLayout.show(contentPanel, "Rooms");
+    });
+
+    checkInBtn.addActionListener(e -> {
+      setActiveBtn(checkInBtn);
+    });
+
+    checkOutBtn.addActionListener(e -> {
+      setActiveBtn(checkOutBtn);
+    });
+
+    reservationBtn.addActionListener(e -> {
+      setActiveBtn(reservationBtn);
+    });
+
+    bookingsBtn.addActionListener(e -> {
+      setActiveBtn(bookingsBtn);
     });
 
     setTitle("Hotel Sugu");
