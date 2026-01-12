@@ -24,6 +24,7 @@ public class Database {
       // stmt.executeUpdate("DELETE FROM bookings");
       seedRooms(stmt);
       seedBookingAuto(stmt);
+      seedCustomers(stmt);
 
       System.out.println("Database Initialized Successfully.");
     } catch (SQLException e) {
@@ -77,7 +78,7 @@ public class Database {
   private static void seedBookingAuto(Statement stmt) throws SQLException {
     LocalDate today = LocalDate.now();
 
-    for (int i = 1; i <= 100; i++) {
+    for (int i = 1; i <= 10; i++) {
       int customerId = (i % 6) + 1;
       int roomId = (i % 50) + 1;
 
@@ -145,5 +146,18 @@ public class Database {
     }
 
     System.out.println("Seeded: 50 Rooms");
+  }
+
+  private static void seedCustomers(Statement stmt) throws SQLException {
+    var rs = stmt.executeQuery("SELECT COUNT(*) AS count FROM customers");
+    if (rs.next() && rs.getInt("count") > 0)
+      return;
+
+    String[] names = { "Alice", "Bob", "Charlie", "David", "Eve", "Frank" };
+    for (String name : names) {
+      stmt.executeUpdate("INSERT INTO customers (name, phone, email) " +
+          "VALUES ('" + name + "', '1234567890', '" + name.toLowerCase() + "@example.com')");
+    }
+    System.out.println("Seeded: 6 Customers");
   }
 }
