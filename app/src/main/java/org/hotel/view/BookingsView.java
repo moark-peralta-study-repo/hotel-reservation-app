@@ -25,7 +25,7 @@ public class BookingsView extends JPanel {
 
   public BookingsView(List<BookingRowDTO> rows, BookingsViewMode mode) {
     setLayout(new BorderLayout());
-    setBackground(Color.decode("#f9fafb"));
+    setBackground(Color.decode("#fffafb"));
 
     JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
@@ -106,7 +106,7 @@ public class BookingsView extends JPanel {
     JScrollPane scrollPane = new JScrollPane(bookingTable);
 
     JPanel tableWrapper = new JPanel(new BorderLayout());
-    tableWrapper.setBackground(Color.decode("#e8e8e8"));
+    tableWrapper.setBackground(Color.decode("#f9fafb"));
     tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
 
     tableWrapper.add(scrollPane, BorderLayout.CENTER);

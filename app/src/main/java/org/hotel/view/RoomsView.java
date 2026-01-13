@@ -77,7 +77,7 @@ public class RoomsView extends JPanel {
     JScrollPane scrollPane = new JScrollPane(roomTable);
 
     JPanel tableWrapper = new JPanel(new BorderLayout());
-    tableWrapper.setBackground(Color.decode("#e8e8e8"));
+    tableWrapper.setBackground(Color.decode("#f9fafb"));
     tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
 
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
