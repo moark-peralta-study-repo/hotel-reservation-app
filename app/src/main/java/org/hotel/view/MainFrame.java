@@ -22,9 +22,14 @@ public class MainFrame extends JFrame {
   private NavButton reservationBtn;
   private NavButton checkInBtn;
   private NavButton checkOutBtn;
+  private NavButton dashboardBtn;
 
   public JButton getReservationBtn() {
     return reservationBtn;
+  }
+
+  public JButton getDashboardBtn() {
+    return dashboardBtn;
   }
 
   public JButton getCheckInBtn() {
@@ -68,7 +73,7 @@ public class MainFrame extends JFrame {
     int navWidth = width / 6;
 
     // Buttons
-    JButton dashBoardBtn = new NavButton("Dashboard");
+    dashboardBtn = new NavButton("Dashboard");
     roomsBtn = new NavButton("Rooms");
     // JButton bookingsBtn = new NavButton("Bookings");
     bookingsBtn = new NavButton("Bookings");
@@ -115,7 +120,7 @@ public class MainFrame extends JFrame {
 
     add(navPanel, BorderLayout.WEST);
 
-    navPanel.add(dashBoardBtn);
+    navPanel.add(dashboardBtn);
     navPanel.add(roomsBtn);
     navPanel.add(bookingsBtn);
     navPanel.add(reservationBtn);
