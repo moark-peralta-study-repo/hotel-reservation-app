@@ -24,6 +24,10 @@ public class Main {
       new RoomsController(mainFrame);
       new BookingsController(mainFrame);
       new DashboardController(mainFrame);
+
+      mainFrame.showView("Dashboard");
+      mainFrame.getDashboardBtn().doClick();
+      ;
     });
   }
 }

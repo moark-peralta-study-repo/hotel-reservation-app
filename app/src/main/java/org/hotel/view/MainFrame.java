@@ -61,9 +61,14 @@ public class MainFrame extends JFrame {
   }
 
   private void setActiveBtn(NavButton clicked) {
-    for (NavButton btn : new NavButton[] { roomsBtn, bookingsBtn, reservationBtn, checkInBtn, checkOutBtn }) {
+    for (NavButton btn : new NavButton[] { roomsBtn, bookingsBtn, reservationBtn, checkInBtn, checkOutBtn,
+        dashboardBtn }) {
       btn.setActive(btn == clicked);
     }
+  }
+
+  public void showView(String viewName) {
+    cardLayout.show(contentPanel, viewName);
   }
 
   public MainFrame() {
@@ -84,9 +89,12 @@ public class MainFrame extends JFrame {
     // JButton checkOutBtn = new NavButton("Check-out");
     checkOutBtn = new NavButton("Check-outs");
 
+    dashboardBtn.addActionListener(e -> {
+      setActiveBtn(dashboardBtn);
+    });
+
     roomsBtn.addActionListener(e -> {
       setActiveBtn(roomsBtn);
-      // cardLayout.show(contentPanel, "Rooms");
     });
 
     checkInBtn.addActionListener(e -> {
@@ -135,8 +143,6 @@ public class MainFrame extends JFrame {
     cardLayout = new CardLayout();
     contentPanel = new JPanel(cardLayout);
     contentWrapper.add(contentPanel, BorderLayout.CENTER);
-
-    contentPanel.add(new JPanel(), "Rooms");
 
     add(contentWrapper, BorderLayout.CENTER);
 
