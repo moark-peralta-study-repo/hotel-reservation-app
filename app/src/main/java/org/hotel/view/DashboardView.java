@@ -17,7 +17,7 @@ public class DashboardView extends JPanel {
 
   public DashboardView() {
     setLayout(new GridLayout(2, 2, 20, 20));
-    setBorder(new EmptyBorder(100, 100, 100, 100));
+    setBorder(new EmptyBorder(150, 100, 100, 100));
     setBackground(Color.decode("#f9fafb"));
 
     checkedInLabel = createCard("Checked In");
