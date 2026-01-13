@@ -55,10 +55,10 @@ public class DashboardView extends JPanel {
   }
 
   public void setTodayCheckIn(int value) {
-    checkedInLabel.setText(cardText("Today's Check-ins", value));
+    todayCheckInLabel.setText(cardText("Today's Check-ins", value));
   }
 
   public void setTodayCheckOut(int value) {
-    checkedInLabel.setText(cardText("Today's Check-outs", value));
+    todayCheckOutLabel.setText(cardText("Today's Check-outs", value));
   }
 }
