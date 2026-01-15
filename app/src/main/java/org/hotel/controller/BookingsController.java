@@ -16,7 +16,6 @@ import org.hotel.view.MainFrame;
 public class BookingsController {
   private MainFrame mainFrame;
   private BookingsDAO bookingsDAO;
-  private Booking booking;
   private BookingsView bookingsView;
 
   public BookingsController(MainFrame mainFrame) {
