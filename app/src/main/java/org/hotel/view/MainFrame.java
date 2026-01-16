@@ -11,6 +11,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class MainFrame extends JFrame {
 
@@ -67,6 +69,28 @@ public class MainFrame extends JFrame {
     }
   }
 
+  private JPanel createNavButton(NavButton btn, String iconPath) {
+    FlatSVGIcon icon = new FlatSVGIcon(iconPath, 24, 24);
+    btn.setIcon(icon);
+    btn.setIconTextGap(12);
+
+    JPanel wrapper = new JPanel(new BorderLayout());
+    wrapper.setBorder(new EmptyBorder(5, 12, 5, 12));
+    wrapper.setBackground(Color.decode("#ffffff"));
+    wrapper.add(btn, BorderLayout.CENTER);
+
+    return wrapper;
+  }
+
+  // private JPanel createNavButton(NavButton btn) {
+  // JPanel wrapper = new JPanel(new BorderLayout());
+  // wrapper.setBorder(new EmptyBorder(5, 12, 5, 12));
+  // wrapper.setBackground(Color.decode("#ffffff"));
+  // wrapper.add(btn, BorderLayout.CENTER);
+  //
+  // return wrapper;
+  // }
+
   public void showView(String viewName) {
     cardLayout.show(contentPanel, viewName);
   }
@@ -75,7 +99,7 @@ public class MainFrame extends JFrame {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int width = (int) screenSize.getWidth();
     int height = (int) screenSize.getHeight();
-    int navWidth = width / 6;
+    int navWidth = width / 7;
 
     // Buttons
     dashboardBtn = new NavButton("Dashboard");
@@ -128,12 +152,14 @@ public class MainFrame extends JFrame {
 
     add(navPanel, BorderLayout.WEST);
 
-    navPanel.add(dashboardBtn);
-    navPanel.add(roomsBtn);
-    navPanel.add(bookingsBtn);
-    navPanel.add(reservationBtn);
-    navPanel.add(checkInBtn);
-    navPanel.add(checkOutBtn);
+    navPanel.add(createNavButton(dashboardBtn,
+        "../../../../../main/resources/bed-svgrepo-com.svg"));
+
+    // navPanel.add(createNavButton(dashboardBtn));
+    // navPanel.add(createNavButton(roomsBtn));
+    // navPanel.add(createNavButton(bookingsBtn));
+    // navPanel.add(createNavButton(checkInBtn));
+    // navPanel.add(createNavButton(checkOutBtn));
 
     JPanel contentWrapper = new JPanel(new BorderLayout());
 
