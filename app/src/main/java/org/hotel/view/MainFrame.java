@@ -82,15 +82,6 @@ public class MainFrame extends JFrame {
     return wrapper;
   }
 
-  // private JPanel createNavButton(NavButton btn) {
-  // JPanel wrapper = new JPanel(new BorderLayout());
-  // wrapper.setBorder(new EmptyBorder(5, 12, 5, 12));
-  // wrapper.setBackground(Color.decode("#ffffff"));
-  // wrapper.add(btn, BorderLayout.CENTER);
-  //
-  // return wrapper;
-  // }
-
   public void showView(String viewName) {
     cardLayout.show(contentPanel, viewName);
   }
@@ -101,16 +92,11 @@ public class MainFrame extends JFrame {
     int height = (int) screenSize.getHeight();
     int navWidth = width / 7;
 
-    // Buttons
     dashboardBtn = new NavButton("Dashboard");
     roomsBtn = new NavButton("Rooms");
-    // JButton bookingsBtn = new NavButton("Bookings");
     bookingsBtn = new NavButton("Bookings");
-    // JButton reservationBtn = new NavButton("Reservations");
     reservationBtn = new NavButton("Reservations");
-    // JButton checkInBtn = new NavButton("Check-in");
     checkInBtn = new NavButton("Check-ins");
-    // JButton checkOutBtn = new NavButton("Check-out");
     checkOutBtn = new NavButton("Check-outs");
 
     dashboardBtn.addActionListener(e -> {
@@ -140,7 +126,6 @@ public class MainFrame extends JFrame {
     setTitle("Hotel Sugu");
     setSize(width, height);
     setBackground(Color.decode("#f9fafb"));
-    // setBackground(Color.decode("#e5e7eb"));
     setLocationRelativeTo(null);
 
     navPanel = new JPanel();
@@ -158,12 +143,6 @@ public class MainFrame extends JFrame {
     navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
     navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
     navPanel.add(createNavButton(checkOutBtn, "icons/out.svg"));
-
-    // navPanel.add(createNavButton(dashboardBtn));
-    // navPanel.add(createNavButton(roomsBtn));
-    // navPanel.add(createNavButton(bookingsBtn));
-    // navPanel.add(createNavButton(checkInBtn));
-    // navPanel.add(createNavButton(checkOutBtn));
 
     JPanel contentWrapper = new JPanel(new BorderLayout());
 
