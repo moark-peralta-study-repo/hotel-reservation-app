@@ -22,6 +22,7 @@ dependencies {
     implementation ("org.xerial:sqlite-jdbc:3.46.0.0")
     implementation ("org.jdatepicker:jdatepicker:1.3.4")
     implementation("com.formdev:flatlaf:3.4.1")
+    implementation("com.formdev:flatlaf-extras:3.4.1")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
