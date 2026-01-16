@@ -153,7 +153,11 @@ public class MainFrame extends JFrame {
     add(navPanel, BorderLayout.WEST);
 
     navPanel.add(createNavButton(dashboardBtn,
-        "../../../../../main/resources/bed-svgrepo-com.svg"));
+        "icons/home.svg"));
+    navPanel.add(createNavButton(roomsBtn, "icons/bed.svg"));
+    navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
+    navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
+    navPanel.add(createNavButton(checkOutBtn, "icons/out.svg"));
 
     // navPanel.add(createNavButton(dashboardBtn));
     // navPanel.add(createNavButton(roomsBtn));
