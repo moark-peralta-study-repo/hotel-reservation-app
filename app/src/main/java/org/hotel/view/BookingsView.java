@@ -3,6 +3,7 @@ package org.hotel.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -12,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
 import org.hotel.dto.BookingRowDTO;
@@ -31,9 +33,9 @@ public class BookingsView extends JPanel {
 
     switch (mode) {
       case RESERVATION -> {
-        addReservationBtn = new JButton("Add Reservation");
-        editReservationBtn = new JButton("Edit Reservation");
-        cancelReservationBtn = new JButton("Cancel Reservation");
+        addReservationBtn = createActionButton("Add Reservation");
+        editReservationBtn = createActionButton("Edit Reservation");
+        cancelReservationBtn = createActionButton("Cancel Reservation");
 
         actionPanel.add(addReservationBtn);
         actionPanel.add(editReservationBtn);
@@ -41,12 +43,12 @@ public class BookingsView extends JPanel {
       }
 
       case CHECK_IN -> {
-        checkInBtn = new JButton("Check In");
+        checkInBtn = createActionButton("Check-in");
         actionPanel.add(checkInBtn);
       }
 
       case CHECK_OUT -> {
-        checkOutBtn = new JButton("Check Out");
+        checkOutBtn = createActionButton("Check-Out");
         actionPanel.add(checkOutBtn);
       }
 
@@ -111,6 +113,15 @@ public class BookingsView extends JPanel {
 
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
     add(tableWrapper, BorderLayout.CENTER);
+  }
+
+  private JButton createActionButton(String text) {
+    JButton btn = new JButton(text);
+
+    var base = UIManager.getFont("Button.font");
+    btn.setFont(base.deriveFont(Font.PLAIN, base.getSize() + 1f));
+
+    return btn;
   }
 
   public JTable getBookingTable() {

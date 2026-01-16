@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
+import javax.swing.UIManager;
 
 public class NavButton extends JButton {
 
@@ -17,13 +18,15 @@ public class NavButton extends JButton {
   public NavButton(String text) {
     super(text);
 
+    setFont(UIManager.getFont("Button.font"));
+
     setBorderPainted(false);
     setFocusPainted(false);
     setOpaque(true);
     setBackground(Color.decode("#ffffff"));
     setForeground(Color.decode("#1f2937"));
-    setFont(new Font("MonoLisa", 1, 32));
-
+    // setFont(new Font("MonoLisa", 1, 32));
+    setFont(UIManager.getFont("Button.font").deriveFont(Font.BOLD, 24f));
     addMouseListener(new MouseAdapter() {
       @Override
       public void mouseEntered(MouseEvent e) {
