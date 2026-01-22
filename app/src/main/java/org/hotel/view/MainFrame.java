@@ -25,6 +25,7 @@ public class MainFrame extends JFrame {
   private NavButton checkInBtn;
   private NavButton checkOutBtn;
   private NavButton dashboardBtn;
+  private NavButton userBtn;
 
   public JButton getReservationBtn() {
     return reservationBtn;
@@ -64,7 +65,7 @@ public class MainFrame extends JFrame {
 
   private void setActiveBtn(NavButton clicked) {
     for (NavButton btn : new NavButton[] { roomsBtn, bookingsBtn, reservationBtn, checkInBtn, checkOutBtn,
-        dashboardBtn }) {
+        dashboardBtn, userBtn }) {
       btn.setActive(btn == clicked);
     }
   }
@@ -92,6 +93,7 @@ public class MainFrame extends JFrame {
     int navWidth = width / 7;
 
     dashboardBtn = new NavButton("Dashboard");
+    userBtn = new NavButton("Users");
     roomsBtn = new NavButton("Rooms");
     bookingsBtn = new NavButton("Bookings");
     reservationBtn = new NavButton("Reservations");
@@ -122,7 +124,11 @@ public class MainFrame extends JFrame {
       setActiveBtn(bookingsBtn);
     });
 
-    setTitle("Hotel Sugu");
+    userBtn.addActionListener(e -> {
+      setActiveBtn(userBtn);
+    });
+
+    setTitle("Lodgify");
     setSize(width, height);
     setBackground(Color.decode("#f9fafb"));
     setLocationRelativeTo(null);
@@ -142,6 +148,7 @@ public class MainFrame extends JFrame {
     navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
     navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
     navPanel.add(createNavButton(checkOutBtn, "icons/out.svg"));
+    navPanel.add(createNavButton(userBtn, "icons/user.svg"));
 
     JPanel contentWrapper = new JPanel(new BorderLayout());
 
