@@ -70,8 +70,7 @@ public class MainFrame extends JFrame {
   }
 
   private JPanel createNavButton(NavButton btn, String iconPath) {
-    FlatSVGIcon icon = new FlatSVGIcon(iconPath, 24, 24);
-    btn.setIcon(icon);
+    btn.setSvgIcon(iconPath, 24, 24);
     btn.setIconTextGap(12);
 
     JPanel wrapper = new JPanel(new BorderLayout());
