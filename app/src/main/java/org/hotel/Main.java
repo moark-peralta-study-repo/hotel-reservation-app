@@ -10,6 +10,7 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import org.hotel.controller.BookingsController;
 import org.hotel.controller.DashboardController;
 import org.hotel.controller.RoomsController;
+import org.hotel.controller.UserController;
 import org.hotel.db.Database;
 import org.hotel.view.MainFrame;
 
@@ -24,6 +25,7 @@ public class Main {
       new RoomsController(mainFrame);
       new BookingsController(mainFrame);
       new DashboardController(mainFrame);
+      new UserController(mainFrame);
 
       mainFrame.showView("Dashboard");
       mainFrame.getDashboardBtn().doClick();
