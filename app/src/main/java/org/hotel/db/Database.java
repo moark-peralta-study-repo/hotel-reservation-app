@@ -34,6 +34,18 @@ public class Database {
   }
 
   private static void createTables(Statement stmt) throws SQLException {
+    String sqlUsers = """
+          CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          first_name TEXT NOT NULL,
+          last_name TEXT NOT NULL,
+          username TEXT UNIQUE NOT NULL,
+          password TEXT NOT NULL,
+          full_name TEXT,
+          role TEXT NOT NULL
+        );
+        """;
+
     String sqlRooms = """
         CREATE TABLE IF NOT EXISTS rooms (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -71,6 +83,7 @@ public class Database {
     stmt.execute(sqlCustomers);
     stmt.execute(sqlRooms);
     stmt.execute(sqlBookings);
+    stmt.execute(sqlUsers);
 
     System.out.println("Tables Created");
   }
