@@ -145,10 +145,11 @@ public class MainFrame extends JFrame {
     navPanel.add(createNavButton(dashboardBtn,
         "icons/home.svg"));
     navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
-    navPanel.add(createNavButton(roomsBtn, "icons/bed.svg"));
-    navPanel.add(createNavButton(userBtn, "icons/user.svg"));
+    navPanel.add(createNavButton(reservationBtn, "icons/user.svg"));
     navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
     navPanel.add(createNavButton(checkOutBtn, "icons/out.svg"));
+    navPanel.add(createNavButton(roomsBtn, "icons/bed.svg"));
+    navPanel.add(createNavButton(userBtn, "icons/user.svg"));
 
     JPanel contentWrapper = new JPanel(new BorderLayout());
 
