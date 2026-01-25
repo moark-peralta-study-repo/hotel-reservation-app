@@ -12,7 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class MainFrame extends JFrame {
 
@@ -49,6 +48,10 @@ public class MainFrame extends JFrame {
 
   public JButton getRoomsBtn() {
     return roomsBtn;
+  }
+
+  public JButton getUsersBtn() {
+    return userBtn;
   }
 
   public JPanel getNavPanel() {
@@ -134,7 +137,7 @@ public class MainFrame extends JFrame {
     setLocationRelativeTo(null);
 
     navPanel = new JPanel();
-    navPanel.setLayout(new GridLayout(10, 1, 5, 5));
+    navPanel.setLayout(new GridLayout(15, 1, 5, 5));
     navPanel.setBackground(Color.decode("#ffffff"));
     navPanel.setPreferredSize(new Dimension(navWidth, height));
     navPanel.setBackground(Color.decode("#ffffff"));
@@ -148,6 +151,9 @@ public class MainFrame extends JFrame {
     navPanel.add(createNavButton(reservationBtn, "icons/user.svg"));
     navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
     navPanel.add(createNavButton(checkOutBtn, "icons/out.svg"));
+
+    navPanel.add(new BottomDivider());
+
     navPanel.add(createNavButton(roomsBtn, "icons/bed.svg"));
     navPanel.add(createNavButton(userBtn, "icons/user.svg"));
 
