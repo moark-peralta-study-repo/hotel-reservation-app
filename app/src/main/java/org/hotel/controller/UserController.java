@@ -5,6 +5,7 @@ import java.util.List;
 import org.hotel.model.User;
 import org.hotel.model.dao.UsersDAO;
 import org.hotel.view.MainFrame;
+import org.hotel.view.ShowAddUserDialog;
 import org.hotel.view.UsersView;
 
 public class UserController {
@@ -23,10 +24,15 @@ public class UserController {
     mainFrame.getUsersBtn().addActionListener(e -> loadUsers());
   }
 
+  private void onAddUser() {
+    new ShowAddUserDialog(mainFrame);
+  }
+
   private void loadUsers() {
     List<User> users = usersDAO.getAll();
 
     usersView = new UsersView(users);
+    usersView.getAddUserBtn().addActionListener(e -> onAddUser());
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(usersView, "Users");
