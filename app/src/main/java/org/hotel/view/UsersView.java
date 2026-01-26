@@ -98,4 +98,28 @@ public class UsersView extends JPanel {
 
     return btn;
   }
+
+  public JTable getUsersTable() {
+    return usersTable;
+  }
+
+  public DefaultTableModel getTableModel() {
+    return tableModel;
+  }
+
+  public JTextField getSearchField() {
+    return searchField;
+  }
+
+  public JButton getAddUserBtn() {
+    return addUserBtn;
+  }
+
+  public JButton getEditUserBtn() {
+    return editUserBtn;
+  }
+
+  public JButton getDeleteUserBtn() {
+    return deleteUserBtn;
+  }
 }
