@@ -13,6 +13,7 @@ import org.hotel.model.Room;
 import org.hotel.model.dao.RoomDAO;
 import org.hotel.view.MainFrame;
 import org.hotel.view.RoomsView;
+import org.hotel.view.RoundedTextField;
 
 public class RoomsController {
   private MainFrame mainFrame;
@@ -56,9 +57,9 @@ public class RoomsController {
   }
 
   private Room showAddDialog() {
-    JTextField roomNoField = new JTextField();
-    JTextField typeField = new JTextField();
-    JTextField priceField = new JTextField();
+    RoundedTextField roomNoField = new RoundedTextField();
+    RoundedTextField typeField = new RoundedTextField();
+    RoundedTextField priceField = new RoundedTextField();
 
     JCheckBox availableCheck = new JCheckBox("Available");
     availableCheck.setSelected(true);
@@ -127,9 +128,9 @@ public class RoomsController {
   }
 
   private void showEditDialog(Room room) {
-    JTextField roomNoField = new JTextField(String.valueOf(room.getRoomNumber()));
-    JTextField typeField = new JTextField(room.getType());
-    JTextField priceField = new JTextField(String.valueOf(room.getPrice()));
+    RoundedTextField roomNoField = new RoundedTextField(String.valueOf(room.getRoomNumber()));
+    RoundedTextField typeField = new RoundedTextField(room.getType());
+    RoundedTextField priceField = new RoundedTextField(String.valueOf(room.getPrice()));
 
     JCheckBox availableCheck = new JCheckBox("Available");
     availableCheck.setSelected(room.isAvailable());
