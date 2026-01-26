@@ -73,4 +73,42 @@ public class UsersDAO {
 
     return user.getPassword().equals(password) ? user : null;
   }
+
+  public boolean usernameExists(String username) {
+    String sql = "SELECT 1 FROM users WHERE username = ? LIMIT 1";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setString(1, username);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        return rs.next();
+      }
+    } catch (SQLException e) {
+
+      e.printStackTrace();
+      return true;
+    }
+  }
+
+  public void insert(User user) {
+    String sql = """
+          INSERT INTO users (first_name, last_name, user, password, role) VALUES (?, ?, ?, ?, ?)
+        """;
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setString(1, user.getFirstName());
+      stmt.setString(2, user.getLastName());
+      stmt.setString(3, user.getUsername());
+      stmt.setString(4, user.getPassword());
+      stmt.setString(5, user.getRole().name());
+
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 }
