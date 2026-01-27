@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hotel.db.Database;
@@ -28,7 +29,7 @@ public class UsersDAO {
             rs.getString("first_name"),
             rs.getString("last_name"),
             rs.getString("username"),
-            rs.getString("password"),
+            rs.getString("password").toCharArray(),
             UserRole.valueOf(rs.getString("role").toUpperCase())));
       }
 
@@ -55,7 +56,7 @@ public class UsersDAO {
               rs.getString("first_name"),
               rs.getString("last_name"),
               rs.getString("username"),
-              rs.getString("password"),
+              rs.getString("password").toCharArray(),
               UserRole.valueOf(rs.getString("role")));
         }
       }
@@ -66,12 +67,16 @@ public class UsersDAO {
     return null;
   }
 
-  public User login(String username, String password) {
+  public User login(String username, char[] password) {
     User user = findByUsername(username);
     if (user == null)
       return null;
 
-    return user.getPassword().equals(password) ? user : null;
+    boolean ok = Arrays.equals(user.getPassword(), password);
+
+    Arrays.fill(password, '\0');
+
+    return ok ? user : null;
   }
 
   public boolean usernameExists(String username) {
@@ -94,8 +99,12 @@ public class UsersDAO {
 
   public void insert(User user) {
     String sql = """
-          INSERT INTO users (first_name, last_name, user, password, role) VALUES (?, ?, ?, ?, ?)
+          INSERT INTO users (first_name, last_name, username, password, role) VALUES (?, ?, ?, ?, ?)
         """;
+
+    char[] pw = user.getPassword();
+    String pwStr = new String(pw);
+    Arrays.fill(pw, '\0');
 
     try (Connection conn = Database.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -103,7 +112,7 @@ public class UsersDAO {
       stmt.setString(1, user.getFirstName());
       stmt.setString(2, user.getLastName());
       stmt.setString(3, user.getUsername());
-      stmt.setString(4, user.getPassword());
+      stmt.setString(4, pwStr);
       stmt.setString(5, user.getRole().name());
 
       stmt.executeUpdate();

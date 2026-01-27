@@ -5,10 +5,10 @@ public class User {
   private String firstName;
   private String lastName;
   private String username;
-  private String password;
+  private char[] password;
   private UserRole role;
 
-  public User(int id, String firstName, String lastName, String username, String password, UserRole role) {
+  public User(int id, String firstName, String lastName, String username, char[] password, UserRole role) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -17,7 +17,7 @@ public class User {
     this.role = role;
   }
 
-  public User(String firstName, String lastName, String username, String password, UserRole role) {
+  public User(String firstName, String lastName, String username, char[] password, UserRole role) {
     this(0, firstName, lastName, username, password, role);
   }
 
@@ -53,11 +53,11 @@ public class User {
     this.username = username;
   }
 
-  public String getPassword() {
+  public char[] getPassword() {
     return password;
   }
 
-  public void setPassword(String password) {
+  public void setPassword(char[] password) {
     this.password = password;
   }
 
