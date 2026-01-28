@@ -43,6 +43,16 @@ public class UserController {
     }
   }
 
+  private void showEditDialog() {
+    RoundedTextField fnameField = new RoundedTextField();
+    RoundedTextField lnameField = new RoundedTextField();
+    RoundedTextField usernameField = new RoundedTextField();
+    RoundedPasswordField passwordField = new RoundedPasswordField();
+    RoundedPasswordField confirmPasswordField = new RoundedPasswordField();
+    JComboBox<UserRole> roleCombo = new JComboBox<>(UserRole.values());
+
+  }
+
   private User showAddDialog() {
     RoundedTextField fnameField = new RoundedTextField();
     RoundedTextField lnameField = new RoundedTextField();
