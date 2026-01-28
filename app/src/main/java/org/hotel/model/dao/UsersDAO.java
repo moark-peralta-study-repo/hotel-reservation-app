@@ -120,4 +120,26 @@ public class UsersDAO {
       e.printStackTrace();
     }
   }
+
+  public void update(User user) {
+    String sql = "UPDATE users SET first_name=?, last_name=?, username=?, password=?, role=? WHERE id=?";
+
+    try (
+        Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      char[] pw = user.getPassword();
+      String pwStr = new String(pw);
+
+      stmt.setString(1, user.getFirstName());
+      stmt.setString(2, user.getLastName());
+      stmt.setString(3, user.getUsername());
+      stmt.setString(4, pwStr);
+      stmt.setString(5, user.getRole().name());
+
+      stmt.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 }
