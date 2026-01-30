@@ -97,4 +97,22 @@ public class CustomerDAO {
     }
     return -1;
   }
+
+  public void update(Customer customer) {
+    String sql = "UPDATE customer SET name = ?, phone = ?, email = ? WHERE id = ?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setString(1, customer.getName());
+      stmt.setString(2, customer.getPhone());
+      stmt.setString(3, customer.getEmail());
+      stmt.setInt(4, customer.getId());
+
+      stmt.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 }
