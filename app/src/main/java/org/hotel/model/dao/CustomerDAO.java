@@ -1,12 +1,12 @@
 package org.hotel.model.dao;
 
-import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hotel.db.Database;
 import org.hotel.model.Customer;
@@ -31,7 +31,7 @@ public class CustomerDAO {
 
   public List<Customer> getAll() {
     List<Customer> customers = new ArrayList<>();
-    String sql = "SELECT * FROM customers WHERE is_active = 1";
+    String sql = "SELECT * FROM customers";
 
     try (Connection conn = Database.getConnection();
         Statement stmt = conn.createStatement();
@@ -54,22 +54,8 @@ public class CustomerDAO {
     return customers;
   }
 
-  public void deactivate(int customerId) {
-    String sql = "UPDATE customers SET is_active = 0 WHERE id = ?";
-
-    try (Connection conn = Database.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-      stmt.setInt(1, customerId);
-      stmt.executeUpdate();
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
-  }
-
   public Customer getById(int id) {
-    String sql = "SELECT * FROM customers WHERE id = ? AND is_active = 1";
+    String sql = "SELECT * FROM customers WHERE id = ?";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -89,5 +75,26 @@ public class CustomerDAO {
     }
 
     return null;
+  }
+
+  public int insertAndReturnId(Customer customer) {
+    String sql = "INSERT INTO customers (name, phone, email) VALUES (?,?,?)";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+      pstmt.setString(1, customer.getName());
+      pstmt.setString(2, customer.getPhone());
+      pstmt.setString(3, customer.getEmail());
+      pstmt.executeUpdate();
+
+      try (ResultSet keys = pstmt.getGeneratedKeys()) {
+        if (keys.next())
+          return keys.getInt(1);
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    return -1;
   }
 }

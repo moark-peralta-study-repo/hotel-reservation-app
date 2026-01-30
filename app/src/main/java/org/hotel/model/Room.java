@@ -62,4 +62,8 @@ public class Room {
     this.isAvailable = isAvailable;
   }
 
+  @Override
+  public String toString() {
+    return roomNumber + " - " + type + " (₱" + price + ")";
+  }
 }

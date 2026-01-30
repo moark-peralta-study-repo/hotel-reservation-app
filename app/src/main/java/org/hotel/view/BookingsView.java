@@ -31,6 +31,9 @@ public class BookingsView extends JPanel {
 
     JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
+    if (mode == null)
+      mode = BookingsViewMode.ALL;
+
     switch (mode) {
       case RESERVATION -> {
         addReservationBtn = createActionButton("Add Reservation");
@@ -57,7 +60,6 @@ public class BookingsView extends JPanel {
         actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 22, 22));
 
       }
-      default -> throw new IllegalArgumentException("Unexpected value: " + mode);
     }
 
     add(actionPanel, BorderLayout.NORTH);
