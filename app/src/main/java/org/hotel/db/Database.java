@@ -23,8 +23,8 @@ public class Database {
       // stmt.executeUpdate("DELETE FROM customers");
       // stmt.executeUpdate("DELETE FROM bookings");
       seedRooms(stmt);
-      seedBookingAuto(stmt);
       seedCustomers(stmt);
+      seedBookingAuto(stmt);
 
       System.out.println("Database Initialized Successfully.");
     } catch (SQLException e) {
@@ -165,11 +165,23 @@ public class Database {
     if (rs.next() && rs.getInt("count") > 0)
       return;
 
-    String[] names = { "Alice", "Bob", "Charlie", "David", "Eve", "Frank" };
-    for (String name : names) {
-      stmt.executeUpdate("INSERT INTO customers (name, phone, email) " +
-          "VALUES ('" + name + "', '1234567890', '" + name.toLowerCase() + "@example.com')");
+    String[][] customers = {
+        { "Alice Reyes", "09171234567", "alice@example.com" },
+        { "Bob Santos", "09181234567", "bob@example.com" },
+        { "Charlie Cruz", "09191234567", "charlie@example.com" },
+        { "David Lim", "09201234567", "david@example.com" },
+        { "Eve Tan", "09211234567", "eve@example.com" },
+        { "Frank Go", "09221234567", "frank@example.com" }
+    };
+
+    for (String[] c : customers) {
+      stmt.executeUpdate("""
+            INSERT INTO customers (name, phone, email)
+            VALUES ('%s', '%s', '%s')
+          """.formatted(c[0], c[1], c[2]));
     }
+
     System.out.println("Seeded: 6 Customers");
   }
+
 }

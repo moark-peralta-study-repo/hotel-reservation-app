@@ -148,8 +148,8 @@ public class RoomsController {
     panel.add(roomType);
     panel.add(new JLabel("Price: "));
     panel.add(priceField);
-    panel.add(availableCheck);
 
+    panel.add(availableCheck);
     int result = JOptionPane.showConfirmDialog(
         mainFrame, panel, "Edit Room", JOptionPane.OK_CANCEL_OPTION);
 
