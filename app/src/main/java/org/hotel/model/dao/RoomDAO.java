@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.hotel.db.Database;
 import org.hotel.model.Room;
+import org.hotel.model.RoomType;
 
 public class RoomDAO {
   public void insert(Room room) {
@@ -18,7 +19,7 @@ public class RoomDAO {
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
       pstmt.setInt(1, room.getRoomNumber());
-      pstmt.setString(2, room.getType());
+      pstmt.setString(2, room.getType().name());
       pstmt.setDouble(3, room.getPrice());
       pstmt.setInt(4, room.isAvailable() ? 1 : 0);
       pstmt.executeUpdate();
@@ -48,11 +49,13 @@ public class RoomDAO {
             available = checkRs.getInt("count") == 0;
           }
 
+          RoomType type = RoomType.valueOf(rs.getString("type").toUpperCase());
+
           rooms.add(
               new Room(
                   roomId,
                   rs.getInt("room_number"),
-                  rs.getString("type"),
+                  type,
                   rs.getDouble("price"),
                   available));
         }
@@ -75,10 +78,11 @@ public class RoomDAO {
       ResultSet rs = stmt.executeQuery();
 
       if (rs.next()) {
+        RoomType type = RoomType.valueOf(rs.getString("type").toUpperCase());
         return new Room(
             rs.getInt("id"),
             rs.getInt("room_number"),
-            rs.getString("type"),
+            type,
             rs.getDouble("price"),
             rs.getInt("is_available") == 1);
       }
@@ -100,10 +104,12 @@ public class RoomDAO {
       ResultSet rs = stmt.executeQuery();
 
       if (rs.next()) {
+        RoomType type = RoomType.valueOf(rs.getString("type").toUpperCase());
+
         return new Room(
             rs.getInt("id"),
             rs.getInt("room_number"),
-            rs.getString("type"),
+            type,
             rs.getDouble("price"),
             rs.getInt("is_available") == 1);
       }
@@ -121,7 +127,7 @@ public class RoomDAO {
         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
       stmt.setInt(1, room.getRoomNumber());
-      stmt.setString(2, room.getType());
+      stmt.setString(2, room.getType().name());
       stmt.setDouble(3, room.getPrice());
       stmt.setInt(4, room.isAvailable() ? 1 : 0);
       stmt.setInt(5, room.getId());
@@ -152,7 +158,7 @@ public class RoomDAO {
         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
       stmt.setInt(1, newRoom.getRoomNumber());
-      stmt.setString(2, newRoom.getType());
+      stmt.setString(2, newRoom.getType().name());
       stmt.setDouble(3, newRoom.getPrice());
       stmt.setBoolean(2, newRoom.isAvailable());
 

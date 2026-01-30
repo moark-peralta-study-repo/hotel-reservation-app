@@ -4,12 +4,13 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.hotel.model.Room;
+import org.hotel.model.RoomType;
 import org.hotel.model.dao.RoomDAO;
 import org.hotel.view.MainFrame;
 import org.hotel.view.RoomsView;
@@ -58,17 +59,19 @@ public class RoomsController {
 
   private Room showAddDialog() {
     RoundedTextField roomNoField = new RoundedTextField();
-    RoundedTextField typeField = new RoundedTextField();
     RoundedTextField priceField = new RoundedTextField();
 
     JCheckBox availableCheck = new JCheckBox("Available");
     availableCheck.setSelected(true);
 
+    JComboBox<RoomType> roomType = new JComboBox<>(RoomType.values());
+    roomType.setSelectedItem(RoomType.SINGLE);
+
     JPanel panel = new JPanel(new GridLayout(0, 1));
     panel.add(new JLabel("Room Number:"));
     panel.add(roomNoField);
     panel.add(new JLabel("Type:"));
-    panel.add(typeField);
+    panel.add(roomType);
     panel.add(new JLabel("Price:"));
     panel.add(priceField);
     panel.add(availableCheck);
@@ -81,7 +84,7 @@ public class RoomsController {
     return new Room(
         0,
         Integer.parseInt(roomNoField.getText()),
-        typeField.getText(),
+        (RoomType) roomType.getSelectedItem(),
         Double.parseDouble(priceField.getText()),
         availableCheck.isSelected());
   }
@@ -129,7 +132,10 @@ public class RoomsController {
 
   private void showEditDialog(Room room) {
     RoundedTextField roomNoField = new RoundedTextField(String.valueOf(room.getRoomNumber()));
-    RoundedTextField typeField = new RoundedTextField(room.getType());
+
+    JComboBox<RoomType> roomType = new JComboBox<>(RoomType.values());
+    roomType.setSelectedItem(RoomType.SINGLE);
+
     RoundedTextField priceField = new RoundedTextField(String.valueOf(room.getPrice()));
 
     JCheckBox availableCheck = new JCheckBox("Available");
@@ -139,7 +145,7 @@ public class RoomsController {
     panel.add(new JLabel("Room Number: "));
     panel.add(roomNoField);
     panel.add(new JLabel("Type: "));
-    panel.add(typeField);
+    panel.add(roomType);
     panel.add(new JLabel("Price: "));
     panel.add(priceField);
     panel.add(availableCheck);
@@ -149,7 +155,7 @@ public class RoomsController {
 
     if (result == JOptionPane.OK_OPTION) {
       room.setRoomNumber(Integer.parseInt(roomNoField.getText()));
-      room.setType(typeField.getText());
+      room.setType((RoomType) roomType.getSelectedItem());
       room.setPrice(Double.parseDouble(priceField.getText()));
       room.setAvailable(availableCheck.isSelected());
 
