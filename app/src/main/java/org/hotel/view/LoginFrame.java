@@ -28,6 +28,8 @@ public class LoginFrame extends JFrame {
     wrapper = new LoginWrapper();
     setContentPane(wrapper);
 
+    getRootPane().setDefaultButton(wrapper.getLoginBtn());
+
     wrapper.getLoginBtn().addActionListener(e -> validateLogin());
     wrapper.getExitBtn().addActionListener(e -> handleExit());
 
