@@ -66,14 +66,83 @@ public class UserController {
     }
   }
 
-  private void showEditDialog() {
-    RoundedTextField fnameField = new RoundedTextField();
-    RoundedTextField lnameField = new RoundedTextField();
-    RoundedTextField usernameField = new RoundedTextField();
+  private User showEditDialog(User user) {
+    RoundedTextField fnameField = new RoundedTextField(user.getFirstName());
+    RoundedTextField lnameField = new RoundedTextField(user.getLastName());
+    RoundedTextField usernameField = new RoundedTextField(user.getUsername());
+
     RoundedPasswordField passwordField = new RoundedPasswordField();
     RoundedPasswordField confirmPasswordField = new RoundedPasswordField();
-    JComboBox<UserRole> roleCombo = new JComboBox<>(UserRole.values());
 
+    JComboBox<UserRole> roleCombo = new JComboBox<>(UserRole.values());
+    roleCombo.setSelectedItem(user.getRole());
+
+    JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+    panel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+
+    panel.add(new JLabel("First Name: "));
+    panel.add(fnameField);
+
+    panel.add(new JLabel("Last Name: "));
+    panel.add(lnameField);
+
+    panel.add(new JLabel("New Password: "));
+    panel.add(passwordField);
+
+    panel.add(new JLabel("Confirm New Password: "));
+    panel.add(confirmPasswordField);
+
+    panel.add(new JLabel("Role: "));
+    panel.add(roleCombo);
+
+    int result = JOptionPane.showConfirmDialog(
+        mainFrame,
+        panel,
+        "Edit User",
+        JOptionPane.OK_CANCEL_OPTION);
+
+    if (result != JOptionPane.OK_OPTION) {
+      Arrays.fill(passwordField.getPassword(), '\0');
+      Arrays.fill(confirmPasswordField.getPassword(), '\0');
+      return null;
+    }
+
+    String firstName = fnameField.getText().trim();
+    String lastName = lnameField.getText().trim();
+    String username = usernameField.getText().trim();
+    UserRole role = (UserRole) roleCombo.getSelectedItem();
+
+    if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty()) {
+      JOptionPane.showMessageDialog(mainFrame, "All fields except password are required.");
+      Arrays.fill(passwordField.getPassword(), '\0');
+      Arrays.fill(confirmPasswordField.getPassword(), '\0');
+      return null;
+    }
+    char[] pw = passwordField.getPassword();
+    char[] confirm = confirmPasswordField.getPassword();
+
+    char[] finalPassword;
+
+    if (pw.length == 0 && confirm.length == 0) {
+      finalPassword = user.getPassword();
+    } else {
+      if (!Arrays.equals(pw, confirm)) {
+        Arrays.fill(pw, '\0');
+        Arrays.fill(confirm, '\0');
+        JOptionPane.showMessageDialog(mainFrame, "Passwords do not match.");
+        return null;
+      }
+      finalPassword = pw; // use new password
+    }
+
+    // Build updated user (keep same id)
+    return new User(
+        user.getId(),
+        firstName,
+        lastName,
+        username,
+        finalPassword,
+        role);
   }
 
   private User showAddDialog() {
@@ -145,11 +214,36 @@ public class UserController {
     usersView = new UsersView(users);
     usersView.getAddUserBtn().addActionListener(e -> onAddUser());
     usersView.getDeleteUserBtn().addActionListener(e -> onDeleteUser());
+    usersView.getEditUserBtn().addActionListener(e -> onEditUser());
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(usersView, "Users");
     mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Users");
     mainFrame.getContentPanel().revalidate();
     mainFrame.getContentPanel().repaint();
+  }
+
+  private void onEditUser() {
+    int selectedRow = usersView.getUsersTable().getSelectedRow();
+
+    if (selectedRow == -1) {
+      JOptionPane.showMessageDialog(mainFrame, "Please select a user to edit");
+      return;
+    }
+
+    int id = (int) usersView.getTableModel().getValueAt(selectedRow, 1);
+    User existing = usersDAO.getById(id);
+
+    if (existing == null) {
+      JOptionPane.showMessageDialog(mainFrame, "User not found.");
+      return;
+    }
+
+    User updated = showEditDialog(existing);
+
+    if (updated != null) {
+      usersDAO.update(updated);
+      loadUsers();
+    }
   }
 }
