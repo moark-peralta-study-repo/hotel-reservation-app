@@ -153,4 +153,44 @@ public class UsersDAO {
       e.printStackTrace();
     }
   }
+
+  public void delete(int id) {
+    String sql = "DELETE FROM users WHERE id=?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, id);
+      stmt.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public User getById(int id) {
+    String sql = "SELECT * FROM users WHERE id=?";
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setInt(1, id);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          return new User(
+              rs.getInt("id"),
+              rs.getString("first_name"),
+              rs.getString("last_name"),
+              rs.getString("username"),
+              rs.getString("password").toCharArray(),
+              UserRole.valueOf(rs.getString("role").toUpperCase()));
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
 }

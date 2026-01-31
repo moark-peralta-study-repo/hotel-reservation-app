@@ -34,6 +34,29 @@ public class UserController {
     mainFrame.getUsersBtn().addActionListener(e -> loadUsers());
   }
 
+  private void onDeleteUser() {
+    int selectedRow = usersView.getUsersTable().getSelectedRow();
+
+    if (selectedRow == -1) {
+      JOptionPane.showMessageDialog(mainFrame, "Please select a user to delete");
+      return;
+    }
+
+    int id = (int) usersView.getTableModel().getValueAt(selectedRow, 1);
+    User user = usersDAO.getById(id);
+
+    int confirm = JOptionPane.showConfirmDialog(
+        null,
+        "Are you sure you want to delete User " + user.getId() + "?",
+        "Confirm Delete",
+        JOptionPane.YES_NO_OPTION);
+
+    if (confirm == JOptionPane.YES_OPTION) {
+      usersDAO.delete(user.getId());
+      loadUsers();
+    }
+  }
+
   private void onAddUser() {
     User user = showAddDialog();
 
@@ -121,6 +144,7 @@ public class UserController {
 
     usersView = new UsersView(users);
     usersView.getAddUserBtn().addActionListener(e -> onAddUser());
+    usersView.getDeleteUserBtn().addActionListener(e -> onDeleteUser());
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(usersView, "Users");
