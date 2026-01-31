@@ -59,7 +59,7 @@ public class UsersView extends JPanel {
       tableData[i][2] = u.getFirstName();
       tableData[i][3] = u.getLastName();
       tableData[i][4] = u.getUsername();
-      tableData[i][5] = u.getPassword();
+      tableData[i][5] = new String(u.getPassword());
       tableData[i][6] = u.getRole();
     }
 
