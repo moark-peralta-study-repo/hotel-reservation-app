@@ -145,6 +145,7 @@ public class MainFrame extends JFrame {
 
     add(navPanel, BorderLayout.WEST);
 
+    navPanel.add(new LogoWrapper());
     navPanel.add(createNavButton(dashboardBtn,
         "icons/home.svg"));
     navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
