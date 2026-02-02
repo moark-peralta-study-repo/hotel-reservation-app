@@ -25,6 +25,9 @@ public class LoginWrapper extends JPanel {
     setLayout(new BorderLayout());
     setBackground(Color.decode("#f9fafb"));
 
+    usernameField.setText("admin001");
+    passwordField.setText("admin123");
+
     leftPanel = new JPanel();
     rightPanel = new JPanel();
     bottomPanel = new JPanel();

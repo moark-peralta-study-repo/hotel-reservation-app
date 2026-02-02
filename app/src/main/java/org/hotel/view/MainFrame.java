@@ -10,6 +10,7 @@ import java.awt.Toolkit;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -18,6 +19,8 @@ public class MainFrame extends JFrame {
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
+
+  private TopPanel topPanel;
 
   private NavButton roomsBtn;
   private NavButton bookingsBtn;
@@ -91,7 +94,7 @@ public class MainFrame extends JFrame {
     cardLayout.show(contentPanel, viewName);
   }
 
-  public MainFrame() {
+  public MainFrame(String username) {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int width = (int) screenSize.getWidth();
     int height = (int) screenSize.getHeight();
@@ -149,8 +152,21 @@ public class MainFrame extends JFrame {
 
     JPanel contentWrapper = new JPanel(new BorderLayout());
 
-    TopPanel topPanel = new TopPanel("Mark Lester Peralta");
+    topPanel = new TopPanel(username);
     contentWrapper.add(topPanel, BorderLayout.NORTH);
+
+    topPanel.getLogoutButton().addActionListener(e -> {
+      int confirm = JOptionPane.showConfirmDialog(
+          this,
+          "Are you sure you want to logout?",
+          "Logout",
+          JOptionPane.YES_NO_OPTION);
+
+      if (confirm == JOptionPane.YES_OPTION) {
+        dispose();
+        new LoginFrame();
+      }
+    });
 
     cardLayout = new CardLayout();
     contentPanel = new JPanel(cardLayout);

@@ -53,8 +53,8 @@ public class LoginFrame extends JFrame {
 
   }
 
-  private void openMainApp() {
-    MainFrame mainFrame = new MainFrame();
+  private void openMainApp(User user) {
+    MainFrame mainFrame = new MainFrame(user.getUsername());
     new RoomsController(mainFrame);
     new BookingsController(mainFrame);
     new DashboardController(mainFrame);
@@ -99,6 +99,6 @@ public class LoginFrame extends JFrame {
     }
 
     dispose();
-    openMainApp();
+    openMainApp(user);
   }
 }
