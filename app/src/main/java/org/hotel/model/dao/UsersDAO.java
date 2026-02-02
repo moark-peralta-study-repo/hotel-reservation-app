@@ -25,8 +25,6 @@ public class UsersDAO {
 
       while (rs.next()) {
 
-        System.out.println("DB RAW password for " + rs.getString("username") + " = " + rs.getString("password"));
-
         users.add(new User(
             rs.getInt("id"),
             rs.getString("first_name"),
@@ -108,13 +106,7 @@ public class UsersDAO {
     char[] pw = user.getPassword();
     String pwStr = new String(pw);
 
-    System.out.println("INSERT password string: " + pwStr);
-    System.out.println("INSERT password Arrays.toString BEFORE wipe: " + Arrays.toString(pw));
-
-    // if you still want:
     Arrays.fill(pw, '\0');
-
-    System.out.println("INSERT password Arrays.toString AFTER wipe: " + Arrays.toString(pw));
 
     try (Connection conn = Database.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
