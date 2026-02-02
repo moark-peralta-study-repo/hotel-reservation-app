@@ -15,7 +15,7 @@ public class LogoWrapper extends JPanel {
   public LogoWrapper() {
     setLayout(new BorderLayout());
     setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-    setBackground(Color.decode("#f9fafb"));
+    setBackground(Color.decode("#ffffff"));
 
     URL url = getClass().getClassLoader().getResource("icons/logo.png");
     System.out.println(url);
