@@ -26,7 +26,7 @@ public class ActionButton extends JButton {
     setOpaque(false);
 
     setForeground(Color.WHITE);
-    setFont(new Font("Roboto", Font.BOLD, 18));
+    setFont(new Font("Poppins", Font.BOLD, 18));
     setMargin(new Insets(30, 40, 30, 40));
     setPreferredSize(new Dimension(80, 40));
 

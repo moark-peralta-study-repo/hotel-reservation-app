@@ -99,7 +99,7 @@ public class CustomerDAO {
   }
 
   public void update(Customer customer) {
-    String sql = "UPDATE customer SET name = ?, phone = ?, email = ? WHERE id = ?";
+    String sql = "UPDATE customers SET name = ?, phone = ?, email = ? WHERE id = ?";
 
     try (Connection conn = Database.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 public class InputLabel extends JLabel {
   public InputLabel(String label) {
     super(label);
-    setFont(new Font("Roboto", Font.BOLD, 16));
+    setFont(new Font("Poppins", Font.BOLD, 16));
     setAlignmentX(JComponent.CENTER_ALIGNMENT);
   }
 }

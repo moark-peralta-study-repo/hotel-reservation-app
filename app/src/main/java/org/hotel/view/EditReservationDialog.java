@@ -1,7 +1,9 @@
 package org.hotel.view;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -10,8 +12,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -30,85 +36,171 @@ import org.jdatepicker.impl.UtilDateModel;
 
 public class EditReservationDialog extends JDialog {
 
+  private final Color BG = Color.decode("#f9fafb");
+  private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+
   private RoundedTextField customerNameField;
   private RoundedTextField phoneField;
   private RoundedTextField emailField;
 
   private JComboBox<Room> roomCombo;
-  private JLabel totalPriceLbl;
-
   private JDatePickerImpl checkInPicker;
   private JDatePickerImpl checkOutPicker;
+
+  private JLabel totalPriceLbl;
 
   private final Booking booking;
   private final BookingsDAO bookingsDAO;
   private final CustomerDAO customerDAO = new CustomerDAO();
   private final RoomDAO roomDAO = new RoomDAO();
 
-  private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
   public EditReservationDialog(MainFrame parent, Booking booking, BookingsDAO dao) {
     super(parent, "Edit Reservation", true);
     this.booking = booking;
     this.bookingsDAO = dao;
 
-    setSize(450, 320);
+    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    setSize(560, 700);
     setLocationRelativeTo(parent);
+    setLayout(new BorderLayout());
+    getContentPane().setBackground(BG);
 
     initUI();
     loadBookingData();
   }
 
   private void initUI() {
-    JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
+    JPanel header = new JPanel(new BorderLayout());
+    header.setBackground(BG);
+    header.setBorder(BorderFactory.createEmptyBorder(18, 24, 8, 24));
+
+    JLabel title = new HeaderLabel("Edit Reservation");
+    header.add(title, BorderLayout.WEST);
+
+    add(header, BorderLayout.NORTH);
+
+    JPanel formWrapper = new JPanel(new BorderLayout());
+    formWrapper.setBackground(BG);
+    formWrapper.setBorder(BorderFactory.createEmptyBorder(8, 24, 8, 24));
+
+    JPanel form = new JPanel();
+    form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
+    form.setBackground(BG);
+    form.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
 
     customerNameField = new RoundedTextField();
     phoneField = new RoundedTextField();
     emailField = new RoundedTextField();
 
+    enforceFieldSize(customerNameField);
+    enforceFieldSize(phoneField);
+    enforceFieldSize(emailField);
+
     roomCombo = new JComboBox<>(roomDAO.getAll().toArray(new Room[0]));
-    totalPriceLbl = new JLabel("0.00");
+    roomCombo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
 
     checkInPicker = createDatePicker();
     checkOutPicker = createDatePicker();
 
-    form.add(new JLabel("Customer Name"));
-    form.add(customerNameField);
+    totalPriceLbl = new JLabel("₱0.00");
+    totalPriceLbl.setFont(totalPriceLbl.getFont().deriveFont(16f));
 
-    form.add(new JLabel("Phone"));
-    form.add(phoneField);
+    form.add(fieldBlock("Customer Name", customerNameField));
+    form.add(Box.createVerticalStrut(16));
 
-    form.add(new JLabel("Email"));
-    form.add(emailField);
+    form.add(fieldBlock("Phone", phoneField));
+    form.add(Box.createVerticalStrut(16));
 
-    form.add(new JLabel("Room"));
-    form.add(roomCombo);
+    form.add(fieldBlock("Email", emailField));
+    form.add(Box.createVerticalStrut(24));
 
-    form.add(new JLabel("Check-in Date"));
-    form.add(checkInPicker);
+    form.add(fieldBlock("Room", roomCombo));
+    form.add(Box.createVerticalStrut(24));
 
-    form.add(new JLabel("Check-out Date"));
-    form.add(checkOutPicker);
+    form.add(fieldBlock("Check-in Date", padded(checkInPicker)));
+    form.add(Box.createVerticalStrut(16));
 
-    form.add(new JLabel("Total Price"));
-    form.add(totalPriceLbl);
+    form.add(fieldBlock("Check-out Date", padded(checkOutPicker)));
+    form.add(Box.createVerticalStrut(24));
+
+    form.add(createFieldLabel("Total Price"));
+    form.add(Box.createVerticalStrut(8));
+    form.add(totalBlock());
+    form.add(Box.createVerticalStrut(24));
 
     roomCombo.addActionListener(e -> updateTotal());
     checkInPicker.getModel().addChangeListener(e -> updateTotal());
     checkOutPicker.getModel().addChangeListener(e -> updateTotal());
 
-    JButton saveBtn = new JButton("Save");
+    formWrapper.add(form, BorderLayout.CENTER);
+    add(formWrapper, BorderLayout.CENTER);
+
+    JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+    actions.setBackground(BG);
+    actions.setBorder(BorderFactory.createEmptyBorder(10, 24, 18, 24));
+
     JButton cancelBtn = new JButton("Cancel");
+    JButton saveBtn = new JButton("Save");
 
-    saveBtn.addActionListener(e -> onSave());
     cancelBtn.addActionListener(e -> dispose());
+    saveBtn.addActionListener(e -> onSave());
 
-    JPanel actions = new JPanel();
-    actions.add(saveBtn);
     actions.add(cancelBtn);
+    actions.add(saveBtn);
 
-    add(form, BorderLayout.CENTER);
     add(actions, BorderLayout.SOUTH);
+  }
+
+  private void enforceFieldSize(JComponent c) {
+    c.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+    c.setAlignmentX(LEFT_ALIGNMENT);
+  }
+
+  private JLabel createFieldLabel(String text) {
+    JLabel lbl = new JLabel(text);
+    lbl.setForeground(Color.decode("#374151"));
+    lbl.setBorder(BorderFactory.createEmptyBorder(2, 2, 6, 2));
+    lbl.setAlignmentX(LEFT_ALIGNMENT);
+    return lbl;
+  }
+
+  private JPanel fieldBlock(String labelText, java.awt.Component field) {
+    JPanel block = new JPanel();
+    block.setLayout(new BoxLayout(block, BoxLayout.Y_AXIS));
+    block.setBackground(BG);
+    block.setAlignmentX(LEFT_ALIGNMENT);
+
+    block.add(createFieldLabel(labelText));
+    block.add(field);
+
+    return block;
+  }
+
+  private JComponent padded(java.awt.Component c) {
+    JPanel wrap = new JPanel(new BorderLayout());
+    wrap.setBackground(BG);
+    wrap.setAlignmentX(LEFT_ALIGNMENT);
+    wrap.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
+
+    if (c instanceof JComponent jc) {
+      jc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+    }
+
+    wrap.add(c, BorderLayout.CENTER);
+    return wrap;
+  }
+
+  private JComponent totalBlock() {
+    JPanel totalWrap = new JPanel(new BorderLayout());
+    totalWrap.setBackground(Color.decode("#ffffff"));
+    totalWrap.setAlignmentX(LEFT_ALIGNMENT);
+
+    totalWrap.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(Color.decode("#e5e7eb")),
+        BorderFactory.createEmptyBorder(16, 18, 16, 18)));
+
+    totalWrap.add(totalPriceLbl, BorderLayout.WEST);
+    return totalWrap;
   }
 
   private JDatePickerImpl createDatePicker() {
@@ -123,7 +215,6 @@ public class EditReservationDialog extends JDialog {
   }
 
   private void loadBookingData() {
-    // Load customer info
     Customer c = customerDAO.getById(booking.getCustomerId());
     if (c != null) {
       customerNameField.setText(c.getName());
@@ -131,7 +222,6 @@ public class EditReservationDialog extends JDialog {
       emailField.setText(c.getEmail() == null ? "" : c.getEmail());
     }
 
-    // Select room in combo
     for (int i = 0; i < roomCombo.getItemCount(); i++) {
       Room r = roomCombo.getItemAt(i);
       if (r.getId() == booking.getRoomId()) {
@@ -161,7 +251,7 @@ public class EditReservationDialog extends JDialog {
     Date out = (Date) checkOutPicker.getModel().getValue();
 
     if (room == null || in == null || out == null) {
-      totalPriceLbl.setText("0.00");
+      totalPriceLbl.setText("₱0.00");
       return;
     }
 
@@ -170,12 +260,12 @@ public class EditReservationDialog extends JDialog {
     long nights = ChronoUnit.DAYS.between(inDate, outDate);
 
     if (nights <= 0) {
-      totalPriceLbl.setText("0.00");
+      totalPriceLbl.setText("₱0.00");
       return;
     }
 
     double total = nights * room.getPrice();
-    totalPriceLbl.setText(String.format("%.2f", total));
+    totalPriceLbl.setText(String.format("₱%.2f", total));
   }
 
   private void onSave() {
@@ -204,16 +294,14 @@ public class EditReservationDialog extends JDialog {
       return;
     }
 
-    // Update customer details
     Customer c = customerDAO.getById(booking.getCustomerId());
     if (c != null) {
       c.setName(name);
       c.setPhone(phoneField.getText().trim());
       c.setEmail(emailField.getText().trim());
-      customerDAO.update(c); // you'll need to add this method
+      customerDAO.update(c); // make sure this exists
     }
 
-    // Update booking fields
     LocalDate inLocal = inDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     LocalDate outLocal = outDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     long nights = ChronoUnit.DAYS.between(inLocal, outLocal);
@@ -224,9 +312,9 @@ public class EditReservationDialog extends JDialog {
     booking.setCheckOut(SDF.format(outDate));
     booking.setTotalPrice(totalPrice);
 
-    // keep status as is
-    if (booking.getStatus() == null)
+    if (booking.getStatus() == null) {
       booking.setStatus(BookingStatus.RESERVED);
+    }
 
     bookingsDAO.update(booking);
     dispose();
