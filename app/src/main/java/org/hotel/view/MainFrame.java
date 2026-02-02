@@ -179,13 +179,9 @@ public class MainFrame extends JFrame {
     return checkInBtn;
   }
 
-    navPanel.add(new LogoWrapper());
-    navPanel.add(createNavButton(dashboardBtn,
-        "icons/home.svg"));
-    navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
-    navPanel.add(createNavButton(reservationBtn, "icons/user.svg"));
-    navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
-    navPanel.add(createNavButton(checkOutBtn, "icons/out.svg"));
+  public JButton getCheckOutBtn() {
+    return checkOutBtn;
+  }
 
   public JButton getBookingsBtn() {
     return bookingsBtn;
