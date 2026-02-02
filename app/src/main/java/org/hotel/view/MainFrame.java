@@ -18,6 +18,7 @@ public class MainFrame extends JFrame {
   private JPanel navPanel;
   private JPanel contentPanel;
   private CardLayout cardLayout;
+
   private NavButton roomsBtn;
   private NavButton bookingsBtn;
   private NavButton reservationBtn;
@@ -67,8 +68,9 @@ public class MainFrame extends JFrame {
   }
 
   private void setActiveBtn(NavButton clicked) {
-    for (NavButton btn : new NavButton[] { roomsBtn, bookingsBtn, reservationBtn, checkInBtn, checkOutBtn,
-        dashboardBtn, userBtn }) {
+    for (NavButton btn : new NavButton[] {
+        roomsBtn, bookingsBtn, reservationBtn, checkInBtn, checkOutBtn, dashboardBtn, userBtn
+    }) {
       btn.setActive(btn == clicked);
     }
   }
@@ -103,50 +105,38 @@ public class MainFrame extends JFrame {
     checkInBtn = new NavButton("Check-ins");
     checkOutBtn = new NavButton("Check-outs");
 
-    dashboardBtn.addActionListener(e -> {
-      setActiveBtn(dashboardBtn);
-    });
-
-    roomsBtn.addActionListener(e -> {
-      setActiveBtn(roomsBtn);
-    });
-
-    checkInBtn.addActionListener(e -> {
-      setActiveBtn(checkInBtn);
-    });
-
-    checkOutBtn.addActionListener(e -> {
-      setActiveBtn(checkOutBtn);
-    });
-
-    reservationBtn.addActionListener(e -> {
-      setActiveBtn(reservationBtn);
-    });
-
-    bookingsBtn.addActionListener(e -> {
-      setActiveBtn(bookingsBtn);
-    });
-
-    userBtn.addActionListener(e -> {
-      setActiveBtn(userBtn);
-    });
+    dashboardBtn.addActionListener(e -> setActiveBtn(dashboardBtn));
+    roomsBtn.addActionListener(e -> setActiveBtn(roomsBtn));
+    checkInBtn.addActionListener(e -> setActiveBtn(checkInBtn));
+    checkOutBtn.addActionListener(e -> setActiveBtn(checkOutBtn));
+    reservationBtn.addActionListener(e -> setActiveBtn(reservationBtn));
+    bookingsBtn.addActionListener(e -> setActiveBtn(bookingsBtn));
+    userBtn.addActionListener(e -> setActiveBtn(userBtn));
 
     setTitle("Lodgify");
     setSize(width, height);
     setBackground(Color.decode("#f9fafb"));
     setLocationRelativeTo(null);
+    setLayout(new BorderLayout());
 
-    navPanel = new JPanel();
-    navPanel.setLayout(new GridLayout(15, 1, 5, 5));
+    JPanel sidePanel = new JPanel(new BorderLayout());
+    sidePanel.setPreferredSize(new Dimension(navWidth, height));
+    sidePanel.setBackground(Color.decode("#ffffff"));
+    sidePanel.setBorder(BorderFactory.createLineBorder(Color.decode("#f3f4f6")));
+    add(sidePanel, BorderLayout.WEST);
+
+    JPanel logoPanel = new JPanel(new BorderLayout());
+    logoPanel.setPreferredSize(new Dimension(navWidth, 150));
+    logoPanel.setBackground(Color.decode("#ffffff"));
+    logoPanel.add(new LogoWrapper(), BorderLayout.CENTER);
+    sidePanel.add(logoPanel, BorderLayout.NORTH);
+
+    navPanel = new JPanel(new GridLayout(15, 1, 5, 5));
     navPanel.setBackground(Color.decode("#ffffff"));
-    navPanel.setPreferredSize(new Dimension(navWidth, height));
-    navPanel.setBackground(Color.decode("#ffffff"));
-    navPanel.setBorder(BorderFactory.createLineBorder(Color.decode("#f3f4f6")));
+    navPanel.setBorder(new EmptyBorder(8, 0, 8, 0));
+    sidePanel.add(navPanel, BorderLayout.CENTER);
 
-    add(navPanel, BorderLayout.WEST);
-
-    navPanel.add(createNavButton(dashboardBtn,
-        "icons/home.svg"));
+    navPanel.add(createNavButton(dashboardBtn, "icons/home.svg"));
     navPanel.add(createNavButton(bookingsBtn, "icons/calendar.svg"));
     navPanel.add(createNavButton(reservationBtn, "icons/user.svg"));
     navPanel.add(createNavButton(checkInBtn, "icons/in.svg"));
