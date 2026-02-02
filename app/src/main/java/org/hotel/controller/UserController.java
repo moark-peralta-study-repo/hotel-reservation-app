@@ -31,7 +31,9 @@ public class UserController {
   }
 
   private void registerEvents() {
-    mainFrame.getUsersBtn().addActionListener(e -> loadUsers());
+    if (mainFrame.getUsersBtn() != null) {
+      mainFrame.getUsersBtn().addActionListener(e -> loadUsers());
+    }
   }
 
   private void onDeleteUser() {

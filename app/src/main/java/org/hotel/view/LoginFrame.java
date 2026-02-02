@@ -11,6 +11,7 @@ import org.hotel.controller.DashboardController;
 import org.hotel.controller.RoomsController;
 import org.hotel.controller.UserController;
 import org.hotel.model.User;
+import org.hotel.model.UserRole;
 import org.hotel.model.dao.UsersDAO;
 
 public class LoginFrame extends JFrame {
@@ -53,12 +54,16 @@ public class LoginFrame extends JFrame {
 
   }
 
-  private void openMainApp() {
-    MainFrame mainFrame = new MainFrame();
+  private void openMainApp(User user) {
+    MainFrame mainFrame = new MainFrame(user);
+    new DashboardController(mainFrame);
     new RoomsController(mainFrame);
     new BookingsController(mainFrame);
-    new DashboardController(mainFrame);
-    new UserController(mainFrame);
+
+    if (user.getRole() == UserRole.ADMIN) {
+      new BookingsController(mainFrame);
+      new UserController(mainFrame);
+    }
   }
 
   private void validateLogin() {
@@ -99,6 +104,6 @@ public class LoginFrame extends JFrame {
     }
 
     dispose();
-    openMainApp();
+    openMainApp(user);
   }
 }

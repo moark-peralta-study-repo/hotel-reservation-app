@@ -29,7 +29,9 @@ public class RoomsController {
   }
 
   private void registerEvents() {
-    mainFrame.getRoomsBtn().addActionListener(e -> loadRooms());
+    if (mainFrame.getRoomsBtn() != null) {
+      mainFrame.getRoomsBtn().addActionListener(e -> loadRooms());
+    }
   }
 
   public void loadRooms() {
