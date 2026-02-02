@@ -22,6 +22,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.hotel.model.Booking;
 import org.hotel.model.BookingStatus;
@@ -76,12 +77,7 @@ public class EditReservationDialog extends JDialog {
 
     JLabel title = new HeaderLabel("Edit Reservation");
     header.add(title, BorderLayout.WEST);
-
     add(header, BorderLayout.NORTH);
-
-    JPanel formWrapper = new JPanel(new BorderLayout());
-    formWrapper.setBackground(BG);
-    formWrapper.setBorder(BorderFactory.createEmptyBorder(8, 24, 8, 24));
 
     JPanel form = new JPanel();
     form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
@@ -98,6 +94,7 @@ public class EditReservationDialog extends JDialog {
 
     roomCombo = new JComboBox<>(roomDAO.getAll().toArray(new Room[0]));
     roomCombo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+    roomCombo.setAlignmentX(LEFT_ALIGNMENT);
 
     checkInPicker = createDatePicker();
     checkOutPicker = createDatePicker();
@@ -132,8 +129,20 @@ public class EditReservationDialog extends JDialog {
     checkInPicker.getModel().addChangeListener(e -> updateTotal());
     checkOutPicker.getModel().addChangeListener(e -> updateTotal());
 
-    formWrapper.add(form, BorderLayout.CENTER);
-    add(formWrapper, BorderLayout.CENTER);
+    JPanel formWrapper = new JPanel(new BorderLayout());
+    formWrapper.setBackground(BG);
+    formWrapper.setBorder(BorderFactory.createEmptyBorder(8, 24, 8, 24));
+    formWrapper.add(form, BorderLayout.NORTH);
+
+    JScrollPane scrollPane = new JScrollPane(
+        formWrapper,
+        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setBorder(null);
+    scrollPane.getViewport().setBackground(BG);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+    add(scrollPane, BorderLayout.CENTER);
 
     JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
     actions.setBackground(BG);
@@ -184,6 +193,7 @@ public class EditReservationDialog extends JDialog {
 
     if (c instanceof JComponent jc) {
       jc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+      jc.setAlignmentX(LEFT_ALIGNMENT);
     }
 
     wrap.add(c, BorderLayout.CENTER);
@@ -299,12 +309,13 @@ public class EditReservationDialog extends JDialog {
       c.setName(name);
       c.setPhone(phoneField.getText().trim());
       c.setEmail(emailField.getText().trim());
-      customerDAO.update(c); // make sure this exists
+      customerDAO.update(c); // make sure SQL uses "customers" table
     }
 
-    LocalDate inLocal = inDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    LocalDate outLocal = outDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    long nights = ChronoUnit.DAYS.between(inLocal, outLocal);
+    long nights = ChronoUnit.DAYS.between(
+        inDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+        outDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
     double totalPrice = nights * room.getPrice();
 
     booking.setRoomId(room.getId());
