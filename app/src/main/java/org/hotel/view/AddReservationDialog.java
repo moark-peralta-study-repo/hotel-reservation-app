@@ -6,10 +6,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,9 +27,10 @@ import org.hotel.model.Customer;
 import org.hotel.model.Room;
 import org.hotel.model.dao.CustomerDAO;
 import org.hotel.model.dao.RoomDAO;
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdatepicker.impl.UtilDateModel;
+
+import raven.datetime.DatePicker;
+import raven.datetime.DatePicker.DateSelectionMode;
+import raven.datetime.event.DateSelectionListener;
 
 public class AddReservationDialog extends JDialog {
 
@@ -49,8 +48,8 @@ public class AddReservationDialog extends JDialog {
   private final RoomDAO roomDAO = new RoomDAO();
   private final CustomerDAO customerDAO = new CustomerDAO();
 
-  private JDatePickerImpl checkInPicker;
-  private JDatePickerImpl checkOutPicker;
+  private DatePicker stayPicker;
+  private JFormattedTextField stayEditor;
 
   private Booking booking;
 
@@ -99,8 +98,8 @@ public class AddReservationDialog extends JDialog {
     roomCombo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
     roomCombo.setAlignmentX(LEFT_ALIGNMENT);
 
-    checkInPicker = createDatePicker();
-    checkOutPicker = createDatePicker();
+    stayEditor = new JFormattedTextField();
+    stayPicker = createBetweenDatePicker(stayEditor);
 
     totalPriceLbl = new JLabel("₱0.00");
     totalPriceLbl.setFont(totalPriceLbl.getFont().deriveFont(16f));
@@ -117,10 +116,7 @@ public class AddReservationDialog extends JDialog {
     form.add(fieldBlock("Room", roomCombo));
     form.add(Box.createVerticalStrut(24));
 
-    form.add(fieldBlock("Check-in Date", padded(checkInPicker)));
-    form.add(Box.createVerticalStrut(16));
-
-    form.add(fieldBlock("Check-out Date", padded(checkOutPicker)));
+    form.add(fieldBlock("Stay Dates", padded(stayEditor)));
     form.add(Box.createVerticalStrut(24));
 
     form.add(createFieldLabel("Total Price"));
@@ -129,8 +125,7 @@ public class AddReservationDialog extends JDialog {
     form.add(Box.createVerticalStrut(24));
 
     roomCombo.addActionListener(e -> updateTotal());
-    checkInPicker.getModel().addChangeListener(e -> updateTotal());
-    checkOutPicker.getModel().addChangeListener(e -> updateTotal());
+    stayPicker.addDateSelectionListener((DateSelectionListener) e -> updateTotal());
 
     formWrapper.add(form, BorderLayout.CENTER);
 
@@ -157,6 +152,22 @@ public class AddReservationDialog extends JDialog {
     actions.add(saveBtn);
 
     add(actions, BorderLayout.SOUTH);
+  }
+
+  private DatePicker createBetweenDatePicker(JFormattedTextField editor) {
+    DatePicker picker = new DatePicker();
+    picker.setDateSelectionMode(DateSelectionMode.BETWEEN_DATE_SELECTED);
+    picker.setDateFormat("yyyy-MM-dd");
+    picker.setSeparator(" to ");
+    picker.setCloseAfterSelected(true);
+
+    editor.setEditable(false);
+    editor.setFocusable(true);
+    editor.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+    editor.setPreferredSize(new Dimension(0, 42));
+
+    picker.setEditor(editor);
+    return picker;
   }
 
   private void enforceFieldSize(JComponent c) {
@@ -211,17 +222,6 @@ public class AddReservationDialog extends JDialog {
     return totalWrap;
   }
 
-  private JDatePickerImpl createDatePicker() {
-    UtilDateModel model = new UtilDateModel();
-    Properties props = new Properties();
-    props.put("text.today", "Today");
-    props.put("text.month", "Month");
-    props.put("text.year", "Year");
-
-    JDatePanelImpl panel = new JDatePanelImpl(model, props);
-    return new JDatePickerImpl(panel, new DateLabelFormatter());
-  }
-
   private void onSave() {
     String name = customerNameField.getText().trim();
     if (name.isEmpty()) {
@@ -235,15 +235,16 @@ public class AddReservationDialog extends JDialog {
       return;
     }
 
-    Date inDate = (Date) checkInPicker.getModel().getValue();
-    Date outDate = (Date) checkOutPicker.getModel().getValue();
-
-    if (inDate == null || outDate == null) {
-      JOptionPane.showMessageDialog(this, "Please select dates");
+    LocalDate[] range = stayPicker.getSelectedDateRange();
+    if (range == null || range.length < 2 || range[0] == null || range[1] == null) {
+      JOptionPane.showMessageDialog(this, "Please select stay dates");
       return;
     }
 
-    if (!inDate.before(outDate)) {
+    LocalDate checkIn = range[0];
+    LocalDate checkOut = range[1];
+
+    if (!checkIn.isBefore(checkOut)) {
       JOptionPane.showMessageDialog(this, "Check-in must be before check-out");
       return;
     }
@@ -259,18 +260,15 @@ public class AddReservationDialog extends JDialog {
       return;
     }
 
-    LocalDate inLocal = inDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    LocalDate outLocal = outDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    long nights = ChronoUnit.DAYS.between(inLocal, outLocal);
-
+    long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
     double totalPrice = nights * room.getPrice();
 
     booking = new Booking(
         0,
         customerId,
         room.getId(),
-        SDF.format(inDate),
-        SDF.format(outDate),
+        checkIn.toString(),
+        checkOut.toString(),
         totalPrice,
         BookingStatus.RESERVED);
 
@@ -279,18 +277,17 @@ public class AddReservationDialog extends JDialog {
 
   private void updateTotal() {
     Room room = (Room) roomCombo.getSelectedItem();
-    Date in = (Date) checkInPicker.getModel().getValue();
-    Date out = (Date) checkOutPicker.getModel().getValue();
 
-    if (room == null || in == null || out == null) {
+    LocalDate[] range = stayPicker.getSelectedDateRange();
+    if (room == null || range == null || range.length < 2 || range[0] == null || range[1] == null) {
       totalPriceLbl.setText("₱0.00");
       return;
     }
 
-    LocalDate inDate = in.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    LocalDate outDate = out.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    long nights = ChronoUnit.DAYS.between(inDate, outDate);
+    LocalDate checkIn = range[0];
+    LocalDate checkOut = range[1];
 
+    long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
     if (nights <= 0) {
       totalPriceLbl.setText("₱0.00");
       return;
