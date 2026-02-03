@@ -22,6 +22,7 @@ dependencies {
     implementation ("org.xerial:sqlite-jdbc:3.46.0.0")
     implementation ("org.jdatepicker:jdatepicker:1.3.4")
     implementation("com.formdev:flatlaf:3.4.1")
+    implementation ("io.github.dj-raven:swing-datetime-picker:2.1.3")
     implementation("com.formdev:flatlaf-extras:3.4.1")
 }
 
