@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -35,8 +34,6 @@ import raven.datetime.event.DateSelectionListener;
 public class AddReservationDialog extends JDialog {
 
   private final Color BG = Color.decode("#f9fafb");
-  private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
-
   private RoundedTextField customerNameField;
   private RoundedTextField phoneField;
   private RoundedTextField emailField;
