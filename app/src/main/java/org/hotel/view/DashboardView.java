@@ -28,7 +28,7 @@ public class DashboardView extends JPanel {
   private static final Color TEXT = Color.decode("#111827");
 
   private static final Font TITLE_FONT = new Font("Poppins", Font.BOLD, 22);
-  private static final Font KPI_VALUE_FONT = new Font("Poppins", Font.BOLD, 32);
+  private static final Font KPI_VALUE_FONT = new Font("Roboto", Font.BOLD, 32);
   private static final Font KPI_TITLE_FONT = new Font("Poppins", Font.BOLD, 14);
   private static final Font KPI_SUB_FONT = new Font("Poppins", Font.PLAIN, 12);
 
@@ -242,11 +242,11 @@ public class DashboardView extends JPanel {
   }
 
   private String formatPhp(double amount) {
-    NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("en", "PH"));
-    return nf.format(amount);
+    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.of("en", "PH"));
+    String s = nf.format(amount);
+    return s;
   }
 
-  // ===== Small reusable Card =====
   private static class KpiCard extends JPanel {
     private final JLabel title = new JLabel();
     private final JLabel value = new JLabel();
