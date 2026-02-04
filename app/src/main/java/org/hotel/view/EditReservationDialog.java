@@ -154,9 +154,7 @@ public class EditReservationDialog extends JDialog {
         if (start.isBefore(LocalDate.now())) {
           setError(datesErr, "Check-in cannot be in the past.");
           stayPicker.clearSelectedDate();
-        }
-
-        else if (rangeOverlapsBooked(room, start, end)) {
+        } else if (rangeOverlapsBooked(room, start, end)) {
           setError(datesErr, "Selected stay overlaps reserved/checked-in dates.");
           stayPicker.clearSelectedDate();
         } else {
@@ -229,7 +227,6 @@ public class EditReservationDialog extends JDialog {
     }
 
     boolean contains(LocalDate d) {
-      // [from, to)
       return (d.equals(from) || d.isAfter(from)) && d.isBefore(to);
     }
   }
@@ -238,7 +235,6 @@ public class EditReservationDialog extends JDialog {
     loadBookedRanges(ignoreBookingId);
 
     dateRule = (LocalDate date) -> {
-
       if (date.isBefore(LocalDate.now()))
         return false;
 
@@ -269,13 +265,11 @@ public class EditReservationDialog extends JDialog {
       if (ignoreBookingId != null && b.getId() == ignoreBookingId)
         continue;
 
-      if (b.getStatus() != BookingStatus.RESERVED && b.getStatus() != BookingStatus.CHECKED_IN) {
+      if (b.getStatus() != BookingStatus.RESERVED && b.getStatus() != BookingStatus.CHECKED_IN)
         continue;
-      }
 
       LocalDate in = LocalDate.parse(b.getCheckIn());
       LocalDate out = LocalDate.parse(b.getCheckOut());
-
       if (!in.isBefore(out))
         continue;
 
@@ -286,7 +280,6 @@ public class EditReservationDialog extends JDialog {
   }
 
   private void refreshDateRuleAndClearIfInvalid() {
-
     stayPicker.setDateSelectionAble(dateRule);
 
     LocalDate[] range = stayPicker.getSelectedDateRange();
@@ -310,7 +303,16 @@ public class EditReservationDialog extends JDialog {
     lbl.setText((msg == null || msg.isBlank()) ? " " : msg);
   }
 
+  private void mark(RoundedTextField field, JLabel err, boolean bad, String msg) {
+    field.setError(bad);
+    setError(err, bad ? msg : " ");
+  }
+
   private void clearErrors() {
+    customerNameField.setError(false);
+    phoneField.setError(false);
+    emailField.setError(false);
+
     setError(nameErr, " ");
     setError(phoneErr, " ");
     setError(emailErr, " ");
@@ -339,34 +341,40 @@ public class EditReservationDialog extends JDialog {
     JComponent firstBad = null;
 
     if (name.isEmpty()) {
-      setError(nameErr, "Customer name is required.");
+      mark(customerNameField, nameErr, true, "Customer name is required.");
       ok = false;
       if (firstBad == null)
         firstBad = customerNameField;
+    } else {
+      mark(customerNameField, nameErr, false, null);
     }
 
     if (phone.isEmpty()) {
-      setError(phoneErr, "Phone number is required.");
+      mark(phoneField, phoneErr, true, "Phone number is required.");
       ok = false;
       if (firstBad == null)
         firstBad = phoneField;
     } else if (!isValidPhone(phone)) {
-      setError(phoneErr, "Use 09XXXXXXXXX or +63XXXXXXXXXX.");
+      mark(phoneField, phoneErr, true, "Use 09XXXXXXXXX or +63XXXXXXXXXX.");
       ok = false;
       if (firstBad == null)
         firstBad = phoneField;
+    } else {
+      mark(phoneField, phoneErr, false, null);
     }
 
     if (email.isEmpty()) {
-      setError(emailErr, "Email address is required.");
+      mark(emailField, emailErr, true, "Email address is required.");
       ok = false;
       if (firstBad == null)
         firstBad = emailField;
     } else if (!isValidEmail(email)) {
-      setError(emailErr, "Invalid email format.");
+      mark(emailField, emailErr, true, "Invalid email format.");
       ok = false;
       if (firstBad == null)
         firstBad = emailField;
+    } else {
+      mark(emailField, emailErr, false, null);
     }
 
     if (room == null) {
@@ -374,6 +382,8 @@ public class EditReservationDialog extends JDialog {
       ok = false;
       if (firstBad == null)
         firstBad = (JComponent) roomCombo;
+    } else {
+      setError(roomErr, " ");
     }
 
     if (range == null || range.length < 2 || range[0] == null || range[1] == null) {
@@ -386,18 +396,24 @@ public class EditReservationDialog extends JDialog {
       ok = false;
       if (firstBad == null)
         firstBad = stayEditor;
+    } else if (range[0].isBefore(LocalDate.now())) {
+      setError(datesErr, "Check-in cannot be in the past.");
+      ok = false;
+      if (firstBad == null)
+        firstBad = stayEditor;
     } else if (rangeOverlapsBooked(room, range[0], range[1])) {
       setError(datesErr, "Selected stay overlaps reserved/checked-in dates.");
       ok = false;
       if (firstBad == null)
         firstBad = stayEditor;
     } else {
-      // extra safety: ensure both endpoints are allowed by rule
       if (dateRule != null && (!dateRule.isDateSelectedAble(range[0]) || !dateRule.isDateSelectedAble(range[1]))) {
         setError(datesErr, "Selected dates include unavailable days.");
         ok = false;
         if (firstBad == null)
           firstBad = stayEditor;
+      } else {
+        setError(datesErr, " ");
       }
     }
 
@@ -490,11 +506,9 @@ public class EditReservationDialog extends JDialog {
 
     LocalDate in = LocalDate.parse(booking.getCheckIn());
     LocalDate out = LocalDate.parse(booking.getCheckOut());
-
     stayPicker.setSelectedDateRange(in, out);
 
     refreshDateRuleAndClearIfInvalid();
-
     updateTotal();
     validateForm(false);
   }
@@ -519,9 +533,8 @@ public class EditReservationDialog extends JDialog {
   }
 
   private void onSave() {
-    if (!validateForm(true)) {
+    if (!validateForm(true))
       return;
-    }
 
     String name = customerNameField.getText().trim();
     String phone = phoneField.getText().trim();
@@ -578,7 +591,6 @@ public class EditReservationDialog extends JDialog {
       return false;
 
     for (DateRange r : ranges) {
-
       boolean overlaps = start.isBefore(r.to) && end.isAfter(r.from);
       if (overlaps)
         return true;

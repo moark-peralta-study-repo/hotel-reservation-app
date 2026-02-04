@@ -27,7 +27,6 @@ public class DashboardController {
     int occupied = dashboardDAO.getOccupiedRoomsCount();
 
     int available = dashboardDAO.getAvailableRoomsCount();
-    // fallback if is_available isn’t being maintained yet
     if (available <= 0 && totalRooms > 0) {
       available = Math.max(0, totalRooms - occupied);
     }

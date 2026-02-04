@@ -6,8 +6,13 @@ import javax.swing.JOptionPane;
 
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
+import org.hotel.model.BookingStatus;
 import org.hotel.model.BookingsViewMode;
+import org.hotel.model.Customer;
+import org.hotel.model.Room;
 import org.hotel.model.dao.BookingsDAO;
+import org.hotel.model.dao.CustomerDAO;
+import org.hotel.model.dao.RoomDAO;
 import org.hotel.view.AddReservationDialog;
 import org.hotel.view.BookingsView;
 import org.hotel.view.EditReservationDialog;
@@ -16,22 +21,23 @@ import org.hotel.view.MainFrame;
 public class BookingsController {
   private MainFrame mainFrame;
   private BookingsDAO bookingsDAO;
+  private CustomerDAO customerDAO;
+  private RoomDAO roomDAO;
   private BookingsView bookingsView;
 
   public BookingsController(MainFrame mainFrame) {
     this.mainFrame = mainFrame;
     this.bookingsDAO = new BookingsDAO();
+    this.customerDAO = new CustomerDAO();
+    this.roomDAO = new RoomDAO();
 
     registerEvents();
   }
 
   private void registerEvents() {
     mainFrame.getBookingsBtn().addActionListener(e -> loadBookings());
-
     mainFrame.getCheckInBtn().addActionListener(e -> loadPendingCheckInBookings());
-
     mainFrame.getCheckOutBtn().addActionListener(e -> loadCheckedInBookings());
-
     mainFrame.getReservationBtn().addActionListener(e -> loadFutureBookings());
   }
 
@@ -48,7 +54,6 @@ public class BookingsController {
     mainFrame.getContentPanel().repaint();
   }
 
-  // Future Checkins
   private void loadFutureBookings() {
     List<BookingRowDTO> futureCheckin = bookingsDAO.getReservedBookingRows();
     bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
@@ -62,7 +67,6 @@ public class BookingsController {
     mainFrame.getContentPanel().repaint();
   }
 
-  // Arriving today OR overdue checkins
   private void loadPendingCheckInBookings() {
     List<BookingRowDTO> pendingCheckin = bookingsDAO.getPendingCheckInRows();
     bookingsView = new BookingsView(pendingCheckin, BookingsViewMode.CHECK_IN);
@@ -79,6 +83,8 @@ public class BookingsController {
   private void loadBookings() {
     List<BookingRowDTO> bookings = bookingsDAO.getAllRows();
     bookingsView = new BookingsView(bookings, BookingsViewMode.ALL);
+
+    attachViewListeners();
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
@@ -134,7 +140,7 @@ public class BookingsController {
       if (booking != null) {
         bookingsDAO.checkInCustomer(booking);
         JOptionPane.showMessageDialog(mainFrame, "Checked in Booking ID: " + bookingId);
-        loadPendingCheckInBookings(); // Refresh the view
+        loadPendingCheckInBookings();
       }
     } else {
       JOptionPane.showMessageDialog(mainFrame, "Please select a booking to check in.");
@@ -158,15 +164,53 @@ public class BookingsController {
   }
 
   private void openAddReservationDialog() {
-    AddReservationDialog dialog = new AddReservationDialog(mainFrame);
+    // 1) Controller prepares data for the view
+    List<Room> rooms = new RoomDAO().getAll();
 
+    // For disabling UI dates: only RESERVED + CHECKED_IN ranges
+    // (implement this method in BookingsDAO; shown below)
+    List<AddReservationDialog.RoomBookingRange> ranges = bookingsDAO.getActiveRoomRanges();
+
+    // 2) View (dialog) is UI only
+    AddReservationDialog dialog = new AddReservationDialog(mainFrame, rooms, ranges);
     dialog.setVisible(true);
 
-    Booking booking = dialog.getBooking();
-    if (booking != null) {
-      bookingsDAO.insert(booking);
-      loadFutureBookings();
+    // 3) Controller consumes view result
+    AddReservationDialog.ReservationRequest req = dialog.getResult();
+    if (req == null)
+      return; // cancelled
+
+    // 4) Final source of truth: DB overlap check
+    RoomDAO roomDAO = new RoomDAO();
+    boolean ok = roomDAO.isRoomAvailableForRange(req.roomId, req.checkIn.toString(), req.checkOut.toString());
+    if (!ok) {
+      JOptionPane.showMessageDialog(mainFrame,
+          "That room is no longer available for the selected dates.\nPlease choose another room/date range.",
+          "Room Not Available",
+          JOptionPane.WARNING_MESSAGE);
+      return;
     }
+
+    // 5) Insert customer + booking
+    CustomerDAO customerDAO = new CustomerDAO();
+    int customerId = customerDAO.insertAndReturnId(new Customer(req.customerName, req.phone, req.email));
+    if (customerId <= 0) {
+      JOptionPane.showMessageDialog(mainFrame, "Failed to save customer.", "Error", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+
+    Booking booking = new Booking(
+        0,
+        customerId,
+        req.roomId,
+        req.checkIn.toString(),
+        req.checkOut.toString(),
+        req.totalPrice,
+        BookingStatus.RESERVED);
+
+    bookingsDAO.insert(booking);
+
+    loadFutureBookings();
   }
 
   private void openEditReservationDialog() {

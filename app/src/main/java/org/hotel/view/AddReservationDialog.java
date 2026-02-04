@@ -24,13 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.hotel.model.Booking;
-import org.hotel.model.BookingStatus;
-import org.hotel.model.Customer;
 import org.hotel.model.Room;
-import org.hotel.model.dao.BookingsDAO;
-import org.hotel.model.dao.CustomerDAO;
-import org.hotel.model.dao.RoomDAO;
 
 import raven.datetime.DatePicker;
 import raven.datetime.DatePicker.DateSelectionMode;
@@ -54,16 +48,12 @@ public class AddReservationDialog extends JDialog {
 
   private JLabel nameErr, phoneErr, emailErr, roomErr, datesErr;
 
-  private final RoomDAO roomDAO = new RoomDAO();
-  private final CustomerDAO customerDAO = new CustomerDAO();
-  private final BookingsDAO bookingsDAO = new BookingsDAO();
-
-  private Booking booking;
+  private ReservationRequest result;
 
   private final Map<Integer, List<DateRange>> bookedRangesByRoom = new HashMap<>();
   private DateSelectionAble dateRule;
 
-  public AddReservationDialog(MainFrame parent) {
+  public AddReservationDialog(MainFrame parent, List<Room> rooms, List<RoomBookingRange> bookedRanges) {
     super(parent, "Add Reservation", true);
 
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -74,10 +64,19 @@ public class AddReservationDialog extends JDialog {
     setMinimumSize(new Dimension(520, 560));
     setLocationRelativeTo(parent);
 
-    initUI();
+    // build map for UI disabling
+    buildBookedRangesMap(bookedRanges);
+
+    initUI(rooms);
   }
 
-  private void initUI() {
+  public ReservationRequest getResult() {
+    return result;
+  }
+
+  // ---------- UI ----------
+
+  private void initUI(List<Room> rooms) {
     JPanel header = new JPanel(new BorderLayout());
     header.setBackground(BG);
     header.setBorder(BorderFactory.createEmptyBorder(18, 24, 8, 24));
@@ -103,14 +102,14 @@ public class AddReservationDialog extends JDialog {
     enforceFieldSize(phoneField);
     enforceFieldSize(emailField);
 
-    roomCombo = new JComboBox<>(roomDAO.getAll().toArray(new Room[0]));
+    roomCombo = new JComboBox<>(rooms.toArray(new Room[0]));
     roomCombo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
     roomCombo.setAlignmentX(LEFT_ALIGNMENT);
 
     stayEditor = new JFormattedTextField();
     stayPicker = createBetweenDatePicker(stayEditor);
 
-    setupDisabledDates(null);
+    setupDisabledDates();
 
     totalPriceLbl = new JLabel("₱0.00");
     totalPriceLbl.setFont(totalPriceLbl.getFont().deriveFont(16f));
@@ -158,9 +157,7 @@ public class AddReservationDialog extends JDialog {
         if (start.isBefore(LocalDate.now())) {
           setError(datesErr, "Check-in cannot be in the past.");
           stayPicker.clearSelectedDate();
-        }
-
-        else if (rangeOverlapsBooked(room, start, end)) {
+        } else if (rangeOverlapsBooked(room, start, end)) {
           setError(datesErr, "Selected stay overlaps reserved/checked-in dates.");
           stayPicker.clearSelectedDate();
         } else {
@@ -194,7 +191,10 @@ public class AddReservationDialog extends JDialog {
     JButton cancelBtn = new JButton("Cancel");
     JButton saveBtn = new JButton("Save");
 
-    cancelBtn.addActionListener(e -> dispose());
+    cancelBtn.addActionListener(e -> {
+      result = null;
+      dispose();
+    });
     saveBtn.addActionListener(e -> onSave());
 
     actions.add(cancelBtn);
@@ -203,118 +203,57 @@ public class AddReservationDialog extends JDialog {
     add(actions, BorderLayout.SOUTH);
   }
 
-  private DatePicker createBetweenDatePicker(JFormattedTextField editor) {
-    DatePicker picker = new DatePicker();
-    picker.setDateSelectionMode(DateSelectionMode.BETWEEN_DATE_SELECTED);
-    picker.setDateFormat("yyyy-MM-dd");
-    picker.setSeparator(" to ");
-    picker.setCloseAfterSelected(true);
+  private void onSave() {
+    if (!validateForm(true))
+      return;
 
-    editor.setEditable(false);
-    editor.setFocusable(true);
-    editor.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-    editor.setPreferredSize(new Dimension(0, 42));
-
-    picker.setEditor(editor);
-    return picker;
-  }
-
-  private static class DateRange {
-    final LocalDate from;
-    final LocalDate to;
-
-    DateRange(LocalDate from, LocalDate to) {
-      this.from = from;
-      this.to = to;
-    }
-
-    boolean contains(LocalDate d) {
-
-      return (d.equals(from) || d.isAfter(from)) && d.isBefore(to);
-    }
-  }
-
-  private void setupDisabledDates(Integer ignoreBookingId) {
-    loadBookedRanges(ignoreBookingId);
-
-    dateRule = (LocalDate date) -> {
-
-      if (date.isBefore(LocalDate.now()))
-        return false;
-
-      Room room = (Room) roomCombo.getSelectedItem();
-      if (room == null)
-        return true;
-
-      List<DateRange> ranges = bookedRangesByRoom.get(room.getId());
-      if (ranges == null)
-        return true;
-
-      for (DateRange r : ranges) {
-        if (r.contains(date))
-          return false;
-      }
-
-      return true;
-    };
-
-    stayPicker.setDateSelectionAble(dateRule);
-  }
-
-  private void loadBookedRanges(Integer ignoreBookingId) {
-    bookedRangesByRoom.clear();
-
-    List<Booking> all = bookingsDAO.getAll();
-
-    for (Booking b : all) {
-      if (ignoreBookingId != null && b.getId() == ignoreBookingId)
-        continue;
-
-      if (b.getStatus() != BookingStatus.RESERVED && b.getStatus() != BookingStatus.CHECKED_IN) {
-        continue;
-      }
-
-      LocalDate in = LocalDate.parse(b.getCheckIn());
-      LocalDate out = LocalDate.parse(b.getCheckOut());
-      if (!in.isBefore(out))
-        continue;
-
-      bookedRangesByRoom
-          .computeIfAbsent(b.getRoomId(), k -> new ArrayList<>())
-          .add(new DateRange(in, out));
-    }
-  }
-
-  private void refreshDateRuleAndClearIfInvalid() {
-    stayPicker.setDateSelectionAble(dateRule);
-
+    Room room = (Room) roomCombo.getSelectedItem();
     LocalDate[] range = stayPicker.getSelectedDateRange();
-    if (range != null && range.length >= 2 && range[0] != null && range[1] != null) {
-      if (!dateRule.isDateSelectedAble(range[0]) || !dateRule.isDateSelectedAble(range[1])) {
-        stayPicker.clearSelectedDate();
-      }
+
+    if (room == null || range == null || range[0] == null || range[1] == null) {
+      JOptionPane.showMessageDialog(this, "Please complete the form.", "Missing Data", JOptionPane.WARNING_MESSAGE);
+      return;
     }
+
+    LocalDate checkIn = range[0];
+    LocalDate checkOut = range[1];
+
+    long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
+    double totalPrice = nights * room.getPrice();
+
+    result = new ReservationRequest(
+        customerNameField.getText().trim(),
+        phoneField.getText().trim(),
+        emailField.getText().trim(),
+        room.getId(),
+        checkIn,
+        checkOut,
+        totalPrice);
+
+    dispose();
   }
 
-  private JLabel createErrorLabel() {
-    JLabel lbl = new JLabel(" ");
-    lbl.setForeground(Color.decode("#ef4444"));
-    lbl.setFont(lbl.getFont().deriveFont(12f));
-    lbl.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
-    lbl.setAlignmentX(LEFT_ALIGNMENT);
-    return lbl;
+  // ---------- validation helpers ----------
+
+  private void clearErrors() {
+    customerNameField.setError(false);
+    phoneField.setError(false);
+    emailField.setError(false);
+
+    setError(nameErr, " ");
+    setError(phoneErr, " ");
+    setError(emailErr, " ");
+    setError(roomErr, " ");
+    setError(datesErr, " ");
   }
 
   private void setError(JLabel lbl, String msg) {
     lbl.setText((msg == null || msg.isBlank()) ? " " : msg);
   }
 
-  private void clearErrors() {
-    setError(nameErr, " ");
-    setError(phoneErr, " ");
-    setError(emailErr, " ");
-    setError(roomErr, " ");
-    setError(datesErr, " ");
+  private void mark(RoundedTextField field, JLabel err, boolean bad, String msg) {
+    field.setError(bad);
+    setError(err, bad ? msg : " ");
   }
 
   private boolean isValidEmail(String email) {
@@ -338,66 +277,53 @@ public class AddReservationDialog extends JDialog {
     JComponent firstBad = null;
 
     if (name.isEmpty()) {
-      setError(nameErr, "Customer name is required.");
+      mark(customerNameField, nameErr, true, "Customer name is required.");
       ok = false;
-      if (firstBad == null)
-        firstBad = customerNameField;
+      firstBad = firstBad == null ? customerNameField : firstBad;
     }
 
     if (phone.isEmpty()) {
-      setError(phoneErr, "Phone number is required.");
+      mark(phoneField, phoneErr, true, "Phone number is required.");
       ok = false;
-      if (firstBad == null)
-        firstBad = phoneField;
+      firstBad = firstBad == null ? phoneField : firstBad;
     } else if (!isValidPhone(phone)) {
-      setError(phoneErr, "Use 09XXXXXXXXX or +63XXXXXXXXXX.");
+      mark(phoneField, phoneErr, true, "Use 09XXXXXXXXX or +63XXXXXXXXXX.");
       ok = false;
-      if (firstBad == null)
-        firstBad = phoneField;
+      firstBad = firstBad == null ? phoneField : firstBad;
     }
 
     if (email.isEmpty()) {
-      setError(emailErr, "Email address is required.");
+      mark(emailField, emailErr, true, "Email address is required.");
       ok = false;
-      if (firstBad == null)
-        firstBad = emailField;
+      firstBad = firstBad == null ? emailField : firstBad;
     } else if (!isValidEmail(email)) {
-      setError(emailErr, "Invalid email format.");
+      mark(emailField, emailErr, true, "Invalid email format.");
       ok = false;
-      if (firstBad == null)
-        firstBad = emailField;
+      firstBad = firstBad == null ? emailField : firstBad;
     }
 
     if (room == null) {
       setError(roomErr, "Please select a room.");
       ok = false;
-      if (firstBad == null)
-        firstBad = (JComponent) roomCombo;
+      firstBad = firstBad == null ? (JComponent) roomCombo : firstBad;
     }
 
     if (range == null || range.length < 2 || range[0] == null || range[1] == null) {
       setError(datesErr, "Please select check-in and check-out dates.");
       ok = false;
-      if (firstBad == null)
-        firstBad = stayEditor;
+      firstBad = firstBad == null ? stayEditor : firstBad;
     } else if (!range[0].isBefore(range[1])) {
       setError(datesErr, "Check-in must be before check-out.");
       ok = false;
-      if (firstBad == null)
-        firstBad = stayEditor;
+      firstBad = firstBad == null ? stayEditor : firstBad;
+    } else if (range[0].isBefore(LocalDate.now())) {
+      setError(datesErr, "Check-in cannot be in the past.");
+      ok = false;
+      firstBad = firstBad == null ? stayEditor : firstBad;
     } else if (rangeOverlapsBooked(room, range[0], range[1])) {
       setError(datesErr, "Selected stay overlaps reserved/checked-in dates.");
       ok = false;
-      if (firstBad == null)
-        firstBad = stayEditor;
-    } else {
-      // extra safety: endpoints must be allowed
-      if (dateRule != null && (!dateRule.isDateSelectedAble(range[0]) || !dateRule.isDateSelectedAble(range[1]))) {
-        setError(datesErr, "Selected dates include unavailable days.");
-        ok = false;
-        if (firstBad == null)
-          firstBad = stayEditor;
-      }
+      firstBad = firstBad == null ? stayEditor : firstBad;
     }
 
     if (!ok && showFocus && firstBad != null) {
@@ -405,6 +331,141 @@ public class AddReservationDialog extends JDialog {
     }
 
     return ok;
+  }
+
+  private static class DateRange {
+    final LocalDate from;
+    final LocalDate to; // exclusive
+
+    DateRange(LocalDate from, LocalDate to) {
+      this.from = from;
+      this.to = to;
+    }
+
+    boolean contains(LocalDate d) {
+      return (d.equals(from) || d.isAfter(from)) && d.isBefore(to);
+    }
+  }
+
+  public static class RoomBookingRange {
+    public final int roomId;
+    public final LocalDate checkIn;
+    public final LocalDate checkOut;
+
+    public RoomBookingRange(int roomId, LocalDate checkIn, LocalDate checkOut) {
+      this.roomId = roomId;
+      this.checkIn = checkIn;
+      this.checkOut = checkOut;
+    }
+  }
+
+  public static class ReservationRequest {
+    public final String customerName;
+    public final String phone;
+    public final String email;
+    public final int roomId;
+    public final LocalDate checkIn;
+    public final LocalDate checkOut;
+    public final double totalPrice;
+
+    public ReservationRequest(String customerName, String phone, String email,
+        int roomId, LocalDate checkIn, LocalDate checkOut, double totalPrice) {
+      this.customerName = customerName;
+      this.phone = phone;
+      this.email = email;
+      this.roomId = roomId;
+      this.checkIn = checkIn;
+      this.checkOut = checkOut;
+      this.totalPrice = totalPrice;
+    }
+  }
+
+  private void buildBookedRangesMap(List<RoomBookingRange> bookedRanges) {
+    bookedRangesByRoom.clear();
+    for (RoomBookingRange r : bookedRanges) {
+      if (r.checkIn == null || r.checkOut == null || !r.checkIn.isBefore(r.checkOut))
+        continue;
+      bookedRangesByRoom
+          .computeIfAbsent(r.roomId, k -> new ArrayList<>())
+          .add(new DateRange(r.checkIn, r.checkOut));
+    }
+  }
+
+  private void setupDisabledDates() {
+    dateRule = (LocalDate date) -> {
+      if (date.isBefore(LocalDate.now()))
+        return false;
+
+      Room room = (Room) roomCombo.getSelectedItem();
+      if (room == null)
+        return true;
+
+      List<DateRange> ranges = bookedRangesByRoom.get(room.getId());
+      if (ranges == null)
+        return true;
+
+      for (DateRange r : ranges) {
+        if (r.contains(date))
+          return false;
+      }
+      return true;
+    };
+
+    stayPicker.setDateSelectionAble(dateRule);
+  }
+
+  private void refreshDateRuleAndClearIfInvalid() {
+    stayPicker.setDateSelectionAble(dateRule);
+
+    LocalDate[] range = stayPicker.getSelectedDateRange();
+    if (range != null && range.length >= 2 && range[0] != null && range[1] != null) {
+      if (!dateRule.isDateSelectedAble(range[0]) || !dateRule.isDateSelectedAble(range[1])) {
+        stayPicker.clearSelectedDate();
+      }
+    }
+  }
+
+  private boolean rangeOverlapsBooked(Room room, LocalDate start, LocalDate end) {
+    if (room == null || start == null || end == null)
+      return false;
+    if (!start.isBefore(end))
+      return true;
+
+    List<DateRange> ranges = bookedRangesByRoom.get(room.getId());
+    if (ranges == null)
+      return false;
+
+    for (DateRange r : ranges) {
+      boolean overlaps = start.isBefore(r.to) && end.isAfter(r.from);
+      if (overlaps)
+        return true;
+    }
+    return false;
+  }
+
+  private DatePicker createBetweenDatePicker(JFormattedTextField editor) {
+    DatePicker picker = new DatePicker();
+    picker.setDateSelectionMode(DateSelectionMode.BETWEEN_DATE_SELECTED);
+    picker.setDateFormat("yyyy-MM-dd");
+    picker.setSeparator(" to ");
+    picker.setCloseAfterSelected(true);
+
+    editor.setEditable(false);
+    editor.setFocusable(true);
+    editor.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+    editor.setPreferredSize(new Dimension(0, 42));
+
+    picker.setEditor(editor);
+    return picker;
+  }
+
+  private JLabel createErrorLabel() {
+    JLabel lbl = new JLabel(" ");
+    lbl.setForeground(Color.decode("#ef4444"));
+    lbl.setFont(lbl.getFont().deriveFont(12f));
+    lbl.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
+    lbl.setAlignmentX(LEFT_ALIGNMENT);
+    return lbl;
   }
 
   private void addValidateOnBlur(JComponent c) {
@@ -488,64 +549,5 @@ public class AddReservationDialog extends JDialog {
 
     double total = nights * room.getPrice();
     totalPriceLbl.setText(String.format("₱%.2f", total));
-  }
-
-  private void onSave() {
-    if (!validateForm(true)) {
-      return;
-    }
-
-    String name = customerNameField.getText().trim();
-    String phone = phoneField.getText().trim();
-    String email = emailField.getText().trim();
-    Room room = (Room) roomCombo.getSelectedItem();
-
-    LocalDate[] range = stayPicker.getSelectedDateRange();
-    LocalDate checkIn = range[0];
-    LocalDate checkOut = range[1];
-
-    Customer customer = new Customer(name, phone, email);
-
-    int customerId = customerDAO.insertAndReturnId(customer);
-    if (customerId <= 0) {
-      JOptionPane.showMessageDialog(this, "Failed to save customer.", "Error", JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-
-    long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
-    double totalPrice = nights * room.getPrice();
-
-    booking = new Booking(
-        0,
-        customerId,
-        room.getId(),
-        checkIn.toString(),
-        checkOut.toString(),
-        totalPrice,
-        BookingStatus.RESERVED);
-
-    dispose();
-  }
-
-  private boolean rangeOverlapsBooked(Room room, LocalDate start, LocalDate end) {
-    if (room == null || start == null || end == null)
-      return false;
-    if (!start.isBefore(end))
-      return true;
-
-    List<DateRange> ranges = bookedRangesByRoom.get(room.getId());
-    if (ranges == null)
-      return false;
-
-    for (DateRange r : ranges) {
-      boolean overlaps = start.isBefore(r.to) && end.isAfter(r.from);
-      if (overlaps)
-        return true;
-    }
-    return false;
-  }
-
-  public Booking getBooking() {
-    return booking;
   }
 }
