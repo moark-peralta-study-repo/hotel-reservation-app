@@ -60,6 +60,9 @@ public class LoginFrame extends JFrame {
     new RoomsController(mainFrame);
     new BookingsController(mainFrame);
 
+    mainFrame.showView("Dashboard");
+    mainFrame.getDashboardBtn().doClick();
+
     if (user.getRole() == UserRole.ADMIN) {
       new BookingsController(mainFrame);
       new UserController(mainFrame);
