@@ -3,6 +3,10 @@
  */
 package org.hotel;
 
+import java.awt.Color;
+
+import javax.swing.UIManager;
+
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import org.hotel.db.Database;
@@ -14,17 +18,23 @@ public class Main {
     FlatMacLightLaf.setup();
     Database.initializeDatabase();
 
-    // SwingUtilities.invokeLater(() -> {
-    // MainFrame mainFrame = new MainFrame();
-    // new RoomsController(mainFrame);
-    // new BookingsController(mainFrame);
-    // new DashboardController(mainFrame);
-    // new UserController(mainFrame);
-    //
-    // mainFrame.showView("Dashboard");
-    // mainFrame.getDashboardBtn().doClick();
-    // ;
-    // });
+    UIManager.put("Component.focusColor", new Color(0x4338ca));
+    UIManager.put("Component.arc", 12);
+
+    UIManager.put("Button.background", Color.WHITE);
+    UIManager.put("Button.foreground", Color.BLACK);
+    UIManager.put("Button.hoverBackground", new Color(0xe0e7ff));
+    UIManager.put("Button.pressedBackground", new Color(0xc7d2fe));
+    UIManager.put("Button.focusedBorderColor", new Color(0x4338ca));
+
+    UIManager.put("accentColor", new Color(0x4338ca));
+
+    UIManager.put("Table.selectionBackground", new Color(0x4338ca));
+    UIManager.put("Table.selectionForeground", Color.WHITE);
+    UIManager.put("Table.rowHeight", 36);
+
+    UIManager.put("TextComponent.arc", 12);
+    UIManager.put("TextComponent.focusedBorderColor", new Color(0x4338ca));
     new LoginFrame();
   }
 }
