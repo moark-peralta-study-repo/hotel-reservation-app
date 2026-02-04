@@ -6,9 +6,9 @@ import org.hotel.view.MainFrame;
 
 public class DashboardController {
 
-  private DashboardDAO dashboardDAO;
-  private DashboardView dashboardView;
-  private MainFrame mainFrame;
+  private final DashboardDAO dashboardDAO;
+  private final DashboardView dashboardView;
+  private final MainFrame mainFrame;
 
   public DashboardController(MainFrame mainFrame) {
     this.mainFrame = mainFrame;
@@ -23,10 +23,26 @@ public class DashboardController {
   }
 
   private void loadData() {
-    dashboardView.setCheckedIn(dashboardDAO.getCheckedInCount());
-    dashboardView.setReserved(dashboardDAO.getReservationCount());
-    dashboardView.setTodayCheckIn(dashboardDAO.getTodayCheckInCount());
-    dashboardView.setTodayCheckOut(dashboardDAO.getTodayCheckOutCount());
+    int totalRooms = dashboardDAO.getTotalRoomsCount();
+    int occupied = dashboardDAO.getOccupiedRoomsCount();
+
+    int available = dashboardDAO.getAvailableRoomsCount();
+    // fallback if is_available isn’t being maintained yet
+    if (available <= 0 && totalRooms > 0) {
+      available = Math.max(0, totalRooms - occupied);
+    }
+
+    dashboardView.setOccupancy(occupied, totalRooms);
+    dashboardView.setRoomsAvailable(available, totalRooms);
+
+    dashboardView.setArrivalsToday(dashboardDAO.getArrivalsTodayCount());
+    dashboardView.setDeparturesToday(dashboardDAO.getDeparturesTodayCount());
+
+    dashboardView.setTodayEarnings(dashboardDAO.getTodayEarnings());
+    dashboardView.setMonthEarnings(dashboardDAO.getMonthToDateEarnings());
+
+    dashboardView.setArrivalsRows(dashboardDAO.getArrivalsTodayRows());
+    dashboardView.setCheckoutRows(dashboardDAO.getDeparturesTodayRows());
 
     show();
   }
