@@ -18,23 +18,23 @@ public class Main {
     FlatMacLightLaf.setup();
     Database.initializeDatabase();
 
-    UIManager.put("Component.focusColor", new Color(0x4338ca));
+    UIManager.put("Component.focusColor", Color.decode("#4338ca"));
     UIManager.put("Component.arc", 12);
 
     UIManager.put("Button.background", Color.WHITE);
     UIManager.put("Button.foreground", Color.BLACK);
-    UIManager.put("Button.hoverBackground", new Color(0xe0e7ff));
-    UIManager.put("Button.pressedBackground", new Color(0xc7d2fe));
-    UIManager.put("Button.focusedBorderColor", new Color(0x4338ca));
+    UIManager.put("Button.hoverBackground", Color.decode("#e0e7ff"));
+    UIManager.put("Button.pressedBackground", Color.decode("#c7d2fe"));
+    UIManager.put("Button.focusedBorderColor", Color.decode("#4338ca"));
 
     UIManager.put("accentColor", new Color(0x4338ca));
 
-    UIManager.put("Table.selectionBackground", new Color(0x4338ca));
+    UIManager.put("Table.selectionBackground", Color.decode("#4338ca"));
     UIManager.put("Table.selectionForeground", Color.WHITE);
     UIManager.put("Table.rowHeight", 36);
 
     UIManager.put("TextComponent.arc", 12);
-    UIManager.put("TextComponent.focusedBorderColor", new Color(0x4338ca));
+    UIManager.put("TextComponent.focusedBorderColor", Color.decode("#4338ca"));
     new LoginFrame();
   }
 }
