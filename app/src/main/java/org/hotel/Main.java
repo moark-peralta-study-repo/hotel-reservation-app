@@ -11,6 +11,7 @@ import javax.swing.UIManager;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import org.hotel.db.Database;
+import org.hotel.model.dao.BookingsDAO;
 import org.hotel.view.LoginFrame;
 
 public class Main {
@@ -38,6 +39,7 @@ public class Main {
 
     UIManager.put("TextComponent.arc", 12);
     UIManager.put("TextComponent.focusedBorderColor", Color.decode("#4338ca"));
+    new BookingsDAO().autoCancelExpiredReservations();
     new LoginFrame();
   }
 }

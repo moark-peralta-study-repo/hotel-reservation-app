@@ -441,7 +441,7 @@ public class BookingsDAO {
     return ranges;
   }
 
-  public int getTotalCount(BookingsViewMode mode, BookingStatus statusFilter) {
+  public int getTotalCount(BookingsViewMode mode, BookingStatus statusFilter, String search) {
     StringBuilder sql = new StringBuilder("""
           SELECT COUNT(*)
           FROM bookings b
@@ -465,6 +465,11 @@ public class BookingsDAO {
       params.add(statusFilter.name());
     }
 
+    if (search != null && !search.isBlank()) {
+      sql.append(" AND lower(c.name) LIKE lower(?)");
+      params.add("%" + search + "%");
+    }
+
     try (Connection conn = Database.getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
 
@@ -482,7 +487,8 @@ public class BookingsDAO {
     }
   }
 
-  public List<BookingRowDTO> getPage(BookingsViewMode mode, BookingStatus statusFilter, int limit, int offset) {
+  public List<BookingRowDTO> getPage(BookingsViewMode mode, BookingStatus statusFilter, String search, int limit,
+      int offset) {
     StringBuilder sql = new StringBuilder(
         """
               SELECT
@@ -514,6 +520,11 @@ public class BookingsDAO {
       params.add(statusFilter.name());
     }
 
+    if (search != null && !search.isBlank()) {
+      sql.append(" AND lower(c.name) LIKE lower(?)");
+      params.add("%" + search + "%");
+    }
+
     sql.append(" ORDER BY b.id DESC LIMIT ? OFFSET ?");
     params.add(limit);
     params.add(offset);
@@ -543,5 +554,26 @@ public class BookingsDAO {
     }
 
     return rows;
+  }
+
+  public int autoCancelExpiredReservations() {
+    String sql = """
+          UPDATE bookings
+          SET status = ?
+          WHERE status = ?
+            AND date(check_out) < date('now')
+        """;
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+      stmt.setString(1, BookingStatus.CANCELLED.name());
+      stmt.setString(2, BookingStatus.RESERVED.name());
+
+      return stmt.executeUpdate();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return 0;
+    }
   }
 }
