@@ -68,6 +68,7 @@ public class BookingsController {
   private void loadCheckedInBookings() {
     currentMode = BookingsViewMode.CHECK_OUT;
     currentStatusFilter = null;
+    currentSearch = "";
     PAGE = 1;
 
     List<BookingRowDTO> checkedInBookings = bookingsDAO.getCheckedInBookingsRow();
@@ -86,6 +87,7 @@ public class BookingsController {
   private void loadFutureBookings() {
     currentMode = BookingsViewMode.RESERVATION;
     currentStatusFilter = null;
+    currentSearch = "";
     PAGE = 1;
 
     List<BookingRowDTO> futureCheckin = bookingsDAO.getReservedBookingRows();
@@ -104,24 +106,21 @@ public class BookingsController {
   private void loadPendingCheckInBookings() {
     currentMode = BookingsViewMode.CHECK_IN;
     currentStatusFilter = null;
+    currentSearch = "";
     PAGE = 1;
 
-    List<BookingRowDTO> pendingCheckin = bookingsDAO.getPendingCheckInRows();
-    bookingsView = new BookingsView(pendingCheckin, BookingsViewMode.CHECK_IN);
+    bookingsView = new BookingsView(List.of(), BookingsViewMode.CHECK_IN);
 
-    loadBookingsPage();
     attachViewListeners();
+    showBookingsView();
+    loadBookingsPage();
 
-    mainFrame.getContentPanel().removeAll();
-    mainFrame.getContentPanel().add(bookingsView, "Bookings");
-    mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
-    mainFrame.getContentPanel().revalidate();
-    mainFrame.getContentPanel().repaint();
   }
 
   private void loadBookings() {
     currentMode = BookingsViewMode.ALL;
     currentStatusFilter = null;
+    currentSearch = "";
     PAGE = 1;
 
     bookingsView = new BookingsView(List.of(), BookingsViewMode.ALL);
