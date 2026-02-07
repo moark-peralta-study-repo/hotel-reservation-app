@@ -4,6 +4,7 @@
 package org.hotel;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.UIManager;
 
@@ -27,11 +28,13 @@ public class Main {
     UIManager.put("Button.pressedBackground", Color.decode("#c7d2fe"));
     UIManager.put("Button.focusedBorderColor", Color.decode("#4338ca"));
 
-    UIManager.put("accentColor", new Color(0x4338ca));
+    UIManager.put("accentColor", Color.decode("#4338ca"));
 
     UIManager.put("Table.selectionBackground", Color.decode("#4338ca"));
     UIManager.put("Table.selectionForeground", Color.WHITE);
     UIManager.put("Table.rowHeight", 36);
+    UIManager.put("Table.font", new Font("Poppins", Font.PLAIN, 16));
+    UIManager.put("TableHeader.font", new Font("Poppins", Font.BOLD, 16));
 
     UIManager.put("TextComponent.arc", 12);
     UIManager.put("TextComponent.focusedBorderColor", Color.decode("#4338ca"));
