@@ -3,6 +3,8 @@ package org.hotel.controller;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
@@ -27,6 +29,7 @@ public class BookingsController {
   private int PAGE = 1;
   private final int PAGE_SIZE = 20;
   private int TOTAL = 0;
+  private String currentSearch = "";
 
   public BookingsController(MainFrame mainFrame) {
     this.mainFrame = mainFrame;
@@ -38,11 +41,13 @@ public class BookingsController {
   }
 
   private void loadBookingsPage() {
+    bookingsDAO.autoCancelExpiredReservations();
+
     int offset = (PAGE - 1) * PAGE_SIZE;
 
-    TOTAL = bookingsDAO.getTotalCount(currentMode, currentStatusFilter);
+    TOTAL = bookingsDAO.getTotalCount(currentMode, currentStatusFilter, currentSearch);
 
-    List<BookingRowDTO> rows = bookingsDAO.getPage(currentMode, currentStatusFilter, PAGE_SIZE, offset);
+    List<BookingRowDTO> rows = bookingsDAO.getPage(currentMode, currentStatusFilter, currentSearch, PAGE_SIZE, offset);
 
     bookingsView.setRows(rows);
 
@@ -142,6 +147,31 @@ public class BookingsController {
         currentStatusFilter = (selected instanceof BookingStatus bs) ? bs : null;
         PAGE = 1;
         loadBookingsPage();
+      });
+    }
+
+    if (bookingsView.getSearchField() != null) {
+      bookingsView.getSearchField().getDocument().addDocumentListener(new DocumentListener() {
+        private void changed() {
+          currentSearch = bookingsView.getSearchField().getText().trim();
+          PAGE = 1;
+          loadBookingsPage();
+        }
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+          changed();
+        };
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          changed();
+        };
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+          changed();
+        };
       });
     }
 

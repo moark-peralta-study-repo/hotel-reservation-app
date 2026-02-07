@@ -70,23 +70,45 @@ public class BookingsView extends JPanel {
 
     switch (mode) {
       case RESERVATION -> {
+
+        searchField = new JTextField(18);
+        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
         addReservationBtn = createActionButton("Add Reservation");
         editReservationBtn = createActionButton("Edit Reservation");
         cancelReservationBtn = createActionButton("Cancel Reservation");
         actionPanel.add(addReservationBtn);
         actionPanel.add(editReservationBtn);
         actionPanel.add(cancelReservationBtn);
+
+        actionPanel.add(new JLabel("Search:"));
+        actionPanel.add(searchField);
       }
       case CHECK_IN -> {
         checkInBtn = createActionButton("Check-in");
+        searchField = new JTextField(18);
+        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
+
         actionPanel.add(checkInBtn);
+
+        actionPanel.add(new JLabel("Search:"));
+        actionPanel.add(searchField);
       }
       case CHECK_OUT -> {
         checkOutBtn = createActionButton("Check-Out");
+
+        searchField = new JTextField(18);
+        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
         actionPanel.add(checkOutBtn);
+
+        actionPanel.add(new JLabel("Search:"));
+        actionPanel.add(searchField);
       }
       case ALL -> {
         actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 22, 22));
+        searchField = new JTextField(18);
+        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
+        actionPanel.add(new JLabel("Search:"));
+        actionPanel.add(searchField);
         actionPanel.add(statusFilter);
       }
     }
