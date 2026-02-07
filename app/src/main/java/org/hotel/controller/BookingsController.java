@@ -21,17 +21,36 @@ import org.hotel.view.MainFrame;
 public class BookingsController {
   private MainFrame mainFrame;
   private BookingsDAO bookingsDAO;
-  private CustomerDAO customerDAO;
-  private RoomDAO roomDAO;
   private BookingsView bookingsView;
+  private BookingsViewMode currentMode = BookingsViewMode.ALL;
+  private BookingStatus currentStatusFilter = null;
+  private int PAGE = 1;
+  private final int PAGE_SIZE = 20;
+  private int TOTAL = 0;
 
   public BookingsController(MainFrame mainFrame) {
     this.mainFrame = mainFrame;
     this.bookingsDAO = new BookingsDAO();
-    this.customerDAO = new CustomerDAO();
-    this.roomDAO = new RoomDAO();
+    new CustomerDAO();
+    new RoomDAO();
 
     registerEvents();
+  }
+
+  private void loadBookingsPage() {
+    int offset = (PAGE - 1) * PAGE_SIZE;
+
+    TOTAL = bookingsDAO.getTotalCount(currentMode, currentStatusFilter);
+
+    List<BookingRowDTO> rows = bookingsDAO.getPage(currentMode, currentStatusFilter, PAGE_SIZE, offset);
+
+    bookingsView.setRows(rows);
+
+    int totalPages = Math.max(1, (int) Math.ceil(TOTAL / (double) PAGE_SIZE));
+    bookingsView.getPageLabel().setText("Page " + PAGE + " / " + totalPages);
+
+    bookingsView.getPrevBtn().setEnabled(PAGE > 1);
+    bookingsView.getNextBtn().setEnabled(PAGE < totalPages);
   }
 
   private void registerEvents() {
@@ -42,10 +61,15 @@ public class BookingsController {
   }
 
   private void loadCheckedInBookings() {
+    currentMode = BookingsViewMode.CHECK_OUT;
+    currentStatusFilter = null;
+    PAGE = 1;
+
     List<BookingRowDTO> checkedInBookings = bookingsDAO.getCheckedInBookingsRow();
     bookingsView = new BookingsView(checkedInBookings, BookingsViewMode.CHECK_OUT);
 
     attachViewListeners();
+    loadBookingsPage();
 
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
@@ -55,9 +79,14 @@ public class BookingsController {
   }
 
   private void loadFutureBookings() {
+    currentMode = BookingsViewMode.RESERVATION;
+    currentStatusFilter = null;
+    PAGE = 1;
+
     List<BookingRowDTO> futureCheckin = bookingsDAO.getReservedBookingRows();
     bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
 
+    loadBookingsPage();
     attachViewListeners();
 
     mainFrame.getContentPanel().removeAll();
@@ -68,9 +97,14 @@ public class BookingsController {
   }
 
   private void loadPendingCheckInBookings() {
+    currentMode = BookingsViewMode.CHECK_IN;
+    currentStatusFilter = null;
+    PAGE = 1;
+
     List<BookingRowDTO> pendingCheckin = bookingsDAO.getPendingCheckInRows();
     bookingsView = new BookingsView(pendingCheckin, BookingsViewMode.CHECK_IN);
 
+    loadBookingsPage();
     attachViewListeners();
 
     mainFrame.getContentPanel().removeAll();
@@ -81,11 +115,19 @@ public class BookingsController {
   }
 
   private void loadBookings() {
-    List<BookingRowDTO> bookings = bookingsDAO.getAllRows();
-    bookingsView = new BookingsView(bookings, BookingsViewMode.ALL);
+    currentMode = BookingsViewMode.ALL;
+    currentStatusFilter = null;
+    PAGE = 1;
+
+    bookingsView = new BookingsView(List.of(), BookingsViewMode.ALL);
 
     attachViewListeners();
 
+    showBookingsView();
+    loadBookingsPage();
+  }
+
+  private void showBookingsView() {
     mainFrame.getContentPanel().removeAll();
     mainFrame.getContentPanel().add(bookingsView, "Bookings");
     mainFrame.getCardLayout().show(mainFrame.getContentPanel(), "Bookings");
@@ -94,6 +136,34 @@ public class BookingsController {
   }
 
   private void attachViewListeners() {
+    if (bookingsView.getStatusFilter() != null) {
+      bookingsView.getStatusFilter().addActionListener(e -> {
+        Object selected = bookingsView.getSelectedStatusFilter();
+        currentStatusFilter = (selected instanceof BookingStatus bs) ? bs : null;
+        PAGE = 1;
+        loadBookingsPage();
+      });
+    }
+
+    if (bookingsView.getPrevBtn() != null) {
+      bookingsView.getPrevBtn().addActionListener(e -> {
+        if (PAGE > 1) {
+          PAGE--;
+          loadBookingsPage();
+        }
+      });
+    }
+
+    if (bookingsView.getNextBtn() != null) {
+      bookingsView.getNextBtn().addActionListener(e -> {
+        int totalPages = Math.max(1, (int) Math.ceil(TOTAL / (double) PAGE_SIZE));
+        if (PAGE < totalPages) {
+          PAGE++;
+          loadBookingsPage();
+        }
+      });
+    }
+
     if (bookingsView.getCheckInBtn() != null) {
       bookingsView.getCheckInBtn().addActionListener(e -> handleCheckIn());
     }

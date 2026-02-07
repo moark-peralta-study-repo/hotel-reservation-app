@@ -6,22 +6,20 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.List;
-import java.util.Objects;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.RowFilter;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.BookingStatus;
@@ -31,9 +29,11 @@ public class BookingsView extends JPanel {
   private JTable bookingTable;
   private DefaultTableModel tableModel;
   private JTextField searchField;
-  private JButton addReservationBtn, checkInBtn, checkOutBtn, editReservationBtn, cancelReservationBtn;
+  private JButton addReservationBtn, checkInBtn, checkOutBtn, editReservationBtn, cancelReservationBtn, prevBtn,
+      nextBtn;
+  private JLabel pageLbl;
+
   private JComboBox<Object> statusFilter;
-  private TableRowSorter<DefaultTableModel> sorter;
 
   public BookingsView(List<BookingRowDTO> rows, BookingsViewMode mode) {
     setLayout(new BorderLayout());
@@ -91,6 +91,18 @@ public class BookingsView extends JPanel {
       }
     }
 
+    // Pagination Btns
+    prevBtn = createActionButton("Prev");
+    nextBtn = createActionButton("Next");
+    pageLbl = new JLabel("Page 1");
+
+    JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+    paginationPanel.setOpaque(false);
+
+    paginationPanel.add(prevBtn);
+    paginationPanel.add(pageLbl);
+    paginationPanel.add(nextBtn);
+
     add(actionPanel, BorderLayout.NORTH);
 
     String[] columns = {
@@ -126,41 +138,17 @@ public class BookingsView extends JPanel {
     bookingTable.setRowHeight(30);
     bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    sorter = new TableRowSorter<>(tableModel);
-    bookingTable.setRowSorter(sorter);
-
-    statusFilter.addActionListener(e -> applyStatusFilter());
-
     JScrollPane scrollPane = new JScrollPane(bookingTable);
 
     JPanel tableWrapper = new JPanel(new BorderLayout());
     tableWrapper.setBackground(Color.decode("#f9fafb"));
     tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
+    tableWrapper.add(paginationPanel, BorderLayout.SOUTH);
 
     add(tableWrapper, BorderLayout.CENTER);
 
     statusFilter.setSelectedItem("All");
-  }
-
-  private void applyStatusFilter() {
-    Object selected = statusFilter.getSelectedItem();
-
-    if (selected == null || Objects.equals(selected, "All")) {
-      sorter.setRowFilter(null);
-      return;
-    }
-
-    BookingStatus desired = (BookingStatus) selected;
-    final int STATUS_COL = 7;
-
-    sorter.setRowFilter(new RowFilter<DefaultTableModel, Integer>() {
-      @Override
-      public boolean include(Entry<? extends DefaultTableModel, ? extends Integer> entry) {
-        Object value = entry.getValue(STATUS_COL);
-        return value == desired;
-      }
-    });
   }
 
   private JButton createActionButton(String text) {
@@ -168,6 +156,43 @@ public class BookingsView extends JPanel {
     var base = UIManager.getFont("Button.font");
     btn.setFont(base.deriveFont(Font.PLAIN, base.getSize() + 1f));
     return btn;
+  }
+
+  public void setRows(List<BookingRowDTO> rows) {
+    Object[][] tableData = new Object[rows.size()][8];
+
+    for (int i = 0; i < rows.size(); i++) {
+      BookingRowDTO r = rows.get(i);
+      tableData[i][0] = i + 1;
+      tableData[i][1] = r.getBookingId();
+      tableData[i][2] = r.getCustomerName();
+      tableData[i][3] = r.getRoomNumber();
+      tableData[i][4] = r.getCheckIn();
+      tableData[i][5] = r.getCheckOut();
+      tableData[i][6] = r.getTotalPrice();
+      tableData[i][7] = r.getStatus();
+    }
+
+    tableModel.setDataVector(tableData, new Object[] {
+        "#", "Booking ID", "Customer", "Room No.", "Check-in", "Check-out", "Total Price", "Status"
+    });
+
+    bookingTable.getColumnModel().getColumn(1).setMinWidth(0);
+    bookingTable.getColumnModel().getColumn(1).setMaxWidth(0);
+    bookingTable.getColumnModel().getColumn(1).setWidth(0);
+
+  }
+
+  public JButton getPrevBtn() {
+    return prevBtn;
+  }
+
+  public JButton getNextBtn() {
+    return nextBtn;
+  }
+
+  public JLabel getPageLabel() {
+    return pageLbl;
   }
 
   public JTable getBookingTable() {
@@ -200,5 +225,13 @@ public class BookingsView extends JPanel {
 
   public JButton getCancelReservationBtn() {
     return cancelReservationBtn;
+  }
+
+  public Object getSelectedStatusFilter() {
+    return statusFilter != null ? statusFilter.getSelectedItem() : null;
+  }
+
+  public JComboBox<Object> getStatusFilter() {
+    return statusFilter;
   }
 }

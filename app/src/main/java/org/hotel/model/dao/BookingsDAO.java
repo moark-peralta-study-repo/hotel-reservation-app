@@ -13,6 +13,7 @@ import org.hotel.db.Database;
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
 import org.hotel.model.BookingStatus;
+import org.hotel.model.BookingsViewMode;
 import org.hotel.utils.BookingUtils;
 import org.hotel.view.AddReservationDialog;
 
@@ -438,5 +439,109 @@ public class BookingsDAO {
     }
 
     return ranges;
+  }
+
+  public int getTotalCount(BookingsViewMode mode, BookingStatus statusFilter) {
+    StringBuilder sql = new StringBuilder("""
+          SELECT COUNT(*)
+          FROM bookings b
+          JOIN customers c ON c.id = b.customer_id
+          JOIN rooms r ON r.id = b.room_id
+          WHERE 1=1
+        """);
+
+    List<Object> params = new ArrayList<>();
+
+    if (mode == BookingsViewMode.CHECK_IN) {
+      sql.append(" AND b.status = 'RESERVED'");
+    } else if (mode == BookingsViewMode.CHECK_OUT) {
+      sql.append(" AND b.status = 'CHECKED_IN'");
+    } else if (mode == BookingsViewMode.RESERVATION) {
+      sql.append(" AND b.status = 'RESERVED'");
+    }
+
+    if (statusFilter != null) {
+      sql.append(" AND b.status = ?");
+      params.add(statusFilter.name());
+    }
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+      for (int i = 0; i < params.size(); i++) {
+        stmt.setObject(i + 1, params.get(i));
+      }
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        return rs.next() ? rs.getInt(1) : 0;
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return 0;
+    }
+  }
+
+  public List<BookingRowDTO> getPage(BookingsViewMode mode, BookingStatus statusFilter, int limit, int offset) {
+    StringBuilder sql = new StringBuilder(
+        """
+              SELECT
+                b.id AS booking_id,
+                (c.name) AS customer_name,
+                r.room_number as room_number,
+                b.check_in,
+                b.check_out,
+                b.total_price,
+                b.status
+              FROM bookings b
+              JOIN customers c ON c.id = b.customer_id
+              JOIN rooms r ON r.id = b.room_id
+              WHERE 1=1
+            """);
+
+    List<Object> params = new ArrayList<>();
+
+    if (mode == BookingsViewMode.CHECK_IN) {
+      sql.append(" AND b.status = 'RESERVED'");
+    } else if (mode == BookingsViewMode.CHECK_OUT) {
+      sql.append(" AND b.status = 'CHECKED_IN'");
+    } else if (mode == BookingsViewMode.RESERVATION) {
+      sql.append(" AND b.status = 'RESERVED'");
+    }
+
+    if (statusFilter != null) {
+      sql.append(" AND b.status = ?");
+      params.add(statusFilter.name());
+    }
+
+    sql.append(" ORDER BY b.id DESC LIMIT ? OFFSET ?");
+    params.add(limit);
+    params.add(offset);
+
+    List<BookingRowDTO> rows = new ArrayList<>();
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+      for (int i = 0; i < params.size(); i++) {
+        stmt.setObject(i + 1, params.get(i));
+      }
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          rows.add(new BookingRowDTO(
+              rs.getInt("booking_id"),
+              rs.getString("customer_name"),
+              rs.getInt("room_number"),
+              rs.getString("check_in"),
+              rs.getString("check_out"),
+              rs.getDouble("total_price"),
+              BookingStatus.valueOf(rs.getString("status"))));
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return rows;
   }
 }
