@@ -167,14 +167,16 @@ public class BookingsDAO {
         FROM bookings b
         JOIN customers c ON b.customer_id = c.id
         JOIN rooms r ON b.room_id = r.id
-        WHERE b.status = 'RESERVED' AND b.check_in <= date('now')
+        WHERE b.status = 'RESERVED'
+          AND date(b.check_in) <= date('now')
+        ORDER BY date(b.check_in) ASC, b.id DESC
         """;
 
     List<BookingRowDTO> rows = new ArrayList<>();
 
     try (Connection conn = Database.getConnection();
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(sql)) {
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) {
 
       while (rs.next()) {
         rows.add(BookingUtils.mapRowToDTO(rs));
@@ -453,7 +455,7 @@ public class BookingsDAO {
     List<Object> params = new ArrayList<>();
 
     if (mode == BookingsViewMode.CHECK_IN) {
-      sql.append(" AND b.status = 'RESERVED'");
+      sql.append(" AND b.status = 'RESERVED' AND date(b.check_in) <= date('now')");
     } else if (mode == BookingsViewMode.CHECK_OUT) {
       sql.append(" AND b.status = 'CHECKED_IN'");
     } else if (mode == BookingsViewMode.RESERVATION) {
@@ -508,7 +510,7 @@ public class BookingsDAO {
     List<Object> params = new ArrayList<>();
 
     if (mode == BookingsViewMode.CHECK_IN) {
-      sql.append(" AND b.status = 'RESERVED'");
+      sql.append(" AND b.status = 'RESERVED' AND date(b.check_in) <= date('now')");
     } else if (mode == BookingsViewMode.CHECK_OUT) {
       sql.append(" AND b.status = 'CHECKED_IN'");
     } else if (mode == BookingsViewMode.RESERVATION) {
