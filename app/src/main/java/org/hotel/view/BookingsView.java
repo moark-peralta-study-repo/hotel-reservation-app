@@ -131,11 +131,12 @@ public class BookingsView extends JPanel {
     };
 
     bookingTable = new JTable(tableModel);
+    bookingTable.getColumnModel().getColumn(7).setCellRenderer(new StatusPillRenderer());
     bookingTable.getColumnModel().getColumn(1).setMinWidth(0);
     bookingTable.getColumnModel().getColumn(1).setMaxWidth(0);
     bookingTable.getColumnModel().getColumn(1).setWidth(0);
     bookingTable.setFillsViewportHeight(true);
-    bookingTable.setRowHeight(30);
+    bookingTable.setRowHeight(36);
     bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(bookingTable);
@@ -181,6 +182,8 @@ public class BookingsView extends JPanel {
     bookingTable.getColumnModel().getColumn(1).setMaxWidth(0);
     bookingTable.getColumnModel().getColumn(1).setWidth(0);
 
+    bookingTable.getColumnModel().getColumn(7).setCellRenderer(new StatusPillRenderer());
+    bookingTable.setRowHeight(36);
   }
 
   public JButton getPrevBtn() {
