@@ -62,19 +62,19 @@ public class StatusPillRenderer extends JLabel implements TableCellRenderer {
 
   private Color getBgColor(BookingStatus status) {
     return switch (status) {
-      case RESERVED -> new Color(219, 234, 254); // blue-100
-      case CHECKED_IN -> new Color(220, 252, 231); // green-100
-      case CHECKED_OUT -> new Color(229, 231, 235); // gray-200
-      case CANCELLED -> new Color(254, 226, 226); // red-100
+      case RESERVED -> Color.decode("#BBDEFB");
+      case CHECKED_IN -> Color.decode("#C8E6C9");
+      case CHECKED_OUT -> Color.decode("#EEEEEE");
+      case CANCELLED -> Color.decode("#FFB8B8");
     };
   }
 
   private Color getTextColor(BookingStatus status) {
     return switch (status) {
-      case RESERVED -> new Color(30, 64, 175); // blue-800
-      case CHECKED_IN -> new Color(22, 101, 52); // green-800
-      case CHECKED_OUT -> new Color(55, 65, 81); // gray-700
-      case CANCELLED -> new Color(153, 27, 27); // red-800
+      case RESERVED -> Color.decode("#1565C0");
+      case CHECKED_IN -> Color.decode("#2E7D32");
+      case CHECKED_OUT -> Color.decode("#616161");
+      case CANCELLED -> Color.decode("#C62828");
     };
   }
 }
