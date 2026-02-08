@@ -244,6 +244,17 @@ public class BookingsView extends JPanel {
     bookingTable.setRowHeight(36);
   }
 
+  public void setSortSelected(BookingSort sort) {
+    if (sortFilter == null)
+      return;
+
+    if (sort == null) {
+      sortFilter.setSelectedItem("Default");
+    } else {
+      sortFilter.setSelectedItem(sort);
+    }
+  }
+
   public JButton getPrevBtn() {
     return prevBtn;
   }

@@ -77,10 +77,12 @@ public class BookingsController {
     currentMode = BookingsViewMode.CHECK_OUT;
     currentStatusFilter = null;
     currentSearch = "";
+    currentSort = BookingSort.CHECK_OUT_ASC;
     PAGE = 1;
 
     List<BookingRowDTO> checkedInBookings = bookingsDAO.getCheckedInBookingsRow();
     bookingsView = new BookingsView(checkedInBookings, BookingsViewMode.CHECK_OUT);
+    bookingsView.setSortSelected(currentSort);
 
     attachViewListeners();
     loadBookingsPage();
@@ -96,10 +98,12 @@ public class BookingsController {
     currentMode = BookingsViewMode.RESERVATION;
     currentStatusFilter = null;
     currentSearch = "";
+    currentSort = BookingSort.CHECK_IN_ASC;
     PAGE = 1;
 
     List<BookingRowDTO> futureCheckin = bookingsDAO.getReservedBookingRows();
     bookingsView = new BookingsView(futureCheckin, BookingsViewMode.RESERVATION);
+    bookingsView.setSortSelected(currentSort);
 
     loadBookingsPage();
     attachViewListeners();
@@ -115,9 +119,11 @@ public class BookingsController {
     currentMode = BookingsViewMode.CHECK_IN;
     currentStatusFilter = null;
     currentSearch = "";
+    currentSort = BookingSort.CHECK_IN_ASC;
     PAGE = 1;
 
     bookingsView = new BookingsView(List.of(), BookingsViewMode.CHECK_IN);
+    bookingsView.setSortSelected(currentSort);
 
     attachViewListeners();
     showBookingsView();
@@ -134,7 +140,6 @@ public class BookingsController {
     bookingsView = new BookingsView(List.of(), BookingsViewMode.ALL);
 
     attachViewListeners();
-
     showBookingsView();
     loadBookingsPage();
   }
