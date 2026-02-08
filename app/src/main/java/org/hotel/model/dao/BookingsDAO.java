@@ -12,6 +12,7 @@ import java.util.List;
 import org.hotel.db.Database;
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
+import org.hotel.model.BookingSort;
 import org.hotel.model.BookingStatus;
 import org.hotel.model.BookingsViewMode;
 import org.hotel.utils.BookingUtils;
@@ -489,7 +490,12 @@ public class BookingsDAO {
     }
   }
 
-  public List<BookingRowDTO> getPage(BookingsViewMode mode, BookingStatus statusFilter, String search, int limit,
+  public List<BookingRowDTO> getPage(
+      BookingsViewMode mode,
+      BookingStatus statusFilter,
+      String search,
+      BookingSort sort,
+      int limit,
       int offset) {
     StringBuilder sql = new StringBuilder(
         """
@@ -527,7 +533,9 @@ public class BookingsDAO {
       params.add("%" + search + "%");
     }
 
-    sql.append(" ORDER BY b.id DESC LIMIT ? OFFSET ?");
+    sql.append(" ORDER BY ").append(resolveOrderBy(mode, sort));
+
+    sql.append(" LIMIT ? OFFSET ?");
     params.add(limit);
     params.add(offset);
 
@@ -556,6 +564,23 @@ public class BookingsDAO {
     }
 
     return rows;
+  }
+
+  private String resolveOrderBy(BookingsViewMode mode, BookingSort sort) {
+    if (sort == null) {
+      return switch (mode) {
+        case CHECK_IN, RESERVATION -> "date(b.check_in) ASC, b.id DESC";
+        case CHECK_OUT -> "date(b.check_out) ASC, b.id DESC";
+        default -> "b.id DESC";
+      };
+    }
+
+    return switch (sort) {
+      case CHECK_IN_ASC -> "date(b.check_in) ASC, b.id DESC";
+      case CHECK_IN_DESC -> "date(b.check_in) DESC, b.id DESC";
+      case CHECK_OUT_ASC -> "date(b.check_out) ASC, b.id DESC";
+      case CHECK_OUT_DESC -> "date(b.check_out) DESC, b.id DESC";
+    };
   }
 
   public int autoCancelExpiredReservations() {

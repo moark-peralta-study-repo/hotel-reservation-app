@@ -22,6 +22,7 @@ import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
 import org.hotel.dto.BookingRowDTO;
+import org.hotel.model.BookingSort;
 import org.hotel.model.BookingStatus;
 import org.hotel.model.BookingsViewMode;
 
@@ -34,6 +35,7 @@ public class BookingsView extends JPanel {
   private JLabel pageLbl;
 
   private JComboBox<Object> statusFilter;
+  private JComboBox<Object> sortFilter;
 
   public BookingsView(List<BookingRowDTO> rows, BookingsViewMode mode) {
     setLayout(new BorderLayout());
@@ -43,9 +45,39 @@ public class BookingsView extends JPanel {
 
     statusFilter = new JComboBox<>();
     statusFilter.addItem("All");
+
+    sortFilter = new JComboBox<>();
+    sortFilter.addItem("Default");
+    sortFilter.addItem(BookingSort.CHECK_IN_ASC);
+    sortFilter.addItem(BookingSort.CHECK_IN_DESC);
+    sortFilter.addItem(BookingSort.CHECK_OUT_ASC);
+    sortFilter.addItem(BookingSort.CHECK_OUT_DESC);
+
     for (BookingStatus status : BookingStatus.values()) {
       statusFilter.addItem(status);
     }
+
+    sortFilter.setRenderer(new DefaultListCellRenderer() {
+      @Override
+      public Component getListCellRendererComponent(
+          JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+        if (value instanceof BookingSort s) {
+          String label = switch (s) {
+            case CHECK_IN_ASC -> "Check-in (Oldest first)";
+            case CHECK_IN_DESC -> "Check-in (Newest first)";
+            case CHECK_OUT_ASC -> "Check-out (Oldest first)";
+            case CHECK_OUT_DESC -> "Check-out (Newest first)";
+          };
+          setText("Sort by (" + label + ")");
+        } else {
+          setText("Sort by (Default)");
+        }
+        return this;
+      }
+    });
 
     statusFilter.setRenderer(new DefaultListCellRenderer() {
       @Override
@@ -82,6 +114,7 @@ public class BookingsView extends JPanel {
 
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
+        actionPanel.add(sortFilter);
       }
       case CHECK_IN -> {
         checkInBtn = createActionButton("Check-in");
@@ -92,6 +125,7 @@ public class BookingsView extends JPanel {
 
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
+        actionPanel.add(sortFilter);
       }
       case CHECK_OUT -> {
         checkOutBtn = createActionButton("Check-Out");
@@ -102,6 +136,7 @@ public class BookingsView extends JPanel {
 
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
+        actionPanel.add(sortFilter);
       }
       case ALL -> {
         actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 22, 22));
@@ -110,6 +145,7 @@ public class BookingsView extends JPanel {
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
         actionPanel.add(statusFilter);
+        actionPanel.add(sortFilter);
       }
     }
 
@@ -256,7 +292,15 @@ public class BookingsView extends JPanel {
     return statusFilter != null ? statusFilter.getSelectedItem() : null;
   }
 
+  public Object getSelectedSortFilter() {
+    return sortFilter != null ? sortFilter.getSelectedItem() : null;
+  }
+
   public JComboBox<Object> getStatusFilter() {
     return statusFilter;
+  }
+
+  public JComboBox<Object> getSortFilter() {
+    return sortFilter;
   }
 }

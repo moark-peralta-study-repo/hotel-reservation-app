@@ -8,6 +8,7 @@ import javax.swing.event.DocumentListener;
 
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.Booking;
+import org.hotel.model.BookingSort;
 import org.hotel.model.BookingStatus;
 import org.hotel.model.BookingsViewMode;
 import org.hotel.model.Customer;
@@ -26,6 +27,7 @@ public class BookingsController {
   private BookingsView bookingsView;
   private BookingsViewMode currentMode = BookingsViewMode.ALL;
   private BookingStatus currentStatusFilter = null;
+  private BookingSort currentSort = null;
   private int PAGE = 1;
   private final int PAGE_SIZE = 20;
   private int TOTAL = 0;
@@ -47,7 +49,13 @@ public class BookingsController {
 
     TOTAL = bookingsDAO.getTotalCount(currentMode, currentStatusFilter, currentSearch);
 
-    List<BookingRowDTO> rows = bookingsDAO.getPage(currentMode, currentStatusFilter, currentSearch, PAGE_SIZE, offset);
+    List<BookingRowDTO> rows = bookingsDAO.getPage(
+        currentMode,
+        currentStatusFilter,
+        currentSearch,
+        currentSort,
+        PAGE_SIZE,
+        offset);
 
     bookingsView.setRows(rows);
 
@@ -144,6 +152,15 @@ public class BookingsController {
       bookingsView.getStatusFilter().addActionListener(e -> {
         Object selected = bookingsView.getSelectedStatusFilter();
         currentStatusFilter = (selected instanceof BookingStatus bs) ? bs : null;
+        PAGE = 1;
+        loadBookingsPage();
+      });
+    }
+
+    if (bookingsView.getSortFilter() != null) {
+      bookingsView.getSortFilter().addActionListener(e -> {
+        Object selected = bookingsView.getSelectedSortFilter();
+        currentSort = (selected instanceof BookingSort sort) ? sort : null;
         PAGE = 1;
         loadBookingsPage();
       });
