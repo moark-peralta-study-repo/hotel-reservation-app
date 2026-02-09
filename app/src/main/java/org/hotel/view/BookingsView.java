@@ -28,11 +28,13 @@ import org.hotel.model.BookingsViewMode;
 import org.hotel.utils.BookingUtils;
 
 public class BookingsView extends JPanel {
+
   private JTable bookingTable;
   private DefaultTableModel tableModel;
   private JTextField searchField;
-  private JButton addReservationBtn, checkInBtn, checkOutBtn, editReservationBtn, cancelReservationBtn, prevBtn,
-      nextBtn;
+
+  private JButton addReservationBtn, checkInBtn, checkOutBtn, editReservationBtn, cancelReservationBtn;
+  private JButton prevBtn, nextBtn;
   private JLabel pageLbl;
 
   private JComboBox<Object> statusFilter;
@@ -41,9 +43,9 @@ public class BookingsView extends JPanel {
   public BookingsView(List<BookingRowDTO> rows, BookingsViewMode mode) {
     setLayout(new BorderLayout());
     setBackground(Color.decode("#f9fafb"));
+    setBorder(new EmptyBorder(25, 30, 25, 30));
 
     JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-    actionPanel.setOpaque(true);
     actionPanel.setBackground(Color.decode("#f9fafb"));
 
     statusFilter = new JComboBox<>();
@@ -93,58 +95,52 @@ public class BookingsView extends JPanel {
           String label = status.name().toLowerCase().replace('_', ' ');
           label = Character.toUpperCase(label.charAt(0)) + label.substring(1);
           setText("Filter by (" + label + ")");
-        } else if ("All".equals(value)) {
+        } else {
           setText("Filter by (All)");
         }
         return this;
       }
     });
 
-    if (mode == null)
+    if (mode == null) {
       mode = BookingsViewMode.ALL;
+    }
 
     switch (mode) {
       case RESERVATION -> {
-
         searchField = new JTextField(18);
-        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
+        searchField.putClientProperty("JTextField.placeholderText", "Search customer...");
         addReservationBtn = createActionButton("Add Reservation");
         editReservationBtn = createActionButton("Edit Reservation");
         cancelReservationBtn = createActionButton("Cancel Reservation");
         actionPanel.add(addReservationBtn);
         actionPanel.add(editReservationBtn);
         actionPanel.add(cancelReservationBtn);
-
         actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
       }
-
       case CHECK_IN -> {
-        checkInBtn = createActionButton("Check-in");
         searchField = new JTextField(18);
-        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
-
+        searchField.putClientProperty("JTextField.placeholderText", "Search customer...");
+        checkInBtn = createActionButton("Check-in");
         actionPanel.add(checkInBtn);
-
         actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
       }
       case CHECK_OUT -> {
-        checkOutBtn = createActionButton("Check-Out");
-
         searchField = new JTextField(18);
-        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
+        searchField.putClientProperty("JTextField.placeholderText", "Search customer...");
+        checkOutBtn = createActionButton("Check-Out");
         actionPanel.add(checkOutBtn);
-
         actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
       }
       case ALL -> {
         searchField = new JTextField(18);
-        searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
+        searchField.putClientProperty("JTextField.placeholderText", "Search customer...");
         actionPanel.add(statusFilter);
         actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
@@ -152,52 +148,49 @@ public class BookingsView extends JPanel {
       }
     }
 
-    // Pagination Btns
     prevBtn = createActionButton("Prev");
     nextBtn = createActionButton("Next");
     pageLbl = new JLabel("Page 1");
 
     JPanel paginationPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
     paginationPanel.setOpaque(false);
-
     paginationPanel.add(prevBtn);
     paginationPanel.add(pageLbl);
     paginationPanel.add(nextBtn);
 
-    JPanel top = new JPanel(new BorderLayout());
-    top.setOpaque(false);
+    String title;
+    String subtitle;
 
-    top.add(
-        BookingUtils.buildHeader(
-            "Bookings",
-            "Manage reservations, check-ins, and check-outs"),
-        BorderLayout.SOUTH);
-
-    top.add(actionPanel, BorderLayout.NORTH);
-
-    add(top, BorderLayout.NORTH);
-
-    String[] columns = {
-        "#", "Booking ID", "Customer", "Room No.", "Check-in", "Check-out", "Total Price", "Status"
-    };
-
-    Object[][] tableData = new Object[rows.size()][columns.length];
-
-    for (int i = 0; i < rows.size(); i++) {
-      BookingRowDTO r = rows.get(i);
-      tableData[i][0] = i + 1;
-      tableData[i][1] = r.getBookingId();
-      tableData[i][2] = r.getCustomerName();
-      tableData[i][3] = r.getRoomNumber();
-      tableData[i][4] = r.getCheckIn();
-      tableData[i][5] = r.getCheckOut();
-      tableData[i][6] = r.getTotalPrice();
-      tableData[i][7] = r.getStatus();
+    switch (mode) {
+      case RESERVATION -> {
+        title = "Reservations";
+        subtitle = "Upcoming and future reservations";
+      }
+      case CHECK_IN -> {
+        title = "Check-ins";
+        subtitle = "Guests arriving today or overdue";
+      }
+      case CHECK_OUT -> {
+        title = "Check-outs";
+        subtitle = "Guests currently staying";
+      }
+      default -> {
+        title = "Bookings";
+        subtitle = "View and manage all bookings";
+      }
     }
 
-    tableModel = new DefaultTableModel(tableData, columns) {
+    JPanel top = new JPanel(new BorderLayout());
+    top.setOpaque(false);
+    top.add(actionPanel, BorderLayout.NORTH);
+    top.add(BookingUtils.buildHeader(title, subtitle), BorderLayout.SOUTH);
+    add(top, BorderLayout.NORTH);
+
+    tableModel = new DefaultTableModel(buildData(rows), new Object[] {
+        "#", "Booking ID", "Customer", "Room No.", "Check-in", "Check-out", "Total Price", "Status"
+    }) {
       @Override
-      public boolean isCellEditable(int row, int cols) {
+      public boolean isCellEditable(int row, int col) {
         return false;
       }
     };
@@ -207,21 +200,38 @@ public class BookingsView extends JPanel {
     bookingTable.getColumnModel().getColumn(1).setMinWidth(0);
     bookingTable.getColumnModel().getColumn(1).setMaxWidth(0);
     bookingTable.getColumnModel().getColumn(1).setWidth(0);
-    bookingTable.setFillsViewportHeight(true);
     bookingTable.setRowHeight(36);
+    bookingTable.setFillsViewportHeight(true);
     bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(bookingTable);
 
     JPanel tableWrapper = new JPanel(new BorderLayout());
     tableWrapper.setBackground(Color.decode("#f9fafb"));
-    setBorder(new EmptyBorder(25, 30, 25, 30));
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
     tableWrapper.add(paginationPanel, BorderLayout.SOUTH);
 
     add(tableWrapper, BorderLayout.CENTER);
 
-    statusFilter.setSelectedItem("All");
+    if (statusFilter != null) {
+      statusFilter.setSelectedItem("All");
+    }
+  }
+
+  private Object[][] buildData(List<BookingRowDTO> rows) {
+    Object[][] data = new Object[rows.size()][8];
+    for (int i = 0; i < rows.size(); i++) {
+      BookingRowDTO r = rows.get(i);
+      data[i][0] = i + 1;
+      data[i][1] = r.getBookingId();
+      data[i][2] = r.getCustomerName();
+      data[i][3] = r.getRoomNumber();
+      data[i][4] = r.getCheckIn();
+      data[i][5] = r.getCheckOut();
+      data[i][6] = r.getTotalPrice();
+      data[i][7] = r.getStatus();
+    }
+    return data;
   }
 
   private JButton createActionButton(String text) {
@@ -232,21 +242,7 @@ public class BookingsView extends JPanel {
   }
 
   public void setRows(List<BookingRowDTO> rows) {
-    Object[][] tableData = new Object[rows.size()][8];
-
-    for (int i = 0; i < rows.size(); i++) {
-      BookingRowDTO r = rows.get(i);
-      tableData[i][0] = i + 1;
-      tableData[i][1] = r.getBookingId();
-      tableData[i][2] = r.getCustomerName();
-      tableData[i][3] = r.getRoomNumber();
-      tableData[i][4] = r.getCheckIn();
-      tableData[i][5] = r.getCheckOut();
-      tableData[i][6] = r.getTotalPrice();
-      tableData[i][7] = r.getStatus();
-    }
-
-    tableModel.setDataVector(tableData, new Object[] {
+    tableModel.setDataVector(buildData(rows), new Object[] {
         "#", "Booking ID", "Customer", "Room No.", "Check-in", "Check-out", "Total Price", "Status"
     });
 
@@ -259,14 +255,22 @@ public class BookingsView extends JPanel {
   }
 
   public void setSortSelected(BookingSort sort) {
-    if (sortFilter == null)
+    if (sortFilter == null) {
       return;
-
+    }
     if (sort == null) {
       sortFilter.setSelectedItem("Default");
     } else {
       sortFilter.setSelectedItem(sort);
     }
+  }
+
+  public Object getSelectedStatusFilter() {
+    return statusFilter != null ? statusFilter.getSelectedItem() : null;
+  }
+
+  public Object getSelectedSortFilter() {
+    return sortFilter != null ? sortFilter.getSelectedItem() : null;
   }
 
   public JButton getPrevBtn() {
@@ -311,14 +315,6 @@ public class BookingsView extends JPanel {
 
   public JButton getCancelReservationBtn() {
     return cancelReservationBtn;
-  }
-
-  public Object getSelectedStatusFilter() {
-    return statusFilter != null ? statusFilter.getSelectedItem() : null;
-  }
-
-  public Object getSelectedSortFilter() {
-    return sortFilter != null ? sortFilter.getSelectedItem() : null;
   }
 
   public JComboBox<Object> getStatusFilter() {
