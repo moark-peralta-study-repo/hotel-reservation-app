@@ -11,23 +11,27 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.hotel.model.User;
+import org.hotel.utils.BookingUtils;
 
 public class UsersView extends JPanel {
   private JTable usersTable;
   private DefaultTableModel tableModel;
-  private JTextField searchField;
   private JButton addUserBtn, editUserBtn, deleteUserBtn;
 
   public UsersView(List<User> rows) {
-    JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-
     setLayout(new BorderLayout());
+    setBackground(Color.decode("#f9fafb"));
+
+    setBorder(new EmptyBorder(25, 30, 25, 30));
+
+    JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+    actionPanel.setOpaque(false);
 
     addUserBtn = createActionButton("Add User");
     editUserBtn = createActionButton("Edit User");
@@ -37,7 +41,17 @@ public class UsersView extends JPanel {
     actionPanel.add(editUserBtn);
     actionPanel.add(deleteUserBtn);
 
-    add(actionPanel, BorderLayout.NORTH);
+    JPanel top = new JPanel(new BorderLayout());
+    top.setOpaque(false);
+
+    top.add(actionPanel, BorderLayout.NORTH);
+    top.add(
+        BookingUtils.buildHeader(
+            "Users",
+            "Manage user accounts and access roles"),
+        BorderLayout.SOUTH);
+
+    add(top, BorderLayout.NORTH);
 
     String[] columns = {
         "#",
@@ -53,7 +67,6 @@ public class UsersView extends JPanel {
 
     for (int i = 0; i < rows.size(); i++) {
       User u = rows.get(i);
-
       tableData[i][0] = i + 1;
       tableData[i][1] = u.getId();
       tableData[i][2] = u.getFirstName();
@@ -65,7 +78,7 @@ public class UsersView extends JPanel {
 
     tableModel = new DefaultTableModel(tableData, columns) {
       @Override
-      public boolean isCellEditable(int row, int cols) {
+      public boolean isCellEditable(int row, int col) {
         return false;
       }
     };
@@ -81,21 +94,21 @@ public class UsersView extends JPanel {
     usersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(usersTable);
+    scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode("#e5e7eb")));
+    scrollPane.getViewport().setBackground(Color.WHITE);
 
     JPanel tableWrapper = new JPanel(new BorderLayout());
-    tableWrapper.setBackground(Color.decode("#f9fafb"));
-    tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
-
+    tableWrapper.setOpaque(false);
+    tableWrapper.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
+
     add(tableWrapper, BorderLayout.CENTER);
   }
 
   private JButton createActionButton(String text) {
     JButton btn = new JButton(text);
-
     var base = UIManager.getFont("Button.font");
     btn.setFont(base.deriveFont(Font.PLAIN, base.getSize() + 1f));
-
     return btn;
   }
 
@@ -105,10 +118,6 @@ public class UsersView extends JPanel {
 
   public DefaultTableModel getTableModel() {
     return tableModel;
-  }
-
-  public JTextField getSearchField() {
-    return searchField;
   }
 
   public JButton getAddUserBtn() {

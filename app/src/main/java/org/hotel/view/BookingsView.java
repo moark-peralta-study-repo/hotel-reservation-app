@@ -7,7 +7,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,12 +18,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.hotel.dto.BookingRowDTO;
 import org.hotel.model.BookingSort;
 import org.hotel.model.BookingStatus;
 import org.hotel.model.BookingsViewMode;
+import org.hotel.utils.BookingUtils;
 
 public class BookingsView extends JPanel {
   private JTable bookingTable;
@@ -39,9 +40,11 @@ public class BookingsView extends JPanel {
 
   public BookingsView(List<BookingRowDTO> rows, BookingsViewMode mode) {
     setLayout(new BorderLayout());
-    setBackground(Color.decode("#fffafb"));
+    setBackground(Color.decode("#f9fafb"));
 
     JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+    actionPanel.setOpaque(true);
+    actionPanel.setBackground(Color.decode("#f9fafb"));
 
     statusFilter = new JComboBox<>();
     statusFilter.addItem("All");
@@ -112,10 +115,11 @@ public class BookingsView extends JPanel {
         actionPanel.add(editReservationBtn);
         actionPanel.add(cancelReservationBtn);
 
+        actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
-        actionPanel.add(sortFilter);
       }
+
       case CHECK_IN -> {
         checkInBtn = createActionButton("Check-in");
         searchField = new JTextField(18);
@@ -123,9 +127,9 @@ public class BookingsView extends JPanel {
 
         actionPanel.add(checkInBtn);
 
+        actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
-        actionPanel.add(sortFilter);
       }
       case CHECK_OUT -> {
         checkOutBtn = createActionButton("Check-Out");
@@ -134,18 +138,17 @@ public class BookingsView extends JPanel {
         searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
         actionPanel.add(checkOutBtn);
 
+        actionPanel.add(sortFilter);
         actionPanel.add(new JLabel("Search:"));
         actionPanel.add(searchField);
-        actionPanel.add(sortFilter);
       }
       case ALL -> {
-        actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 22, 22));
         searchField = new JTextField(18);
         searchField.putClientProperty("JTextField.placeholderText", "Seach customer...");
-        actionPanel.add(new JLabel("Search:"));
-        actionPanel.add(searchField);
         actionPanel.add(statusFilter);
         actionPanel.add(sortFilter);
+        actionPanel.add(new JLabel("Search:"));
+        actionPanel.add(searchField);
       }
     }
 
@@ -161,7 +164,18 @@ public class BookingsView extends JPanel {
     paginationPanel.add(pageLbl);
     paginationPanel.add(nextBtn);
 
-    add(actionPanel, BorderLayout.NORTH);
+    JPanel top = new JPanel(new BorderLayout());
+    top.setOpaque(false);
+
+    top.add(
+        BookingUtils.buildHeader(
+            "Bookings",
+            "Manage reservations, check-ins, and check-outs"),
+        BorderLayout.SOUTH);
+
+    top.add(actionPanel, BorderLayout.NORTH);
+
+    add(top, BorderLayout.NORTH);
 
     String[] columns = {
         "#", "Booking ID", "Customer", "Room No.", "Check-in", "Check-out", "Total Price", "Status"
@@ -201,7 +215,7 @@ public class BookingsView extends JPanel {
 
     JPanel tableWrapper = new JPanel(new BorderLayout());
     tableWrapper.setBackground(Color.decode("#f9fafb"));
-    tableWrapper.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
+    setBorder(new EmptyBorder(25, 30, 25, 30));
     tableWrapper.add(scrollPane, BorderLayout.CENTER);
     tableWrapper.add(paginationPanel, BorderLayout.SOUTH);
 
