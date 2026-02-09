@@ -111,7 +111,7 @@ public class DashboardView extends JPanel {
     title.setForeground(TEXT);
 
     JLabel subtitle = new JLabel("Quick view of occupancy, revenue, and today’s operations");
-    subtitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
+    subtitle.setFont(new Font("Poppins", Font.PLAIN, 14));
     subtitle.setForeground(MUTED);
 
     JPanel left = new JPanel();

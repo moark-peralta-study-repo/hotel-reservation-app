@@ -13,6 +13,7 @@ import org.hotel.model.Room;
 import org.hotel.model.RoomType;
 import org.hotel.model.dao.RoomDAO;
 import org.hotel.view.MainFrame;
+import org.hotel.view.RoomDialog;
 import org.hotel.view.RoomsView;
 import org.hotel.view.RoundedTextField;
 
@@ -50,13 +51,19 @@ public class RoomsController {
   }
 
   private void onAddRoom() {
-    Room newRoom = showAddDialog();
+    RoomDialog dialog = new RoomDialog(
+        mainFrame,
+        "Add Room",
+        null,
+        roomNo -> roomDAO.getByRoomNumber(roomNo) != null);
+
+    dialog.setVisible(true);
+    Room newRoom = dialog.getResult();
 
     if (newRoom != null) {
       roomDAO.insert(newRoom);
       loadRooms();
     }
-
   }
 
   private Room showAddDialog() {
@@ -133,35 +140,18 @@ public class RoomsController {
   }
 
   private void showEditDialog(Room room) {
-    RoundedTextField roomNoField = new RoundedTextField(String.valueOf(room.getRoomNumber()));
+    RoomDialog dialog = new RoomDialog(
+        mainFrame,
+        "Edit Room",
+        room,
+        roomNo -> roomDAO.getByRoomNumber(roomNo) != null);
 
-    JComboBox<RoomType> roomType = new JComboBox<>(RoomType.values());
-    roomType.setSelectedItem(RoomType.SINGLE);
+    dialog.setVisible(true);
+    Room updated = dialog.getResult();
 
-    RoundedTextField priceField = new RoundedTextField(String.valueOf(room.getPrice()));
-
-    JCheckBox availableCheck = new JCheckBox("Available");
-    availableCheck.setSelected(room.isAvailable());
-
-    JPanel panel = new JPanel(new GridLayout(0, 1));
-    panel.add(new JLabel("Room Number: "));
-    panel.add(roomNoField);
-    panel.add(new JLabel("Type: "));
-    panel.add(roomType);
-    panel.add(new JLabel("Price: "));
-    panel.add(priceField);
-
-    panel.add(availableCheck);
-    int result = JOptionPane.showConfirmDialog(
-        mainFrame, panel, "Edit Room", JOptionPane.OK_CANCEL_OPTION);
-
-    if (result == JOptionPane.OK_OPTION) {
-      room.setRoomNumber(Integer.parseInt(roomNoField.getText()));
-      room.setType((RoomType) roomType.getSelectedItem());
-      room.setPrice(Double.parseDouble(priceField.getText()));
-      room.setAvailable(availableCheck.isSelected());
-
-      roomDAO.update(room);
+    if (updated != null) {
+      updated.setId(room.getId());
+      roomDAO.update(updated);
       loadRooms();
     }
   }
