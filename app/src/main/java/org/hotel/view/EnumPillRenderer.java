@@ -1,4 +1,3 @@
-
 package org.hotel.view;
 
 import java.awt.Color;
@@ -12,11 +11,10 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.hotel.model.BookingStatus;
+public abstract class EnumPillRenderer<T extends Enum<T>>
+    extends JLabel implements TableCellRenderer {
 
-public class StatusPillRenderer extends JLabel implements TableCellRenderer {
-
-  public StatusPillRenderer() {
+  public EnumPillRenderer() {
     setOpaque(false);
     setHorizontalAlignment(CENTER);
     setFont(new Font("Poppins", Font.BOLD, 14));
@@ -31,10 +29,13 @@ public class StatusPillRenderer extends JLabel implements TableCellRenderer {
       int row,
       int column) {
 
-    if (value instanceof BookingStatus status) {
-      setText(format(status));
-      setForeground(getTextColor(status));
-      setBackground(getBgColor(status));
+    if (value != null && value.getClass().isEnum()) {
+      @SuppressWarnings("unchecked")
+      T enumValue = (T) value;
+
+      setText(format(enumValue));
+      setForeground(getTextColor(enumValue));
+      setBackground(getBgColor(enumValue));
     } else {
       setText("");
     }
@@ -55,26 +56,12 @@ public class StatusPillRenderer extends JLabel implements TableCellRenderer {
     super.paintComponent(g);
   }
 
-  private String format(BookingStatus status) {
-    String s = status.name().toLowerCase().replace('_', ' ');
+  protected String format(T value) {
+    String s = value.name().toLowerCase().replace('_', ' ');
     return Character.toUpperCase(s.charAt(0)) + s.substring(1);
   }
 
-  private Color getBgColor(BookingStatus status) {
-    return switch (status) {
-      case RESERVED -> Color.decode("#BBDEFB");
-      case CHECKED_IN -> Color.decode("#C8E6C9");
-      case CHECKED_OUT -> Color.decode("#EEEEEE");
-      case CANCELLED -> Color.decode("#FFB8B8");
-    };
-  }
+  protected abstract Color getBgColor(T value);
 
-  private Color getTextColor(BookingStatus status) {
-    return switch (status) {
-      case RESERVED -> Color.decode("#1565C0");
-      case CHECKED_IN -> Color.decode("#2E7D32");
-      case CHECKED_OUT -> Color.decode("#616161");
-      case CANCELLED -> Color.decode("#C62828");
-    };
-  }
+  protected abstract Color getTextColor(T value);
 }

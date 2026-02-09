@@ -89,8 +89,10 @@ public class UsersView extends JPanel {
     usersTable.getColumnModel().getColumn(1).setMaxWidth(0);
     usersTable.getColumnModel().getColumn(1).setWidth(0);
 
+    usersTable.getColumnModel().getColumn(6).setCellRenderer(new UserRolePillRenderer());
+
     usersTable.setFillsViewportHeight(true);
-    usersTable.setRowHeight(30);
+    usersTable.setRowHeight(36);
     usersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(usersTable);
