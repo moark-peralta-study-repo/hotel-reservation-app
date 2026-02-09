@@ -1,21 +1,16 @@
 package org.hotel.controller;
 
-import java.awt.GridLayout;
 import java.util.List;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.hotel.model.Room;
-import org.hotel.model.RoomType;
 import org.hotel.model.dao.RoomDAO;
 import org.hotel.view.MainFrame;
 import org.hotel.view.RoomDialog;
 import org.hotel.view.RoomsView;
-import org.hotel.view.RoundedTextField;
 
 public class RoomsController {
   private MainFrame mainFrame;
@@ -38,6 +33,29 @@ public class RoomsController {
   public void loadRooms() {
     List<Room> rooms = roomDAO.getAll();
     roomsView = new RoomsView(rooms);
+
+    roomsView.getSearchField().getDocument().addDocumentListener(new DocumentListener() {
+      private void changed() {
+        String q = roomsView.getSearchField().getText().trim();
+        List<Room> results = q.isBlank() ? roomDAO.getAll() : roomDAO.searchByRoomNumber(q);
+        roomsView.setRooms(results);
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        changed();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        changed();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        changed();
+      }
+    });
 
     roomsView.getEditBtn().addActionListener(e -> onEditRoom());
     roomsView.getDeleteBtn().addActionListener(e -> onDeleteRoom());
@@ -64,38 +82,6 @@ public class RoomsController {
       roomDAO.insert(newRoom);
       loadRooms();
     }
-  }
-
-  private Room showAddDialog() {
-    RoundedTextField roomNoField = new RoundedTextField();
-    RoundedTextField priceField = new RoundedTextField();
-
-    JCheckBox availableCheck = new JCheckBox("Available");
-    availableCheck.setSelected(true);
-
-    JComboBox<RoomType> roomType = new JComboBox<>(RoomType.values());
-    roomType.setSelectedItem(RoomType.SINGLE);
-
-    JPanel panel = new JPanel(new GridLayout(0, 1));
-    panel.add(new JLabel("Room Number:"));
-    panel.add(roomNoField);
-    panel.add(new JLabel("Type:"));
-    panel.add(roomType);
-    panel.add(new JLabel("Price:"));
-    panel.add(priceField);
-    panel.add(availableCheck);
-
-    int result = JOptionPane.showConfirmDialog(mainFrame, panel, "Add new Room", JOptionPane.OK_CANCEL_OPTION);
-
-    if (result != JOptionPane.OK_OPTION)
-      return null;
-
-    return new Room(
-        0,
-        Integer.parseInt(roomNoField.getText()),
-        (RoomType) roomType.getSelectedItem(),
-        Double.parseDouble(priceField.getText()),
-        availableCheck.isSelected());
   }
 
   private void onDeleteRoom() {
@@ -150,6 +136,7 @@ public class RoomsController {
     Room updated = dialog.getResult();
 
     if (updated != null) {
+      // preserve the real DB id when editing
       updated.setId(room.getId());
       roomDAO.update(updated);
       loadRooms();

@@ -114,6 +114,29 @@ public class RoomsView extends JPanel {
     return btn;
   }
 
+  public void setRooms(List<Room> rooms) {
+    Object[][] tableData = new Object[rooms.size()][6];
+
+    for (int i = 0; i < rooms.size(); i++) {
+      Room r = rooms.get(i);
+      tableData[i][0] = i + 1;
+      tableData[i][1] = r.getId();
+      tableData[i][2] = r.getRoomNumber();
+      tableData[i][3] = r.getType();
+      tableData[i][4] = r.getPrice();
+      tableData[i][5] = r.isAvailable() ? "Available" : "Occupied";
+    }
+
+    tableModel.setDataVector(tableData, new Object[] { "#", "ID", "Room No.", "Type", "Price", "Status" });
+
+    roomTable.getColumnModel().getColumn(1).setMinWidth(0);
+    roomTable.getColumnModel().getColumn(1).setMaxWidth(0);
+    roomTable.getColumnModel().getColumn(1).setWidth(0);
+
+    roomTable.getColumnModel().getColumn(5).setCellRenderer(new RoomStatusPillRenderer());
+    roomTable.setRowHeight(36);
+  }
+
   public JTable getRoomTable() {
     return roomTable;
   }

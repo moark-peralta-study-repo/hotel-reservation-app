@@ -119,7 +119,7 @@ public class BookingsController {
     currentMode = BookingsViewMode.CHECK_IN;
     currentStatusFilter = null;
     currentSearch = "";
-    currentSort = BookingSort.CHECK_IN_ASC;
+    currentSort = BookingSort.CHECK_IN_DESC;
     PAGE = 1;
 
     bookingsView = new BookingsView(List.of(), BookingsViewMode.CHECK_IN);

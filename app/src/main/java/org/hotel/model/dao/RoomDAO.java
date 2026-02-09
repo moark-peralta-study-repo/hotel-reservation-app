@@ -273,4 +273,60 @@ public class RoomDAO {
 
     return false;
   }
+
+  public List<Room> searchByRoomNumber(String query) {
+    List<Room> rooms = new ArrayList<>();
+
+    String sql = """
+          SELECT *
+          FROM rooms
+          WHERE CAST(room_number AS TEXT) LIKE ?
+          ORDER BY room_number ASC
+        """;
+
+    String checkSql = """
+          SELECT COUNT(*) AS count
+          FROM bookings
+          WHERE room_id = ?
+            AND status IN ('RESERVED', 'CHECKED_IN')
+            AND date(check_in) < date('now','+1 day')
+            AND date(check_out) > date('now')
+        """;
+
+    try (Connection conn = Database.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+      stmt.setString(1, "%" + query.trim() + "%");
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          int roomId = rs.getInt("id");
+
+          boolean availableToday = true;
+          try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+            checkStmt.setInt(1, roomId);
+            try (ResultSet checkRs = checkStmt.executeQuery()) {
+              if (checkRs.next()) {
+                availableToday = checkRs.getInt("count") == 0;
+              }
+            }
+          }
+
+          RoomType type = RoomType.valueOf(rs.getString("type").toUpperCase());
+
+          rooms.add(new Room(
+              roomId,
+              rs.getInt("room_number"),
+              type,
+              rs.getDouble("price"),
+              availableToday));
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return rooms;
+  }
 }
