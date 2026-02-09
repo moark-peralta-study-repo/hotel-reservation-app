@@ -89,8 +89,10 @@ public class RoomsView extends JPanel {
     roomTable.getColumnModel().getColumn(1).setMaxWidth(0);
     roomTable.getColumnModel().getColumn(1).setWidth(0);
 
+    roomTable.getColumnModel().getColumn(5).setCellRenderer(new RoomStatusPillRenderer());
+
     roomTable.setFillsViewportHeight(true);
-    roomTable.setRowHeight(30);
+    roomTable.setRowHeight(36);
     roomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     JScrollPane scrollPane = new JScrollPane(roomTable);
