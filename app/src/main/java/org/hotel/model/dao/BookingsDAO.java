@@ -460,7 +460,7 @@ public class BookingsDAO {
     } else if (mode == BookingsViewMode.CHECK_OUT) {
       sql.append(" AND b.status = 'CHECKED_IN'");
     } else if (mode == BookingsViewMode.RESERVATION) {
-      sql.append(" AND b.status = 'RESERVED'");
+      sql.append(" AND b.status = 'RESERVED' AND date(b.check_in) > date('now')");
     }
 
     if (statusFilter != null) {
@@ -520,7 +520,7 @@ public class BookingsDAO {
     } else if (mode == BookingsViewMode.CHECK_OUT) {
       sql.append(" AND b.status = 'CHECKED_IN'");
     } else if (mode == BookingsViewMode.RESERVATION) {
-      sql.append(" AND b.status = 'RESERVED'");
+      sql.append(" AND b.status = 'RESERVED' AND date(b.check_in) > date('now')");
     }
 
     if (statusFilter != null) {
