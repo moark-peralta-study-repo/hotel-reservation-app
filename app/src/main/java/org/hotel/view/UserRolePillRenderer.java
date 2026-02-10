@@ -10,8 +10,8 @@ public class UserRolePillRenderer
   @Override
   protected Color getBgColor(UserRole role) {
     return switch (role) {
-      case ADMIN -> Color.decode("#E1BEE7"); // purple
-      case RECEPTIONIST -> Color.decode("#FFF9C4"); // yellow
+      case ADMIN -> Color.decode("#E1BEE7"); 
+      case RECEPTIONIST -> Color.decode("#FFF9C4"); 
     };
   }
 
