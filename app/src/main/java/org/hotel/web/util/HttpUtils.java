@@ -19,6 +19,11 @@ public class HttpUtils {
 
   public static void sendJson(HttpExchange exchange, int status, String json) throws IOException {
     byte[] bytes = json.getBytes();
+
+    exchange.getResponseHeaders().add("Content-Type", "application/json");
+    exchange.sendResponseHeaders(status, bytes.length);
+    exchange.getResponseBody().write(bytes);
+    exchange.getResponseBody().close();
   }
 
   public static int extractId(String path) {
