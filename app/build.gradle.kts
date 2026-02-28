@@ -24,6 +24,8 @@ dependencies {
     implementation("com.formdev:flatlaf:3.4.1")
     implementation ("io.github.dj-raven:swing-datetime-picker:2.1.3")
     implementation("com.formdev:flatlaf-extras:3.4.1")
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0")   
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -35,5 +37,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.hotel.Main"
+    mainClass = "org.hotel.web.WebServer"
 }

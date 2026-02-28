@@ -9,6 +9,9 @@ public class Booking {
   private double totalPrice;
   private BookingStatus status;
 
+  public Booking() {
+  }
+
   public Booking(
       int id,
       int customerId,

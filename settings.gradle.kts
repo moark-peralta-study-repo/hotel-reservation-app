@@ -10,5 +10,5 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-rootProject.name = "hotel-reservation-gui"
+rootProject.name = "hotel-reservation-app"
 include("app")
