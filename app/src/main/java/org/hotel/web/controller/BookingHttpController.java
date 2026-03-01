@@ -58,8 +58,21 @@ public class BookingHttpController implements HttpHandler {
     }
   }
 
-  private Object handlePut(HttpExchange exchange, int id) {
-    return null;
+  private void handlePut(HttpExchange exchange, int id) throws IOException {
+    Booking updatedBooking = mapper.readValue(exchange.getRequestBody(), Booking.class);
+
+    Booking existing = bookingsDAO.getById(id);
+
+    if (existing == null) {
+      HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found.");
+      return;
+    } else {
+      updatedBooking.setId(id);
+      bookingsDAO.update(updatedBooking);
+
+      mapper.writeValueAsString(updatedBooking);
+      exchange.sendResponseHeaders(204, -1);
+    }
   }
 
   private void handleGetBookingById(HttpExchange exchange, int id) throws IOException {
@@ -73,6 +86,7 @@ public class BookingHttpController implements HttpHandler {
       String json = mapper.writeValueAsString(booking);
       HttpUtils.sendJson(exchange, 200, json);
     }
+
   }
 
   private void handlePost(HttpExchange exchange) throws IOException {
@@ -89,9 +103,6 @@ public class BookingHttpController implements HttpHandler {
 
     String json = mapper.writeValueAsString(bookings);
 
-    exchange.getResponseHeaders().add("Content-Type", "application/json");
-    exchange.sendResponseHeaders(200, json.getBytes().length);
-    exchange.getResponseBody().write(json.getBytes());
-    exchange.getResponseBody().close();
+    HttpUtils.sendJson(exchange, 200, json);
   }
 }
