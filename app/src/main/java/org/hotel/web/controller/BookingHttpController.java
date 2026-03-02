@@ -36,7 +36,7 @@ public class BookingHttpController implements HttpHandler {
           default -> exchange.sendResponseHeaders(405, -1);
         }
 
-      } else if (path.matches("/\\d+/(cancel|check-in|check-out)")) {
+      } else if (path.matches("/\\d+/(cancel|checkin|checkout)")) {
 
         String[] parts = path.split("/");
         int id = Integer.parseInt(parts[1]);
@@ -44,8 +44,8 @@ public class BookingHttpController implements HttpHandler {
 
         switch (action) {
           case "cancel" -> handleCancelBookings(exchange, id);
-          case "check-in" -> handleCheckIn(exchange, id);
-          case "check-out" -> handleCheckOut(exchange, id);
+          case "checkin" -> handleCheckIn(exchange, id);
+          case "checkout" -> handleCheckOut(exchange, id);
         }
 
       } else if (path.matches("/\\d+")) {
@@ -72,9 +72,21 @@ public class BookingHttpController implements HttpHandler {
     throw new UnsupportedOperationException("Unimplemented method 'handleCheckOut'");
   }
 
-  private Object handleCheckIn(HttpExchange exchange, int id) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleCheckIn'");
+  private void handleCheckIn(HttpExchange exchange, int id) throws IOException {
+    Booking existing = bookingsDAO.getById(id);
+
+    if (existing == null) {
+      HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found.");
+      return;
+    }
+
+    if (existing.getStatus() != BookingStatus.RESERVED) {
+      HttpUtils.sendError(exchange, 409, "Only RESERVED bookings can be checked in.");
+      return;
+    }
+
+    bookingsDAO.checkInCustomer(existing);
+    exchange.sendResponseHeaders(204, -1);
   }
 
   private void handleCancelBookings(HttpExchange exchange, int id) throws IOException {
