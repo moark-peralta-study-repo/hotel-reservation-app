@@ -67,18 +67,26 @@ public class BookingHttpController implements HttpHandler {
     }
   }
 
-  private Object handleCheckOut(HttpExchange exchange, int id) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'handleCheckOut'");
+  private void handleCheckOut(HttpExchange exchange, int id) throws IOException {
+    Booking existing = requireBooking(id, exchange);
+
+    if (existing == null) return;
+
+    if (existing.getStatus() != BookingStatus.CHECKED_IN) {
+      HttpUtils.sendError(exchange, 409, "Only CHECKED_IN bookings can be checked out.");
+      return;
+    }
+
+    bookingsDAO.checkOutCustomer(existing);
+    exchange.sendResponseHeaders(204, -1);
   }
 
   private void handleCheckIn(HttpExchange exchange, int id) throws IOException {
-    Booking existing = bookingsDAO.getById(id);
+    Booking existing = requireBooking(id, exchange);
 
-    if (existing == null) {
-      HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found.");
-      return;
-    }
+    if (existing == null) return;
+
+    requireBooking(id, exchange);
 
     if (existing.getStatus() != BookingStatus.RESERVED) {
       HttpUtils.sendError(exchange, 409, "Only RESERVED bookings can be checked in.");
@@ -91,12 +99,9 @@ public class BookingHttpController implements HttpHandler {
 
   private void handleCancelBookings(HttpExchange exchange, int id) throws IOException {
 
-    Booking existing = bookingsDAO.getById(id);
+    Booking existing = requireBooking(id, exchange);
 
-    if (existing == null) {
-      HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found.");
-      return;
-    }
+    if (existing == null) return;
 
     if (existing.getStatus() != BookingStatus.RESERVED) {
         HttpUtils.sendError(exchange, 409, "Only RESERVED bookings can be cancelled.");
@@ -113,30 +118,28 @@ public class BookingHttpController implements HttpHandler {
 
     Booking existing = bookingsDAO.getById(id);
 
+    requireBooking(id, exchange);
+
+
     if (existing == null) {
       HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found.");
       return;
-    } else {
-      updatedBooking.setId(id);
-      bookingsDAO.update(updatedBooking);
-
-      mapper.writeValueAsString(updatedBooking);
-      exchange.sendResponseHeaders(204, -1);
     }
+
+    updatedBooking.setId(id);
+    bookingsDAO.update(updatedBooking);
+
+    mapper.writeValueAsString(updatedBooking);
   }
 
   private void handleGetBookingById(HttpExchange exchange, int id) throws IOException {
 
     Booking booking = bookingsDAO.getById(id);
 
-    if (booking == null) {
-      HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found");
-      return;
-    } else {
-      String json = mapper.writeValueAsString(booking);
-      HttpUtils.sendJson(exchange, 200, json);
-    }
+    requireBooking(id, exchange);
 
+    String json = mapper.writeValueAsString(booking);
+    HttpUtils.sendJson(exchange, 200, json);
   }
 
   private void handlePost(HttpExchange exchange) throws IOException {
@@ -153,5 +156,16 @@ public class BookingHttpController implements HttpHandler {
     String json = mapper.writeValueAsString(bookings);
 
     HttpUtils.sendJson(exchange, 200, json);
+  }
+
+  private Booking requireBooking(int id, HttpExchange exchange) throws IOException {
+    Booking booking = bookingsDAO.getById(id);
+
+    if (booking == null) {
+      HttpUtils.sendError(exchange, 404, "Booking with id " + id + " not found.");
+      return null;
+    }
+
+    return booking;
   }
 }
