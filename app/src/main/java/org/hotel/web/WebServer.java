@@ -4,10 +4,11 @@ import java.net.InetSocketAddress;
 
 import com.sun.net.httpserver.HttpServer;
 
-import org.hotel.web.controller.BookingHttpController;
+import org.hotel.web.router.ApiRouter;
 
 public class WebServer {
   public static void main(String[] args) throws Exception {
+
     HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
     server.createContext("/", exchange -> {
@@ -18,7 +19,8 @@ public class WebServer {
       exchange.getResponseBody().close();
     });
 
-    server.createContext("/api/bookings", new BookingHttpController());
+    // server.createContext("/api/bookings", new BookingHttpController());
+    server.createContext("/api", new ApiRouter());
 
     server.setExecutor(null);
     server.start();
